@@ -2,7 +2,7 @@ $(function () {
     $(window).scroll(function () {
         if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             $.ajax({
-                url: "http://localhost:5000/product-recommended",
+                url: "/product-recommended",
                 type: "POST",
                 data: {},
             }).done(function (response) {
@@ -40,7 +40,7 @@ $(function () {
                                     '<h3 class="glyphicon glyphicon-bookmark" style="position:absolute; left:30px; top:-25px; color:#d9534f;"></h3>' +
                                     '<div class="col-lg-7 col-md-12">' +
                                         '<h4 class="text-info">' +
-                                            '<a class="text-decoration-none" href="http://localhost:5000/productDetail/' + product.CodiceArticolo + '">' +
+                                            '<a class="text-decoration-none" href="/productDetail/' + product.CodiceArticolo + '">' +
                                                 '<b class="text-dark">' + product.Denominazione + '</b>' +
                                             '</a>' +
                                         '</h4>' +
@@ -48,7 +48,7 @@ $(function () {
                                         '<h6 class="text-muted">Confezione (' + product.QuantitaBox + ' unit&agrave;)</h6>' +
                                     '</div>' +
                                     '<div class="col-lg-5 col-md-12">' +
-                                        '<a href="http://localhost:5000/productDetail/' + product.CodiceArticolo + '" style="color:#333;">' +
+                                        '<a href="/productDetail/' + product.CodiceArticolo + '" style="color:#333;">' +
                                             '<img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/' + product.CodiceArticolo + '.jpg" style="width:177px !important; height:177px !important;" class="img-thumbnail" />' +
                                         '</a>' +
                                     '</div>' +
@@ -58,24 +58,24 @@ $(function () {
                                     '<hr style="border: 1px solid #c1c1c1;" />' +
                                     '<div class="col-lg-12 col-md-12 col-sm-12">' +
                                         '<h6>' +
-                                            '<a class="btn btn-default btn-sm" href="http://localhost:5000/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
+                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
                                                 '<span class="glyphicon glyphicon-minus"></span>' +
                                             '</a>' +
                                             '<a class="btn btn-default btn-sm" style="cursor:default; padding: 5px; width: calc(53% - 10px);">' +
                                                 '<b><span class="glyphicon glyphicon-shopping-cart"></span> Articolo</b>' +
                                             '</a>' +
-                                            '<a class="btn btn-default btn-sm" href="http://localhost:5000/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
+                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                             '</a>' +
                                         '</h6>' +
                                         '<h6>' +
-                                            '<a class="btn btn-default btn-sm" href="http://localhost:5000/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
+                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
                                                 '<span class="glyphicon glyphicon-minus"></span>' +
                                             '</a>' +
                                             '<a class="btn btn-default btn-sm" style="cursor:default; padding: 5px; width: calc(53% - 10px);">' +
                                                 '<b><span class="glyphicon glyphicon-shopping-cart"></span> Confezione</b>' +
                                             '</a>' +
-                                            '<a class="btn btn-default btn-sm" href="http://localhost:5000/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
+                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                             '</a>' +
                                         '</h6>' +
