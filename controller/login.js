@@ -13,7 +13,7 @@ $(function() {
         }
         if (isvalidform) {
             $.ajax({
-                url: "http://localhost:5000/login",
+                url: "/login",
                 type: "POST",
                 data: {
                     Userid: $('#Userid').val(),
@@ -27,7 +27,7 @@ $(function() {
                     //console.log(err.name);
                     //console.log(err.stack);
                 } else if (response.status == "OK") {
-                    document.location.href = 'http://localhost:5000/dashboard';
+                    document.location.href = '/dashboard';
                 }
             }).fail(function (xhr, status, errorThrown) {
             }).always(function (xhr, status) {

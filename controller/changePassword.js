@@ -1,17 +1,14 @@
 $(function () {
-    $('#logout').click(function () {
+    $('#btn-update-password').click(function () {
         $.ajax({
-            url: "/logout",
+            url: "/changePassword",
             type: "POST",
         }).done(function (response) {
             if (response.status == "ERR") {
                 var err = JSON.parse(response.error);
                 $('#errorContainer').append(err.sender + ': ' + err.message);
             } else {
-                //$.each(JSON.parse(response.data), function (key, item) {
-                //    $('#container').append(item.Title + '<br>');
-                //});
-                document.location.href = "/login";
+                /* TODO: show ok messagge */
             }
         }).fail(function (xhr, status, errorThrown) {
             //console.log( "Error: " + errorThrown );

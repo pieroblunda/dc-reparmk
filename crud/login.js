@@ -21,7 +21,7 @@ function login(myLogin) {
                     );
                 } else {
                     var request = new sql.Request();
-                    request.query("SELECT A.IdAccount, A.IdAttore, A.IdContratto, A.IDProfiloUtenteDefault, A.ProfiloUtenteDefault, A.IdGruppoOperativoDefault, A.GruppoOperativoDefault, A.Nome, A.Cognome, A.IsPublicAccount AS IsPublic, A.IsVisible FROM [PS].[dbo].[VW_LOGIN] A WHERE IsVisible = 1 AND A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
+                    request.query("SELECT A.Id, A.Username, A.Nominativo, A.Ruolo FROM [dbo].[Login] A WHERE A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
                         if (err) {
                             reject(
                                 JSON.stringify(new exception(sender, err.message, err.name, err.stack))
@@ -46,17 +46,10 @@ function login(myLogin) {
                                 }
                                 /* Valorizza l'oggetto restituito al route */
                                 const user = {
-                                    IdAccount: resultData.IdAccount,
-                                    IdAttore: resultData.IdAttore,
-                                    IdContratto: resultData.IdContratto,
-                                    IDProfiloUtenteDefault: resultData.IDProfiloUtenteDefault,
-                                    ProfiloUtenteDefault: resultData.ProfiloUtenteDefault,
-                                    IdGruppoOperativoDefault: resultData.IdGruppoOperativoDefault,
-                                    GruppoOperativoDefault: resultData.GruppoOperativoDefault,
-                                    Nome: resultData.Nome,
-                                    Cognome: resultData.Cognome, 
-                                    IsPublic: resultData.IsPublic,
-                                    IsVisible: resultData.IsVisible,
+                                    Id: resultData.Id,
+                                    Username: resultData.Username,
+                                    Nominativo: resultData.Nominativo,
+                                    Ruolo: resultData.Ruolo,
                                     LanguageContext: languageContext,
                                     OffsetRows: config.OffsetRows,
                                     NextRows: config.NextRows

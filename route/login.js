@@ -49,7 +49,6 @@ login.post('/login', (req, res) => {
             req.session.save();
             res.status(200).json(new modelResponse('OK', listOf, null));
         }).catch(err => {
-            console.log('Errors: ' + err)
             res.status(200).json(new modelResponse('ERR', null, err));
         }).finally(() => {
             //console.log("Code has been executed")

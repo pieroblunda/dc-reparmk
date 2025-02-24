@@ -9,9 +9,15 @@ function GetArticoliRecommended(myRequest) {
 
     const sender = arguments.callee.name;
 
+    var myIdAccount = myRequest.IdAccount;
     var myLanguageContext = myRequest.LanguageContext;
     var myOffsetRows = myRequest.OffsetRows;
     var myNextRows = myRequest.NextRows;
+
+    //console.log('myIdAccount: ' + myIdAccount);
+    //console.log('myLanguageContext: ' + myLanguageContext);
+    //console.log('myOffsetRows: ' + myOffsetRows);
+    //console.log('myNextRows: ' + myNextRows);
 
     const customPromise = new Promise((resolve, reject) => {
         try {

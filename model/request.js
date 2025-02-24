@@ -1,6 +1,5 @@
 class baseRequest {
-    constructor(IdAttore, IdAccount, LanguageContext, OffsetRows, NextRows) {
-        this.IdAttore = IdAttore;
+    constructor(IdAccount, LanguageContext, OffsetRows, NextRows) {
         this.IdAccount = IdAccount;
         this.LanguageContext = LanguageContext;
         this.OffsetRows = OffsetRows;

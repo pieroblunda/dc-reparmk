@@ -23,7 +23,7 @@ app.use(session({
   resave: true, // Forces the session to be saved back to the session store
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store
   cookie: {
-      maxAge: 1800000, // Sets the cookie expiration time in milliseconds (1 hour = 3600000)
+      maxAge: 3600000, // Sets the cookie expiration time in milliseconds (1 hour = 3600000)
       httpOnly: false, // Reduces client-side script control over the cookie
       secure: false, // Ensures cookies are only sent over HTTPS
   }
@@ -33,29 +33,24 @@ app.use('/', require('./route/login'));
 app.use('/', require('./route/logout'));
 app.use('/', require('./route/dashboard'));
 app.use('/', require('./route/gruppi-operativi'));
-//app.use('/', require('./route/product-recommended'));
-//app.use('/', require('./route/changePassword'));
+app.use('/', require('./route/product-list'));
+app.use('/', require('./route/changePassword'));
 
 app.use(express.static('public'));
-
 app.get('/image', (req, res) => {
     const imagePath = __dirname + '/images';
     res.sendFile(imagePath);
 });
-
 app.get('/confirm-delete', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
         res.status(200).sendFile(path.join(__dirname, "/view/confirm-delete.html"));
     }
 });
-
 app.get('/css', (req, res) => {
     const cssPath = __dirname + '/css';
     res.sendFile(cssPath);
 });
-
 app.use(express.static(__dirname));
-
 app.get('/', (req, res) => {
     if (sessionUtil.verifyUser(req, res)) {
         res.render('dashboard', {
@@ -67,6 +62,6 @@ app.use(function (req, res, next) {
     res.status(404).sendFile(path.join(__dirname, "/view/404.html"));
 });
 
-const server = app.listen(6000, () => {
-  console.log('Server running on port 6000');
+const server = app.listen(5001, () => {
+    console.log('Server running on port 5001');
 });

@@ -2,7 +2,7 @@ $(function () {
     $(window).scroll(function () {
         if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             $.ajax({
-                url: "/product-recommended",
+                url: "/product",
                 type: "POST",
                 data: {},
             }).done(function (response) {
@@ -17,45 +17,55 @@ $(function () {
 
                         var partialSconto = '<h6 class="rounded" style="position:relative; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:-32px; float:right; top:-26px; color:#fff;';
                         if (product.PercentualeSconto != '0.00') {
-                            partialSconto += 'background-color:#d9534f;"> - ' + parseFloat(product.PercentualeSconto) + '%';
+                            partialSconto += 'background-color:#0088ff;"> - ' + parseFloat(product.PercentualeSconto) + '%';
                         } else {
                             partialSconto += 'background-color:#fff;">';
                         }
                         partialSconto += '</h6>';
 
+                        var partialUnita = '';
+                        if (eval(product.QuantitaPacco) != (product.QuantitaBox)) {
+                            partialUnita = '<h6 class="text-muted">' + product.QuantitaPacco + ' unit&agrave; / Confezione da ' + product.QuantitaBox + ' PZ</h6>';
+                        } else {
+                            partialUnita = '<h6 class="text-muted">Confezione da ' + product.QuantitaBox + ' PZ</h6>';
+                        }
+
                         var partialPrezzo = '';
                         if (product.PercentualeSconto != '0.00') {
                             partialPrezzo = '' +
-                                '<h3 style="color:#d9534f;">&euro;&nbsp;' + product.PrezzoUnitarioScontato + '</h3>' +
+                                '<h3 style="color:#0088ff;">&euro;&nbsp;' + product.PrezzoUnitarioScontato + '</h3>' +
                                 '<h4>&euro;&nbsp; <span style="text-decoration: line-through;">' + product.PrezzoUnitario + '</span></h4>';
                         } else {
-                            partialPrezzo = '<h3 style="color:#d9534f;">&euro;&nbsp;' + product.PrezzoUnitario + '</h3><h4>&nbsp;</h4>';
+                            partialPrezzo = '<h3 style="color:#0088ff;">&euro;&nbsp;' + product.PrezzoUnitario + '</h3><h4>&nbsp;</h4>';
                         }
 
                         var partialProduct = '' +
                         '<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">' +
-                            '<div class="jumbotron" style="padding:20px; border:2px solid #d9534f; background-color:#fff;">' +
+                            '<div class="jumbotron" style="padding:20px; border:2px solid #0088ff; background-color:#fff;">' +
                                 '<div class="container-fluid">' +
                                     partialSconto +
-                                    '<h3 class="glyphicon glyphicon-bookmark" style="position:absolute; left:30px; top:-25px; color:#d9534f;"></h3>' +
+                                    '<h3 class="glyphicon glyphicon-bookmark" style="position:absolute; left:30px; top:-25px; color:#0088ff;"></h3>' +
                                     '<div class="col-lg-7 col-md-12">' +
+                                        '<h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;' + product.CodiceArticolo + '</h5>' +
                                         '<h4 class="text-info">' +
-                                            '<a class="text-decoration-none" href="/productDetail/' + product.CodiceArticolo + '">' +
+                                            '<a style="display:block; height:65px !important;" class="text-decoration-none" href="/productDetail/' + product.CodiceArticolo + '">' +
                                                 '<b class="text-dark">' + product.Denominazione + '</b>' +
                                             '</a>' +
                                         '</h4>' +
-                                        '<h6 class="text-muted">Articolo (' + product.QuantitaPacco + ' unit&agrave;)</h6>' +
-                                        '<h6 class="text-muted">Confezione (' + product.QuantitaBox + ' unit&agrave;)</h6>' +
+                                        '<h5 style="color:#0088ff;">' +
+                                            product.DescrizioneSottocategoria +
+                                        '</h5>' + partialUnita +
                                     '</div>' +
                                     '<div class="col-lg-5 col-md-12">' +
                                         '<a href="/productDetail/' + product.CodiceArticolo + '" style="color:#333;">' +
-                                            '<img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/' + product.CodiceArticolo + '.jpg" style="width:177px !important; height:177px !important;" class="img-thumbnail" />' +
+                                            '<img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/' + product.CodiceArticolo + '.jpg"' +
+                                            'onerror="this.onerror=null; this.src=&apos;images/image.png&apos;;"' +
+                                            'style="width:177px !important; height:177px !important;" class="img-thumbnail" />' +
                                         '</a>' +
                                     '</div>' +
                                     '<div class="col-lg-12 col-md-12 col-sm-12">' +
                                         partialPrezzo +
                                     '</div>' +
-                                    '<hr style="border: 1px solid #c1c1c1;" />' +
                                     '<div class="col-lg-12 col-md-12 col-sm-12">' +
                                         '<h6>' +
                                             '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
