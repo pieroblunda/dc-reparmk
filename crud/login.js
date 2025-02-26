@@ -21,7 +21,7 @@ function login(myLogin) {
                     );
                 } else {
                     var request = new sql.Request();
-                    request.query("SELECT A.Id, A.Username, A.Nominativo, A.Ruolo FROM [dbo].[Login] A WHERE A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
+                    request.query("SELECT A.Id, A.Username, A.Nominativo, A.Ruolo, A.Codice FROM [dbo].[Login] A WHERE A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
                         if (err) {
                             reject(
                                 JSON.stringify(new exception(sender, err.message, err.name, err.stack))
@@ -50,6 +50,7 @@ function login(myLogin) {
                                     Username: resultData.Username,
                                     Nominativo: resultData.Nominativo,
                                     Ruolo: resultData.Ruolo,
+                                    Codice: resultData.Codice,
                                     LanguageContext: languageContext,
                                     OffsetRows: config.OffsetRows,
                                     NextRows: config.NextRows

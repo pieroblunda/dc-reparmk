@@ -1,8 +1,11 @@
 $(function () {
+    $('.btn-edit-product').click(function () {
+        $('#product-list-modal').modal('show');
+    });
     $(window).scroll(function () {
         if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             $.ajax({
-                url: "/product",
+                url: "/product-list",
                 type: "POST",
                 data: {},
             }).done(function (response) {
@@ -15,13 +18,13 @@ $(function () {
                 } else if (response.status == "OK") {
                     $.each(response.data, function (key, product) {
 
-                        var partialSconto = '<h6 class="rounded" style="position:relative; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:-32px; float:right; top:-26px; color:#fff;';
+                        /* badge percentuale sconto */
+                        var partialSconto = '';
                         if (product.PercentualeSconto != '0.00') {
-                            partialSconto += 'background-color:#0088ff;"> - ' + parseFloat(product.PercentualeSconto) + '%';
-                        } else {
-                            partialSconto += 'background-color:#fff;">';
+                            partialSconto += '<h6 class="rounded" style="position:relative; margin:0; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:0; float:right; top:-10px; background-color:#0088ff; color:#fff;">';
+                            partialSconto += parseFloat(product.PercentualeSconto) + '%';
+                            partialSconto += '</h6>';
                         }
-                        partialSconto += '</h6>';
 
                         var partialUnita = '';
                         if (eval(product.QuantitaPacco) != (product.QuantitaBox)) {
@@ -29,66 +32,104 @@ $(function () {
                         } else {
                             partialUnita = '<h6 class="text-muted">Confezione da ' + product.QuantitaBox + ' PZ</h6>';
                         }
-
-                        var partialPrezzo = '';
-                        if (product.PercentualeSconto != '0.00') {
-                            partialPrezzo = '' +
-                                '<h3 style="color:#0088ff;">&euro;&nbsp;' + product.PrezzoUnitarioScontato + '</h3>' +
-                                '<h4>&euro;&nbsp; <span style="text-decoration: line-through;">' + product.PrezzoUnitario + '</span></h4>';
+                        var partialFornitore = '';
+                        if (product.CodiceFornitore != '') {
+                            partialFornitore = '<h6>' + product.RagioneSocialeFornitore + '</h6>'
                         } else {
-                            partialPrezzo = '<h3 style="color:#0088ff;">&euro;&nbsp;' + product.PrezzoUnitario + '</h3><h4>&nbsp;</h4>';
+                            partialFornitore = 'Fornitore non dispnonibile';
                         }
 
+                        var partialPrezzo = '';
+                            partialPrezzo = '' +
+                                '<h3 style="color:#0088ff;">&euro;&nbsp;' + product.PrezzoListinoBase + '</h3>' +
+                                '<h4>&euro;&nbsp; <span style="text-decoration: line-through;">' + product.PrezzoListinoFornitore + '</span></h4>';
+
                         var partialProduct = '' +
-                        '<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">' +
-                            '<div class="jumbotron" style="padding:20px; border:2px solid #0088ff; background-color:#fff;">' +
-                                '<div class="container-fluid">' +
+                        '<div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">' +
+                            '<div class="jumbotron" style="padding-left:0; padding-right:0; padding-top:25px; border:2px solid #0088ff; background-color:#fff;">' +
+                                '<div class="container-fluid" style="padding:0 !important;">' +
                                     partialSconto +
                                     '<h3 class="glyphicon glyphicon-bookmark" style="position:absolute; left:30px; top:-25px; color:#0088ff;"></h3>' +
-                                    '<div class="col-lg-7 col-md-12">' +
-                                        '<h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;' + product.CodiceArticolo + '</h5>' +
-                                        '<h4 class="text-info">' +
-                                            '<a style="display:block; height:65px !important;" class="text-decoration-none" href="/productDetail/' + product.CodiceArticolo + '">' +
-                                                '<b class="text-dark">' + product.Denominazione + '</b>' +
-                                            '</a>' +
-                                        '</h4>' +
-                                        '<h5 style="color:#0088ff;">' +
-                                            product.DescrizioneSottocategoria +
-                                        '</h5>' + partialUnita +
-                                    '</div>' +
-                                    '<div class="col-lg-5 col-md-12">' +
+                                    '<div class="col-xs-12">' +
                                         '<a href="/productDetail/' + product.CodiceArticolo + '" style="color:#333;">' +
                                             '<img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/' + product.CodiceArticolo + '.jpg"' +
                                             'onerror="this.onerror=null; this.src=&apos;images/image.png&apos;;"' +
-                                            'style="width:177px !important; height:177px !important;" class="img-thumbnail" />' +
+                                            'class="img-thumbnail" />' +
                                         '</a>' +
                                     '</div>' +
-                                    '<div class="col-lg-12 col-md-12 col-sm-12">' +
-                                        partialPrezzo +
+                                    '<div class="col-xs-12">' +
+                                        '<h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;' + product.CodiceArticolo + '</h5>' +
+                                        '<h6 style="color:#0088ff;"><i>' +
+                                            product.DescrizioneSottocategoria +
+                                        '</i></h6>' + partialFornitore +
+                                        '<h4 class="text-info" style="height:60px !important;">' +
+                                            '<a class="text-decoration-none" href="/productDetail/' + product.CodiceArticolo + '">' +
+                                                '<b class="text-dark">' + product.Denominazione + '</b>' +
+                                            '</a>' +
+                                        '</h4>' + 
                                     '</div>' +
-                                    '<div class="col-lg-12 col-md-12 col-sm-12">' +
-                                        '<h6>' +
-                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
-                                                '<span class="glyphicon glyphicon-minus"></span>' +
-                                            '</a>' +
-                                            '<a class="btn btn-default btn-sm" style="cursor:default; padding: 5px; width: calc(53% - 10px);">' +
-                                                '<b><span class="glyphicon glyphicon-shopping-cart"></span> Articolo</b>' +
-                                            '</a>' +
-                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
-                                                '<span class="glyphicon glyphicon-plus"></span>' +
-                                            '</a>' +
-                                        '</h6>' +
-                                        '<h6>' +
-                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Rimuovi dal Carrello">' +
-                                                '<span class="glyphicon glyphicon-minus"></span>' +
-                                            '</a>' +
-                                            '<a class="btn btn-default btn-sm" style="cursor:default; padding: 5px; width: calc(53% - 10px);">' +
-                                                '<b><span class="glyphicon glyphicon-shopping-cart"></span> Confezione</b>' +
-                                            '</a>' +
-                                            '<a class="btn btn-default btn-sm" href="/cart" data-toggle="tooltip" data-placement="top" title="Aggiungi al Carrello">' +
-                                                '<span class="glyphicon glyphicon-plus"></span>' +
-                                            '</a>' +
-                                        '</h6>' +
+                                    '<div class="col-xs-12">' +
+                                        '<table class="table table-striped table-sm" style="font-size:11px;">' +
+                                            '<tbody>' +
+                                                '<tr class="table-dark">' +
+                                                    '<td scope="col"><b>DC Group</b></td>' +
+                                                    '<td scope="col" class="text-right">' +
+                                                        '<b>' + product.PrezzoListinoBase + '<span class="bi bi-currency-euro"></span></b>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                                '<tr>' +
+                                                    '<td scope="col">Fornitore</td>' +
+                                                    '<td scope="col" class="text-right">' +
+                                                        product.PrezzoListinoFornitore + '<span class="bi bi-currency-euro"></span>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                                '<tr>' +
+                                                    '<td scope="col">Family</td>' +
+                                                    '<td scope="col" class="text-right">' +
+                                                        product.PrezzoListinoFornitore + '<span class="bi bi-currency-euro"></span>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                                '<tr>' +
+                                                    '<td scope="col">Ilomo</td>' +
+                                                    '<td scope="col" class="text-right">' +
+                                                        product.PrezzoListinoFornitore + '<span class="bi bi-currency-euro"></span>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                                '<tr>' +
+                                                    '<td scope="col">Sunlux</td>' +
+                                                    '<td scope="col" class="text-right">' +
+                                                        product.PrezzoListinoFornitore + '<span class="bi bi-currency-euro"></span>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                            '</tbody>' +
+                                        '</table>' +
+                                    '</div>' +
+                                    '<div class="col-xs-12">' +
+                                        '<div class="btn-group dropup" style="position:absolute; display:block; width:100%; z-index:10;">' +
+                                            '<button type="button" class="btn btn-default bi bi-three-dots-vertical rounded-circle"' +
+                                                'data-bs-toggle="dropdown" style="width:34px; height:34px; padding:0; float:right; margin-right:25px; margin-bottom:8px;">' +
+                                            '</button>' +
+                                            '<ul class="dropdown-menu dropdown-menu-lg-end" style="width:250px;">' +
+                                                '<li>' +
+                                                    '<div class="col-xs-12">' +
+                                                        '<b class="gruppo-operativo-1">Azioni</b>' +
+                                                    '</div>' +
+                                                '</li>' +
+                                                '<li class="dropdown-item">' +
+                                                    '<hr class="dropdown-divider">' +
+                                                '</li>' +
+                                                '<li class="dropdown-item">' +
+                                                    '<button type="button" class="btn btn-light col-xs-12">' +
+                                                        'Visualizza dettaglio' +
+                                                    '</button>' +
+                                                '</li>' +
+                                                '<li class="dropdown-item">' +
+                                                    '<button type="button" class="btn btn-light col-xs-12">' +
+                                                        'Aggiungi in approvazione' +
+                                                    '</button>' +
+                                                '</li>' +
+                                            '</ul>' +
+                                        '</div>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
