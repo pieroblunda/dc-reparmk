@@ -29,6 +29,7 @@ app.use(session({
   }
 }));
 
+app.use('/', require('./route/init'));
 app.use('/', require('./route/login'));
 app.use('/', require('./route/logout'));
 app.use('/', require('./route/dashboard'));

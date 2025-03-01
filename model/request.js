@@ -1,9 +1,11 @@
 class baseRequest {
-    constructor(IdAccount, LanguageContext, OffsetRows, NextRows) {
+    constructor(IdAccount, LanguageContext, OffsetRows, NextRows, CodiceFornitore, CodiceArticolo) {
         this.IdAccount = IdAccount;
         this.LanguageContext = LanguageContext;
         this.OffsetRows = OffsetRows;
         this.NextRows = NextRows;
+        this.CodiceFornitore = CodiceFornitore;
+        this.CodiceArticolo = CodiceArticolo;
     }
 }
 module.exports = baseRequest;

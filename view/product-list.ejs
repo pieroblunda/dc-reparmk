@@ -5,15 +5,42 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%- include('partials/head'); %>
+    <script type="text/javascript" src="/utility-script"></script>
     <script type="text/javascript" src="/product-list-script"></script>
     <script type="text/javascript" src="/logout-script"></script>
 </head>
 <body>
     <form name="frmProductList">
-
         <input type="hidden" name="OffsetRows" id="OffsetRows" value="0" />
-    
         <%- include('partials/header'); %>
+
+        <!-- System message-->
+        <div id="system-message" style="display:none;">
+	        <div class="col-xs-12">
+		        <div class="form-group form-errors">
+			        <div class="panel panel-danger">
+				        <div class="panel-heading">
+					        <b>Messaggio di sistema</b>
+				        </div>
+				        <div class="panel-body pnl-errors"></div>
+			        </div>
+		        </div>
+	        </div>
+        </div>
+
+        <div class="modal spinner" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="col-lg-12" style="text-align: center;">
+                      <img src="/images/loader-content-icon.jpg" style="width:300px; height:300px;" />
+                  </div>
+                  <div class="spinner-border text-primary" style="position:absolute; margin:16px; width: 5rem; height: 5rem;" role="status">
+                    <span class="sr-only"></span>
+                  </div>
+              </div>
+            </div>
+        </div>
+
         <div class="container-fluid">
             <div class="col-lg-1 col-md-12 col-sm-12 col-xs-12">
                 <h4>
@@ -25,12 +52,19 @@
             <div class="col-lg-11 col-md-12 col-sm-12 col-xs-12">
                 <div class="row g-3 align-items-center">
                     <div class="col-auto">
+                        <label for="Buyer" class="col-form-label">Buyer</label>
+                    </div>
+                    <div class="col-auto col-xs-2">
+                        <select name id="Buyer" class="form-select" style="font-size:15px;">
+                            <option value="">Tutti</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
                         <label for="Fornitore" class="col-form-label">Fornitore</label>
                     </div>
                     <div class="col-auto col-lg-3 col-md-4 col-sm-3 col-xs-12">
                         <select name id="Fornitore" class="form-select" style="font-size:15px;">
                             <option value="">Tutti</option>
-                            <option value="">Fornitore 1</option>
                         </select>
                     </div>
                     <div class="col-auto">
@@ -40,9 +74,14 @@
                         <input type="text" id="CodiceArticolo" class="form-control" placeholder="es: 0005837">
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-primary mb-3">Cerca</button>
+                        <button type="button" class="btn btn-primary btn-search">Cerca</button>
                     </div>
                 </div>
+            </div>
+            <div class="col-xs-12">
+                <h5 class="load-pager">
+                    <span class="LoadedRows">9</span> di <b><span class="RowsCount"><%= RowsCount %> </span></b> articoli
+                </h5>
             </div>
             <div class="col-xs-12">
                 <hr style="border: 1px solid #d1d1d1;" />
@@ -50,20 +89,20 @@
             <div class="data-container">
             <% products.forEach(function(product) { %>
 
-                <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
-                    <div class="jumbotron" style="padding-left:0; padding-right:0; padding-top:25px; border:2px solid #0088ff; background-color:#fff;">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="jumbotron" style="padding-left:0; padding-right:0; padding-top:15px; border:1px solid lightgray; background-color:#fff;">
                         <div class="container-fluid" style="padding:0 !important;">
                             <% if (product.PercentualeSconto != '0.00') { %>
                             <h6 class="rounded" style="position:relative; margin:0; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:0; float:right; top:-10px; background-color:#0088ff; color:#fff;">
                                 -<%= parseFloat(product.PercentualeSconto) %>%
                             </h6>
                             <% } %>
-                            <h3 class="glyphicon glyphicon-bookmark" style="position:absolute; left:30px; top:-25px; color:#0088ff;"></h3>
+                            <h5 class="bi bi-circle-fill" style="position:absolute; left:25px; top:-14px; color:#0088ff;"></h5>
                             <div class="col-xs-12">
-                                <a href="/productDetail/<%= product.CodiceArticolo %>" style="color:#333;">
+                                <a href="/productDetail/<%= product.CodiceArticolo %>">
                                     <img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/<%= product.CodiceArticolo %>.jpg" 
                                     onerror="this.onerror=null; this.src='images/image.png';"
-                                    class="img-thumbnail" />
+                                    class="img-fluid" />
                                 </a>
                             </div>
                             <div class="col-xs-12">
@@ -111,19 +150,31 @@
                                         <tr>
                                             <td scope="col">Family</td>
                                             <td scope="col" class="text-right">
-                                                <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
+                                                <% if (product.PrezzoFamily != undefined) { %>
+                                                    <%= product.PrezzoFamily %><span class="bi bi-currency-euro"></span>
+                                                <% } else { %>
+                                                    0.00<span class="bi bi-currency-euro"></span>
+                                                <% } %>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td scope="col">Ilomo</td>
                                             <td scope="col" class="text-right">
-                                                <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
+                                                <% if (product.PrezzoIlomo != undefined) { %>
+                                                    <%= product.PrezzoIlomo %><span class="bi bi-currency-euro"></span>
+                                                <% } else { %>
+                                                    0.00<span class="bi bi-currency-euro"></span>
+                                                <% } %>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td scope="col">Sunlux</td>
                                             <td scope="col" class="text-right">
-                                                <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
+                                                <% if (product.PrezzoSunlux != undefined) { %>
+                                                    <%= product.PrezzoSunlux %><span class="bi bi-currency-euro"></span>
+                                                <% } else { %>
+                                                    0.00<span class="bi bi-currency-euro"></span>
+                                                <% } %>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -144,13 +195,18 @@
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li class="dropdown-item">
-                                            <button type="button" class="btn btn-light col-xs-12 btn-edit-product">
-                                                Visualizza dettaglio
+                                            <button data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-detect-price">
+                                                Rileva prezzo competitor
+                                            </button>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <button data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-suggest-price">
+                                                Suggerisci prezzo di vendita
                                             </button>
                                         </li>
                                         <li class="dropdown-item">
                                             <button type="button" class="btn btn-light col-xs-12">
-                                                Aggiungi in approvazione
+                                                Condividi in approvazione
                                             </button>
                                         </li>
                                     </ul>
@@ -167,10 +223,10 @@
         </div>
     </form>
 
-    <form name="frmProductListDetail" class="was-validated" novalidate>
+    <form name="frmDetectPrice" class="was-validated" novalidate>
         <input type="hidden" id="idgruppooperativo" />
         <input type="hidden" id="idgruppooperativoparent" />
-        <div class="modal" id="product-list-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal" id="detect-price" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -183,101 +239,100 @@
                             </div>
                         </div>
                         <h4 class="modal-title">
-                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<b>0002517</b> / Dettaglio Articolo
+                            <span class="bi bi-pen"></span>&nbsp;&nbsp;<b class="text-primary CodiceArticolo"></b> / Rileva prezzo competitor
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
 
-                        <table class="table table-striped table-sm" style="font-size:11px; padding:4px !important;">
-                            <tbody>
-                                <tr class="table-dark">
-                                    <td scope="col"><b>Prezzo DC Group</b></td>
-                                    <td scope="col" class="text-right">
-                                        0,00 <b><span class="bi bi-currency-euro"></span></b>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Prezzo Fornitore</td>
-                                    <td scope="col" class="text-right">
-                                        0,00 <span class="bi bi-currency-euro"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Prezzo Family</td>
-                                    <td scope="col" class="text-right">
-                                        0,00 <span class="bi bi-currency-euro"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Prezzo Ilomo</td>
-                                    <td scope="col" class="text-right">
-                                        0,00 <span class="bi bi-currency-euro"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Prezzo Sunlux</td>
-                                    <td scope="col" class="text-right">
-                                        0,00 <span class="bi bi-currency-euro"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Ricarico</td>
-                                    <td scope="col" class="text-right">
-                                        35 <span class="bi bi bi-percent"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Applicazione</td>
-                                    <td scope="col" class="text-right">
-                                        Stock
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Gamma</td>
-                                    <td scope="col" class="text-right">
-                                        F - DOGS
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td scope="col">Media Vendita</td>
-                                    <td scope="col" class="text-right">
-                                        10
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="tab-detect-price-detail" data-bs-toggle="tab" href="#tabpanel-detect-price-detail" role="tab" aria-controls="tabpanel-detect-price-detail" aria-selected="true">
+                                    Dettaglio
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="simple-tab-1" data-bs-toggle="tab" href="#simple-tabpanel-1" role="tab" aria-controls="simple-tabpanel-1" aria-selected="false">
+                                    History
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-5" id="tab-content-detect-price">
+                            <div style="height:550px;" class="tab-pane active" id="tabpanel-detect-price-detail" role="tabpanel" aria-labelledby="tab-detect-price-detail">
+                                <table class="table table-striped table-sm" style="padding:4px !important;">
+                                    <tbody>
+                                        <tr class="table-dark">
+                                            <td scope="col"><b>Prezzo DC Group</b></td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoListinoBase"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Family</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoFamily"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Ilomo</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoIlomo"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Sunlux</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoSunlux"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Ricarico</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PercentualeRicarico"></span> <span class="bi bi bi-percent"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Applicazione</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="Applicazione"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Gamma</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="Gamma"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Media Vendita</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="MediaVendita"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="col-xs-6">
+                                    <div class="mb-3">
+                                        <label for="PrezzoFamily" class="col-form-label">Prezzo Family:</label>
+                                        <input type="text" class="form-control" id="PrezzoFamily" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="PrezzoIlomo" class="col-form-label">Prezzo Ilomo:</label>
+                                        <input type="text" class="form-control" id="PrezzoIlomo" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="PrezzoSunlux" class="col-form-label">Prezzo Sunlux:</label>
+                                        <input type="text" class="form-control" id="PrezzoSunlux" required>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                </div>
+                            </div>
+                            <div style="height:550px;" class="tab-pane" id="simple-tabpanel-1" role="tabpanel" aria-labelledby="simple-tab-1">
+                                
+                            </div>
+                        </div>
 
-                        <div class="col-xs-6">
-                            <div class="mb-3">
-                                <label for="PrezzoFamily" class="col-form-label">Prezzo Family:</label>
-                                <input type="text" class="form-control" id="PrezzoFamily" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="PrezzoIlomo" class="col-form-label">Prezzo Ilomo:</label>
-                                <input type="text" class="form-control" id="PrezzoIlomo" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="PrezzoSunlux" class="col-form-label">Prezzo Sunlux:</label>
-                                <input type="text" class="form-control" id="PrezzoSunlux" required>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="mb-3">
-                                <label for="PrezzoSuggerito" class="col-form-label">Nuovo prezzo suggerito (DC Group):</label>
-                                <input type="text" class="form-control" id="PrezzoSuggerito" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="Note" class="col-form-label">Note:</label>
-                                <textarea class="form-control" id="Note" rows="5"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-check form-switch">
-                                <label class="form-check-label text-dark" for="rbIsVisible">Condividi in approvazione</label>
-                                <input class="form-check-input" type="checkbox" id="rbIsPublic" name="rbIsPublic">
-                            </div>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <div class="col-xs-6">
@@ -290,6 +345,131 @@
                 </div>
             </div>
         </div>  
+    </form>
+
+    <form name="frmSuggestPrice" class="was-validated" novalidate>
+        <input type="hidden" id="idgruppooperativo" />
+        <input type="hidden" id="idgruppooperativoparent" />
+        <div class="modal" id="suggest-price" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="form-group form-errors" style="display:none;">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <b>Error</b>
+                                </div>
+                                <div class="panel-body pnl-errors"></div>
+                            </div>
+                        </div>
+                        <h4 class="modal-title">
+                            <span class="bi bi-pen"></span>&nbsp;&nbsp;<b class="text-primary CodiceArticolo"></b> / Suggerisci prezzo di vendita
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="tab-suggest-price-detail" data-bs-toggle="tab" href="#tabpanel-suggest-price-detail" role="tab" aria-controls="tabpanel-suggest-price-detail" aria-selected="true">
+                                    Dettaglio
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">
+                                    History
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-5" id="tab-content-suggest-price">
+                            <div style="height:550px;" class="tab-pane active" id="tabpanel-suggest-price-detail" role="tabpanel" aria-labelledby="tab-suggest-price-detail">
+                                <table class="table table-striped table-sm" style="padding:4px !important;">
+                                    <tbody>
+                                        <tr class="table-dark">
+                                            <td scope="col"><b>Prezzo DC Group</b></td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoListinoBase"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Family</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoFamily"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Ilomo</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoIlomo"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Prezzo Sunlux</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PrezzoSunlux"></span> <span class="bi bi-currency-euro"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Ricarico</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="PercentualeRicarico"></span> <span class="bi bi bi-percent"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Applicazione</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="Applicazione"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Gamma</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="Gamma"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td scope="col">Media Vendita</td>
+                                            <td scope="col" class="text-right">
+                                                <span class="MediaVendita"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="col-xs-6">
+                                    <div class="mb-3">
+                                        <label for="PrezzoSuggerito" class="col-form-label">Nuovo prezzo suggerito (DC Group):</label>
+                                        <input type="text" class="form-control" id="PrezzoSuggerito" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Note" class="col-form-label">Note:</label>
+                                        <textarea class="form-control" id="Note" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label text-dark" for="rbIsVisible">Condividi in approvazione</label>
+                                        <input class="form-check-input" type="checkbox" id="rbIsPublic" name="rbIsPublic">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height:550px;" class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
+                                Tab 2 selected
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-xs-6">
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">
+                                Annulla
+                            </button>
+                            <input type="button" class="btn btn-primary btn-ok" value="OK">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </form>
 
 </body>

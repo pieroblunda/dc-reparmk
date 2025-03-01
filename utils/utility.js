@@ -8,8 +8,8 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
 		window[args.data.param1](args.data.param2);
 	}		
 });
-
 ShowError = function (message) {
+	$('.pnl-errors').html('');
 	$('.pnl-errors').text(message);
 	$('#system-message').show();
 	setTimeout(function () {
