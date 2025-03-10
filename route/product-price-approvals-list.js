@@ -1,9 +1,13 @@
 const express = require('express');
 const ProductPriceApprovalsList = express.Router();
 const bodyParser = require('body-parser');
-var productPriceApprovalsListRequest = require('../model/request');
+var productPriceApprovalsListRequest = require('../model/request-product-price-approvals-list');
+var switchApprovalsStateRequest = require('../model/request-switch-approvals-state');
 var modelResponse = require('../model/response');
-const crud = require('../crud/product-list');
+const ExcelJS = require('exceljs');
+const crud = require('../crud/product-price-approvals-list');
+const config = require('../utils/config')
+const soap = require('soap');
 const fs = require('fs');
 const path = require('path');
 const sessionUtil = require('../utils/session')
@@ -17,30 +21,39 @@ ProductPriceApprovalsList.get('/utility-script', (req, res) => {
     const filePath = path.resolve(__dirname, '../utils/utility.js');
     res.sendFile(filePath);
 });
-ProductPriceApprovalsList.get('/product-price-approvals-list', function (req, res) {
+ProductPriceApprovalsList.get('/product-price-approvals-list/:IdStatoApprovazione', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
         res.set('Access-Control-Allow-Origin', '*');
 
         req.session.user.OffsetRows = 0;
         req.session.save();
 
-        var productPriceApprovalsListRequest = new productPriceApprovalsListRequest(
-            req.session.user.Id,
+        var UserId = req.session.user.Id;
+        if (req.session.user.Ruolo == "SUPERVISOR") {
+            UserId = null;
+        }
+        var IdStatoApprovazione = req.params.IdStatoApprovazione;
+        if (req.params.IdStatoApprovazione == 0) {
+            IdStatoApprovazione = null;
+        }
+        var myRequest = new productPriceApprovalsListRequest(
+            UserId,
             req.session.user.LanguageContext,
             req.session.user.OffsetRows,
             req.session.user.NextRows,
+            IdStatoApprovazione
         );
         /* Chiama la crud necessaria per il caricamento dei dati */
         crud.GetProductPriceApprovalsList(myRequest).then(listOf => {
             var data = JSON.parse(JSON.stringify(listOf));
-            //res.status(200).json(
-            //    new modelResponse('OK',
-            //        JSON.parse(JSON.stringify(data["resultdata"])), null, data["rowscount"])
-            //);
-            res.status(200).render('product-list', {
+
+            //console.log("GetProductPriceApprovalsList user: " + JSON.stringify(req.session.user));
+
+            res.status(200).render('product-price-approvals-list', {
                 user: req.session.user,
-                products: JSON.parse(data["resultdata"]),
-                RowsCount: data["rowscount"]
+                approvazioni: JSON.parse(data["resultdata"]),
+                RowsCount: JSON.parse(data["rowscount"]),
+                IdStatoApprovazione: req.params.IdStatoApprovazione
             });
 
         }).catch(err => {
@@ -49,6 +62,187 @@ ProductPriceApprovalsList.get('/product-price-approvals-list', function (req, re
         }).finally(() => {
         })
     }
+});
+ProductPriceApprovalsList.post('/product-price-approvals-list/:IdStatoApprovazione', function (req, res) {
+    if (sessionUtil.verifyUser(req, res)) {
+        res.set('Access-Control-Allow-Origin', '*');
+
+        if (req.session.user.OffsetRows < 0) {
+            req.session.user.OffsetRows = 0;
+        } else {
+            req.session.user.OffsetRows = req.session.user.OffsetRows + req.session.user.NextRows;
+        }
+        req.session.save();
+
+        var UserId = req.session.user.Id;
+        if (req.session.user.Ruolo == "SUPERVISOR") {
+            UserId = null;
+        }
+        var IdStatoApprovazione = req.params.IdStatoApprovazione;
+        if (req.params.IdStatoApprovazione == 0) {
+            IdStatoApprovazione = null;
+        }
+
+        var myRequest = new productPriceApprovalsListRequest(
+            UserId,
+            req.session.user.LanguageContext,
+            req.session.user.OffsetRows,
+            req.session.user.NextRows,
+            IdStatoApprovazione
+        );
+        /* Chiama la crud necessaria per il caricamento dei dati */
+        crud.GetProductPriceApprovalsList(myRequest).then(listOf => {
+            var data = JSON.parse(JSON.stringify(listOf));
+            console.log("data['resultdata']: " + data["resultdata"]);
+            res.status(200).json(
+                new modelResponse('OK', JSON.parse(data["resultdata"]), null, data["rowscount"], req.session.user)
+            );
+        }).catch(err => {
+            console.log('Errors: ' + err)
+            res.status(200).json(new modelResponse('ERR', null, err));
+        }).finally(() => {
+        })
+    }
+});
+ProductPriceApprovalsList.put('/switch-approvals-state/:IdApprovazione', function (req, res) {
+    if (sessionUtil.verifyUser(req, res)) {
+        res.set('Access-Control-Allow-Origin', '*');
+
+        var myRequest = new switchApprovalsStateRequest(
+            req.session.user.Id,
+            req.params.IdApprovazione,
+            req.body.IdStatoApprovazione
+        );
+        /* Chiama la crud necessaria per il caricamento dei dati */
+        crud.PutSwitchApprovalsState(myRequest).then(listOf => {
+            res.status(200).json(
+                new modelResponse('OK', JSON.parse(listOf), null, 0)
+            );
+        }).catch(err => {
+            res.status(200).json(new modelResponse('ERR', null, err));
+        }).finally(() => {
+
+        });
+    }
+});
+ProductPriceApprovalsList.post('/download-excel', async (req, res) => {
+    async function downloadExcelFillData(data) {
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Anomalie Giacenze');
+
+        worksheet.columns = [
+            { header: 'Operatore', key: 'Operatore', width: 20 },
+            { header: 'Società', key: 'Societa', width: 20 },
+            { header: 'Codice Articolo', key: 'CodiceArticolo', width: 15 },
+            { header: 'Descrizione', key: 'Denominazione', width: 60 },
+            { header: 'Brand', key: 'DescrizioneBrand', width: 20 },
+            { header: 'Codice Categoria', key: 'CodiceCategoria', width: 18 },
+            { header: 'Categoria', key: 'DescrizioneCategoria', width: 20 },
+            { header: 'Fornitore', key: 'RagioneSocialeFornitore', width: 25 },
+            { header: 'Prezzo Suggerito', key: 'PrezzoSuggerito', width: 16 },
+            { header: 'Prezzo Family', key: 'PrezzoFamily', width: 16 },
+            { header: 'Prezzo Ilomo', key: 'PrezzoIlomo', width: 16 },
+            { header: 'Prezzo Sunlux', key: 'PrezzoSunlux', width: 16 },
+            { header: 'Percentuale Sconto', key: 'PercentualeSconto', width: 10 },
+            { header: 'Prezzo Base Dc Group', key: 'PrezzoListinoBase', width: 20 },
+            { header: 'Percentuale Ricarico', key: 'PercentualeRicarico', width: 20 },
+            { header: 'Gamma', key: 'Gamma', width: 10 },
+            { header: 'Media vendita', key: 'MediaVendita', width: 15 },
+        ];
+        if (Array.isArray(data)) {
+            data.forEach(item => {
+                worksheet.addRow(item);
+            });
+        } else {
+            worksheet.addRow(data);
+        }
+        worksheet.eachRow(function (row, rowNumber) {
+            row.eachCell((cell, colNumber) => {
+                if (rowNumber == 1) {
+                    // First set the background of header row
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'd4d0d8' },
+                    }
+                    cell.font = {
+                        bold: true
+                    }
+                }
+            })
+            //Commit the changed row to the stream
+            row.commit();
+        });
+        var today = new Date();
+        today = today.toISOString().slice(0, 10);
+        today = today.replace('-', '').replace('-', '');
+        res.setHeader('Content-Disposition', 'attachment; filename=' + req.session.user.Nominativo + '_RichiestaApprovazione_' + today + '.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        await workbook.xlsx.write(res);
+        res.end();
+    }
+    function downloadExcelPromise(myLanguageContext, myIdApprovazione) {
+
+        //console.log("myLanguageContext: " + myLanguageContext);
+        //console.log("myIdApprovazione: " + myIdApprovazione)
+
+        return new Promise((myResolve, myReject) => {
+
+            /* Crea l'istanza del Web Service */
+            soap.createClient(config.SapWebServiceURL, function (err, client) {
+                if (err) {
+                    console.log(err.message, err.name, err.stack);
+                    myReject(err.message);
+                } else {
+                    /* Invoca il Web Service Method */
+                    client.GetProductPriceApprovalsListExcel({ myLanguageContext, myIdApprovazione }, function (err, result) {
+                        if (err) {
+                            //console.log(err.message, err.name, err.stack);
+                            myReject(err.message);
+                        } else {
+
+                            var response = JSON.parse(JSON.stringify(result));
+
+                            //console.log("downloadExcelPromise-result: " + JSON.stringify(result));
+
+                            var resultStatus = response.GetProductPriceApprovalsListExcelResult.Status;
+                            var resultError = response.GetProductPriceApprovalsListExcelResult.Error;
+                            var resultRowsCount = eval(response.GetProductPriceApprovalsListExcelResult.RowsCount);
+
+                            if (resultStatus == "OK") {
+
+                                /* Inizializza i dati ricevuti dal Web Service */
+                                var resultData = response.GetProductPriceApprovalsListExcelResult.Result.diffgram.Data.Articolo;
+
+                                //console.log(response.GetProductPriceApprovalsListExcelResult.RowsCount);
+
+                                /* Valorizza l'oggetto restituito al route */
+                                myResolve(
+                                    resultData
+                                );
+
+                            } else {
+                                myReject(resultError);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    var myLanguageContext = req.session.user.LanguageContext;
+    var myIdApprovazione = req.body.IdApprovazione;
+
+    downloadExcelPromise(
+        myLanguageContext, myIdApprovazione
+    ).then(result => {
+        downloadExcelFillData(result);
+    }).catch(error => {
+        console.log(error);
+    });
 });
 
 module.exports = ProductPriceApprovalsList;

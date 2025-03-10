@@ -34,6 +34,8 @@ app.use('/', require('./route/login'));
 app.use('/', require('./route/logout'));
 app.use('/', require('./route/dashboard'));
 app.use('/', require('./route/gruppi-operativi'));
+app.use('/', require('./route/product-price-approvals-list-product'));
+app.use('/', require('./route/product-price-approvals-list'));
 app.use('/', require('./route/product-list'));
 app.use('/', require('./route/changePassword'));
 

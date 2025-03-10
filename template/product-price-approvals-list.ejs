@@ -1,0 +1,88 @@
+<tr>
+    <td>
+        <span class="bi bi-circle-fill <% if (approvazione.IdStatoApprovazione == 1) { %> text-secondary <% } else if (approvazione.IdStatoApprovazione == 3) { %> text-danger <% } else if (approvazione.IdStatoApprovazione == 5) { %> text-warning <% } else if (approvazione.IdStatoApprovazione == 2 || approvazione.IdStatoApprovazione == 4) { %> text-success <% } else { %> text-primary <% } %>"></span>
+    </td>
+    <td scope="col">
+        <a href="/product-price-approvals-list-product/<%= approvazione.Id %>">
+            <%= approvazione.Id %>
+        </a>
+    </td>
+    <td scope="col">
+        <%= approvazione.Buyer %>
+    </td>
+    <td scope="col">
+        <%= approvazione.PrezziSuggeriti %>
+    </td>
+    <td scope="col">
+        <%= approvazione.PrezziNonApprovati %>
+    </td>
+    <td scope="col">
+        <%= approvazione.DataRegistrazione %>
+    </td>
+    <td scope="col">
+        <%= approvazione.Stato %>
+    </td>
+    <td scope="col">
+        <div class="col-xs-12 text-right">
+            <div class="btn-group dropend">
+                <button type="button" class="btn btn-default btn-sm bi bi-three-dots-vertical rounded-circle"
+                    data-bs-toggle="dropdown" style="width:22px; height:22px; padding:0;">
+                </button>
+                <ul class="dropdown-menu dropdown-menu-lg-end" style="width:250px;">
+                    <li>
+                        <div class="col-xs-12">
+                            <b>Approvazione Id: <%= approvazione.Id %></b>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-item">
+                        <% if ( (user.Ruolo == "BUYER" || user.Ruolo == "BUYER/SUPERVISOR") && approvazione.Stato == "In lavorazione") { %>
+                            <button type="button" class="btn btn-light col-xs-12"
+                                data-toggle="modal" data-target="#confirm-operation"
+                                data-callback="switchApprovalsState"
+                                data-args='{ "IdApprovazione": <%= approvazione.Id %>, "IdStatoApprovazione": 5 }'>
+                                Condividi in approvazione
+                            </button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-light col-xs-12 disabled">
+                                Condividi in approvazione
+                            </button>
+                        <% } %>
+                    </li>
+                    <li class="dropdown-item">
+                        <% if ((user.Ruolo == "SUPERVISOR" || user.Ruolo == "BUYER/SUPERVISOR") && approvazione.Stato == "In approvazione") { %>
+                            <button type="button" class="btn btn-light col-xs-12"
+                                data-toggle="modal" data-target="#confirm-operation"
+                                data-callback="switchApprovalsState"
+                                data-args='{ "IdApprovazione": <%= approvazione.Id %>, "IdStatoApprovazione": 2 }'>
+                                Conferma richiesta
+                            </button>
+                        <% } %>
+                    </li>
+                    <li class="dropdown-item">
+                        <% if ((user.Ruolo == "BUYER" || user.Ruolo == "BUYER/SUPERVISOR") && approvazione.Stato == "In approvazione") { %>
+                            <button type="button" data-args="<%= approvazione.Id %>" class="btn btn-light col-xs-12 btn-download-excel">
+                                Download Excel
+                            </button>
+                        <% } else if ((user.Ruolo == "SUPERVISOR" || user.Ruolo == "BUYER/SUPERVISOR") && (approvazione.IdStatoApprovazione == 2 || approvazione.IdStatoApprovazione == 4) ) { %>
+                            <button type="button" data-args="<%= approvazione.Id %>" class="btn btn-light col-xs-12 btn-download-excel">
+                                Download Excel
+                            </button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-light col-xs-12 disabled">
+                                Download Excel
+                            </button>
+                        <% } %>
+                    </li>
+                    <li class="dropdown-item" style="display:none;">
+                        <button type="button" class="btn btn-light col-xs-12">
+                            Annulla richiesta
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </td>
+</tr>

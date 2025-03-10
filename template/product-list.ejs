@@ -1,0 +1,129 @@
+﻿<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="jumbotron-product">
+        <div class="container-fluid" style="padding:0 !important;">
+            <% if (product.PercentualeSconto != '0.00') { %>
+            <h6 class="rounded" style="position:relative; margin:0; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:0; float:right; top:-10px; background-color:#0088ff; color:#fff;">
+                -<%= parseFloat(product.PercentualeSconto) %>%
+            </h6>
+            <% } %>
+            <h6 id="<%= product.CodiceArticolo %>-StatoArticolo" class="bi bi-circle-fill <% if (product.IdStatoApprovazioneArticolo == 1) { %>text-secondary<% } else if (product.IdStatoApprovazioneArticolo == 5) { %>text-warning<% } else { %> text-primary <% } %>" style="position:absolute; left:24px; top:-1px; z-index:1;"></h6>
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/<%= product.CodiceArticolo %>.jpg" 
+                onerror="this.onerror=null; this.src='images/image.png';"
+                class="img-fluid" />
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
+                <h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<%= product.CodiceArticolo %></h5>
+                <h6 class="text-primary">
+                    <i><%= product.DescrizioneSottocategoria %></i>
+                </h6>
+                <h6>
+                    <% if (product.CodiceFornitore != "") { %>
+                        <%= product.RagioneSocialeFornitore %>
+                    <% } else { %>
+                        Fornitore non dispnonibile
+                    <% } %>
+                </h6>
+                <h4 class="text-info" style="height:60px !important;">
+                    <a class="text-decoration-none;" href="/productDetail/<%= product.CodiceArticolo %>">
+                        <b class="text-dark">
+                            <%= product.Denominazione %>
+                        </b>
+                    </a>
+                </h4>
+                <!--h6 class="text-muted">
+                    <% if (product.QuantitaPacco != product.QuantitaBox) { %>
+                        <%= product.QuantitaPacco %> unit&agrave; / Confezione da <%= product.QuantitaBox %> PZ
+                    <% } else { %>
+                        Confezione da <%= product.QuantitaBox %> PZ
+                    <% } %>
+                </h6-->
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-12 col-xs-12">
+                <table class="table table-sm" style="font-size:12px;">
+                    <tbody>
+                        <tr>
+                            <td scope="row" rowspan="5" class="align-middle">
+                                <span class="badge bg-primary" style="display:block; width:90px; margin-bottom:-10px;">
+                                    Listino Base
+                                </span>
+                                <h2 class="text-primary">
+                                    <%= product.PrezzoListinoBase %><span class="bi bi-currency-euro"></span>
+                                </h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="col">Fornitore</td>
+                            <td scope="col" class="text-right">
+                                <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="col">Family</td>
+                            <td scope="col" class="text-right">
+                                <% if (product.PrezzoFamily != undefined) { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoFamily"><%= product.PrezzoFamily %></span><span class="bi bi-currency-euro"></span>
+                                <% } else { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoFamily">0.00</span><span class="bi bi-currency-euro"></span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="col">Ilomo</td>
+                            <td scope="col" class="text-right">
+                                <% if (product.PrezzoIlomo != undefined) { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoIlomo"><%= product.PrezzoIlomo %></span><span class="bi bi-currency-euro"></span>
+                                <% } else { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoIlomo">0.00</span><span class="bi bi-currency-euro"></span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="col">Sunlux</td>
+                            <td scope="col" class="text-right">
+                                <% if (product.PrezzoSunlux != undefined) { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoSunlux"><%= product.PrezzoSunlux %></span><span class="bi bi-currency-euro"></span>
+                                <% } else { %>
+                                    <span id="<%= product.CodiceArticolo %>-PrezzoSunlux">0.00</span><span class="bi bi-currency-euro"></span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="col-xs-12" style="padding-right:0; margin-right:0;">
+                    <div class="btn-group dropup align-bottom" style="display:block; width:100%; text-align:right;">
+                        <button type="button" class="btn btn-default bi bi-three-dots-vertical rounded-circle"
+                            data-bs-toggle="dropdown" style="width:34px; height:34px; padding:0; float:right;">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-lg-end" style="width:250px;">
+                            <li>
+                                <div class="col-xs-12">
+                                    <b>Articolo <%= product.CodiceArticolo %></b>
+                                </div>
+                            </li>
+                            <li class="dropdown-item">
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li class="dropdown-item">
+                                <button data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-detect-price">
+                                    Rileva prezzo competitor
+                                </button>
+                            </li>
+                            <li class="dropdown-item">
+                                <% if (product.IdStatoApprovazioneArticolo == 1 || product.IdStatoApprovazioneArticolo == 5) { %>
+                                    <button id="<%= product.CodiceArticolo %>-btn-suggest-price" data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-suggest-price disabled">
+                                        Suggerisci prezzo di vendita
+                                    </button>
+                                <% } else { %>
+                                    <button id="<%= product.CodiceArticolo %>-btn-suggest-price" data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-suggest-price">
+                                        Suggerisci prezzo di vendita
+                                    </button>
+                                <% } %>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

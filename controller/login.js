@@ -27,7 +27,7 @@ $(function() {
                     //console.log(err.name);
                     //console.log(err.stack);
                 } else if (response.status == "OK") {
-                    document.location.href = '/dashboard';
+                    document.location.href = '/product-list';
                 }
             }).fail(function (xhr, status, errorThrown) {
             }).always(function (xhr, status) {

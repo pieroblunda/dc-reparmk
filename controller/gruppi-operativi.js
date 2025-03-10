@@ -58,7 +58,7 @@ $(function () {
                     document.location.href = '/gruppi-operativi/' + $('#idgruppooperativoparent').val();
                 }
             })
-        }        
+        }
     });
     $('.gruppi-operativi-new').click(function () {
 

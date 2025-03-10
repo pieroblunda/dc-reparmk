@@ -7,15 +7,17 @@ const fs = require('fs');
 const path = require('path');
 const sessionUtil = require('../utils/session')
 const session = require('express-session');
-
-
 init.post('/init', function (req, res) {
 
     /* Imposta il language dell'APP */
     var languageContext = config.LanguageContext;
 
-    /* Valorizza l'oggetto session dell'APP */
+    var NextRows = req.session.user.NextRows;
+    if (req.body.NextRows != undefined) {
+        NextRows = req.body.NextRows;
+    }
 
+    /* Valorizza l'oggetto session dell'APP */
     const user = {
         Id: req.session.user.Id,
         Username: req.session.user.Username,
@@ -23,11 +25,9 @@ init.post('/init', function (req, res) {
         Ruolo: req.session.user.Ruolo,
         Codice: req.session.user.Codice,
         LanguageContext: req.session.user.LanguageContext,
-        OffsetRows: -9,
-        NextRows: req.session.user.NextRows
-
+        OffsetRows: -1,
+        NextRows: NextRows
     };
-
     req.session.user = JSON.parse(
         JSON.stringify(user)
     );

@@ -1,3 +1,9 @@
+@import url(//fonts.googleapis.com/css?family=Montserrat:300,400,500);
+
+span div table tr td th {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+}
 li.submenu ul.dropdown-menu[data-bs-popper] {
     border-width: 0;
     padding-top: 0.5em;
@@ -17,4 +23,34 @@ li.submenu a[role="button"].show::after {
 }
 .dropdown-menu li button {
     text-align:left;
+}
+.nav-link.active {
+    font-weight: bold !important;
+}
+@media only screen and (min-width: 576px) {
+}
+@media only screen and (min-width: 768px) {
+    .filter {
+        position: fixed;
+    }
+}
+@media only screen and (min-width: 992px) {
+    .filter {
+        position: fixed;
+    }
+}
+@media only screen and (min-width: 1200px) {
+    .filter {
+        position: fixed;
+    }
+}
+.jumbotron-product {
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border: 1px solid lightgray;
+    background-color: #fff;
 }

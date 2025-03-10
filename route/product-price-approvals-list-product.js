@@ -1,10 +1,10 @@
 const express = require('express');
 const ProductPriceApprovalsListProduct = express.Router();
 const bodyParser = require('body-parser');
-var modelRequest = require('../model/request');
-var productRequest = require('../model/product-list');
+var modelRequest = require('../model/request-product-price-approvals-list-product');
 var modelResponse = require('../model/response');
-const crud = require('../crud/product-list');
+var switchProductApprovalsStateRequest = require('../model/request-switch-product-approvals-state');
+const crud = require('../crud/product-price-approvals-list-product');
 const fs = require('fs');
 const path = require('path');
 const sessionUtil = require('../utils/session')
@@ -31,10 +31,11 @@ ProductPriceApprovalsListProduct.get('/product-price-approvals-list-product/:IdA
             req.session.user.OffsetRows,
             req.session.user.NextRows,
             req.body.CodiceFornitore,
-            req.body.CodiceArticolo
+            req.body.CodiceArticolo,
+            req.params.IdApprovazione
         );
         /* Chiama la crud necessaria per il caricamento degli articoli */
-        crud.GetArticoli(myRequest).then(listOf => {
+        crud.GetArticoliApprovazione(myRequest).then(listOf => {
             var data = JSON.parse(JSON.stringify(listOf));
             //res.status(200).json(
             //    new modelResponse('OK',
@@ -70,23 +71,15 @@ ProductPriceApprovalsListProduct.post('/product-price-approvals-list-product/:Id
             req.session.user.OffsetRows,
             req.session.user.NextRows,
             req.body.CodiceFornitore,
-            req.body.CodiceArticolo
+            req.body.CodiceArticolo,
+            req.params.IdApprovazione
         );
 
         /* Chiama la crud necessaria per il caricamento degli articoli */
-        crud.GetArticoli(myRequest).then(listOf => {
-
+        crud.GetArticoliApprovazione(myRequest).then(listOf => {
             var data = JSON.parse(JSON.stringify(listOf));
-            //res.status(200).json(
-            //    new modelResponse('OK',
-            //        JSON.parse(JSON.stringify(data["resultdata"])), null, data["rowscount"])
-            //);
-
-            //console.log("Controller resultdata: " + data["resultdata"]);
-            //console.log("Controller rowscount: " + data["rowscount"]);
-
             res.status(200).json(
-                new modelResponse('OK', JSON.parse(data["resultdata"]), null, data["rowscount"])
+                new modelResponse('OK', JSON.parse(data["resultdata"]), null, data["rowscount"], req.session.user)
             );
 
         }).catch(err => {
@@ -96,6 +89,27 @@ ProductPriceApprovalsListProduct.post('/product-price-approvals-list-product/:Id
         }).finally(() => {
             //console.log("Code has been executed")
         })
+    }
+});
+ProductPriceApprovalsListProduct.put('/switch-product-approvals-state/:IdApprovazioneArticolo', function (req, res) {
+    if (sessionUtil.verifyUser(req, res)) {
+        res.set('Access-Control-Allow-Origin', '*');
+
+        var myRequest = new switchProductApprovalsStateRequest(
+            req.session.user.Id,
+            req.params.IdApprovazioneArticolo,
+            req.body.IdStatoApprovazione
+        );
+        /* Chiama la crud necessaria per il caricamento dei dati */
+        crud.PutSwitchProductApprovalsState(myRequest).then(listOf => {
+            res.status(200).json(
+                new modelResponse('OK', JSON.parse(listOf), null, 0)
+            );
+        }).catch(err => {
+            res.status(200).json(new modelResponse('ERR', null, err));
+        }).finally(() => {
+
+        });
     }
 });
 
