@@ -21,7 +21,7 @@ function login(myLogin) {
                     );
                 } else {
                     var request = new sql.Request();
-                    request.query("SELECT A.Id, A.Username, A.Nominativo, A.Ruolo, A.Codice FROM [dbo].[Login] A WHERE A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
+                    request.query("SELECT (SELECT STRING_AGG(CONVERT(varchar(MAX), Username) , ',') FROM [dbo].[Login] WHERE Ruolo = 'SUPERVISOR') AS Supervisor, A.Id, A.Username, A.Nominativo, A.Ruolo, A.Codice FROM [dbo].[Login] A WHERE A.Username = '" + myUserid + "' AND A.Password = '" + myPassword + "'", function (err, response) {
                         if (err) {
                             reject(
                                 JSON.stringify(new exception(sender, err.message, err.name, err.stack))
@@ -45,18 +45,18 @@ function login(myLogin) {
                                     languageContext = resultData.LanguageContext;
                                 }
                                 /* Valorizza l'oggetto restituito al route */
-                                const user = {
+                                let user = {
                                     Id: resultData.Id,
                                     Username: resultData.Username,
                                     Nominativo: resultData.Nominativo,
                                     Ruolo: resultData.Ruolo,
                                     Codice: resultData.Codice,
+                                    Supervisor: resultData.Supervisor,
                                     LanguageContext: languageContext,
                                     OffsetRows: config.OffsetRows,
                                     NextRows: config.NextRows
-
                                 };
-                                resolve(JSON.stringify(user));
+                                resolve(user);
 
                             } else {
                                 reject(JSON.stringify(

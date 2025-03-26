@@ -43,9 +43,9 @@
 
         <div class="container-fluid">
             <div class="col-xs-3 position-fixed">
-                <h4>
+                <h5>
                     <span class="glyphicon glyphicon-bookmark" style="color:#0088ff;"></span>&nbsp;<b>Richieste Approvazione /</b>
-                </h4>
+                </h5>
                 <hr style="border: 1px solid #d1d1d1; margin-bottom:4px;" />
                 <div style="display:none;">
                     <div class="row">
@@ -71,15 +71,15 @@
                           </label>
                         </div>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_3" <% if (IdStatoApprovazione == 3) { %>checked <% } %> value="3">
-                          <label class="form-check-label" for="rbApprovalState_3">
-                            Non approvata
-                          </label>
-                        </div>
-                        <div class="form-check">
                           <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_4" <% if (IdStatoApprovazione == 4) { %>checked <% } %> value="4">
                           <label class="form-check-label" for="rbApprovalState_4">
                             Approvata parzialmente
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_3" <% if (IdStatoApprovazione == 3) { %>checked <% } %> value="3">
+                          <label class="form-check-label" for="rbApprovalState_3">
+                            Non approvata
                           </label>
                         </div>
                         <div class="form-check">
@@ -125,11 +125,12 @@
 	                </div>
                 </div>
 
-                <table class="table h5">
+                <table class="table table-hover h5">
                     <thead class="table-light">
                         <tr>
                             <th></th>
-                            <th scope="col">Id</th>
+                            <th></th>
+                            <th scope="col">ID</th>
                             <th scope="col">Buyer</th>
                             <th scope="col">Prezzi suggeriti</th>
                             <th scope="col">Prezzi non approvati</th>

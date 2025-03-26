@@ -23,14 +23,15 @@ login.get('/login', function (req, res) {
     if (req.session.user) {
         res.redirect('/dashboard');
     } else {
-        const htmlFile = 'view/login.html';
-        fs.stat(`./${htmlFile}`, (err, stats) => {
-            if (stats) {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'text/html');
-                fs.createReadStream(htmlFile).pipe(res);
-            }
-        });
+        //const htmlFile = 'view/login.html';
+        //fs.stat(`./${htmlFile}`, (err, stats) => {
+        //    if (stats) {
+        //        res.statusCode = 200;
+        //        res.setHeader('Content-Type', 'text/html');
+        //        fs.createReadStream(htmlFile).pipe(res);
+        //    }
+        //});
+        res.status(200).render('login');
     }
 });
 
@@ -45,7 +46,7 @@ login.post('/login', (req, res) => {
         );
         /* Chiama la crud per la gestione del login */
         crud.login(myLogin).then(listOf => {
-            req.session.user = JSON.parse(listOf);
+            req.session.user = listOf;
             req.session.save();
             res.status(200).json(new modelResponse('OK', listOf, null));
         }).catch(err => {

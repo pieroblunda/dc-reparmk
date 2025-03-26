@@ -6,7 +6,8 @@ $(function () {
             url: "/switch-approvals-state/" + args.IdApprovazione,
             type: "PUT",
             data: {
-                IdStatoApprovazione: args.IdStatoApprovazione
+                IdStatoApprovazione: args.IdStatoApprovazione,
+                BuyerMail: args.BuyerMail
             }
         }).done(function (response) {
             if (response.status == "ERR") {
@@ -39,9 +40,12 @@ $(function () {
             templateString = response;
             var partialProduct = ejs.render(templateString, { approvazione, user });
             $('.data-container').append(partialProduct);
-            $('.btn-download-excel').click(function () {
-                downloadExcel($(this).data('args'));
-            });
+            $("#container-" + approvazione.Id).find('.btn-download-excel').each(function () {
+                $(this).click(function () {
+                    downloadExcel($(this).data('args'));
+                });
+            })
+            $('a').tooltip();
         });
     }
     loadProducts = function () {
@@ -62,6 +66,8 @@ $(function () {
                 /* Nasconde il loader al termine del caricamento */
                 $('.spinner').hide();
             } else if (response.status == "OK") {
+                console.log(response.user);
+
                 if (Array.isArray(response.data)) {
                     $.each(response.data, function (key, product) {
                         loadProduct(product, response.user);
@@ -96,6 +102,9 @@ $(function () {
             loadProducts();
         }
     })
+    $('.btn-download-excel').click(function () {
+        downloadExcel($(this).data('args'));
+    });
     function downloadExcel(IdApprovazione) {
 
         /* Visualizza il loader */

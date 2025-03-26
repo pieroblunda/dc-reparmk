@@ -59,38 +59,47 @@ $(document).ready(function () {
             type: "GET",
             data: {},
         }).done(function (response) {
-            if (response.status == "ERR") {
-                var err = JSON.parse(response.error);
-                $('.pnl-errors').html(err.message);
-                $('.form-errors').show();
-            } else if (response.status == "OK") {
-                var product = JSON.parse(response.data);
-                $('.CodiceArticolo').html(product.CodiceArticolo);
-                $('.PrezzoListinoBase').html(product.PrezzoListinoBase);
-                $('.PrezzoListinoFornitore').html(product.PrezzoListinoFornitore);
-                if (product.PrezzoFamily != undefined) {
-                    $('.PrezzoFamily').html(product.PrezzoFamily);
-                } else {
-                    $('#PrezzoFamily').val('');
-                    $('.PrezzoFamily').html('0.00');
+            if (typeof response == "object") {
+                if (response.status == "ERR") {
+                    var err = JSON.parse(response.error);
+                    $('.pnl-errors').html(err.message);
+                    $('.form-errors').show();
+                } else if (response.status == "OK") {
+                    var product = JSON.parse(response.data);
+                    $.get("../template/product-price-detect-detail.ejs", function (response) {
+                        templateString = response;
+                        var partialProduct = ejs.render(templateString, { product });
+                        $('#tabpanel-detect-price-detail').empty().append(partialProduct);
+                        $('.btn-detect-price-ok').click(function () {
+                            detectPriceOk($('.CodiceArticolo').html(), product.ArticoloBrands);
+                        });
+                        $("input.decimal").bind("change keyup input", function () {
+                            var position = this.selectionStart - 1;
+                            //remove all but number and .
+                            var fixed = this.value.replace(/[^0-9\.]/g, "");
+                            if (fixed.charAt(0) === ".")
+                                //can't start with .
+                                fixed = fixed.slice(1);
+                            var pos = fixed.indexOf(".") + 1;
+                            if (pos >= 0)
+                                //avoid more than one .
+                                fixed = fixed.substr(0, pos) + fixed.slice(pos).replace(".", "");
+                            //cancel sub input string
+                            if (fixed.indexOf(".") > 0 && fixed.substr(pos).length > 2)
+                                fixed = fixed.substr(0, pos) + '.' + fixed.substr(pos, 2);
+                            //set cursor position to end
+                            if (this.value !== fixed) {
+                                this.value = fixed;
+                                this.selectionStart = position + 1;
+                                this.selectionEnd = position + 1;
+                            }
+                        });
+                    });
+                    $('.CodiceArticolo').html(product.CodiceArticolo);
+                    $('#detect-price').modal('show');
                 }
-                if (product.PrezzoIlomo != undefined) {
-                    $('.PrezzoIlomo').html(product.PrezzoIlomo);
-                } else {
-                    $('#PrezzoIlomo').val('');
-                    $('.PrezzoIlomo').html('0.00');
-                }
-                if (product.PrezzoSunlux != undefined) {
-                    $('.PrezzoSunlux').html(product.PrezzoSunlux);
-                } else {
-                    $('#PrezzoSunlux').val('');
-                    $('.PrezzoSunlux').html('0.00');
-                }   
-                $('.PercentualeRicarico').html(product.PercentualeRicarico);
-                $('.Applicazione').html(product.Applicazione);
-                $('.Gamma').html(product.Gamma);
-                $('.MediaVendita').html(product.MediaVendita);
-                $('#detect-price').modal('show');
+            } else if (response.indexOf("Login") > -1) {
+                document.location.href = "/login";
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -109,23 +118,56 @@ $(document).ready(function () {
             type: "GET",
             data: {},
         }).done(function (response) {
-            if (response.status == "ERR") {
-                var err = JSON.parse(response.error);
-                $('.pnl-errors').html(err.message);
-                $('.form-errors').show();
-            } else if (response.status == "OK") {
-                var product = JSON.parse(response.data);
-                $('.CodiceArticolo').html(product.CodiceArticolo);
-                $('.PrezzoListinoBase').html(product.PrezzoListinoBase);
-                $('.PrezzoListinoFornitore').html(product.PrezzoListinoFornitore);
-                $('.PrezzoFamily').html(product.PrezzoFamily);
-                $('.PrezzoIlomo').html(product.PrezzoIlomo);
-                $('.PrezzoSunlux').html(product.PrezzoSunlux);
-                $('.PercentualeRicarico').html(product.PercentualeRicarico);
-                $('.Applicazione').html(product.Applicazione);
-                $('.Gamma').html(product.Gamma);
-                $('.MediaVendita').html(product.MediaVendita);
-                $('#suggest-price').modal('show');
+            if (typeof response == "object") {
+                if (response.status == "ERR") {
+                    var err = JSON.parse(response.error);
+                    $('.pnl-errors').html(err.message);
+                    $('.form-errors').show();
+                } else if (response.status == "OK") {
+                    var product = JSON.parse(response.data);
+                    $.get("../template/product-price-suggest-detail.ejs", function (response) {
+                        templateString = response;
+                        var partialProduct = ejs.render(templateString, { product });
+                        $('#tabpanel-suggest-price-detail').empty().append(partialProduct);
+                        $('.btn-suggest-price-ok').click(function () {
+                            suggestPriceOk($('.CodiceArticolo').html());
+                        });
+                        $('#rbSuggestPrice').change(function () {
+                            if ($("input[name=rbSuggestPrice]").prop("checked")) {
+                                $('.btn-suggest-price-ok').removeClass('disabled');
+                                $('.form-suggest-price-alert').show();
+                            } else {
+                                $('.btn-suggest-price-ok').addClass('disabled');
+                                $('.form-suggest-price-alert').hide();
+                            }
+                        });
+                        $("input.decimal").bind("change keyup input", function () {
+                            var position = this.selectionStart - 1;
+                            //remove all but number and .
+                            var fixed = this.value.replace(/[^0-9\.]/g, "");
+                            if (fixed.charAt(0) === ".")
+                                //can't start with .
+                                fixed = fixed.slice(1);
+                            var pos = fixed.indexOf(".") + 1;
+                            if (pos >= 0)
+                                //avoid more than one .
+                                fixed = fixed.substr(0, pos) + fixed.slice(pos).replace(".", "");
+                            //cancel sub input string
+                            if (fixed.indexOf(".") > 0 && fixed.substr(pos).length > 2)
+                                fixed = fixed.substr(0, pos) + '.' + fixed.substr(pos, 2);
+                            //set cursor position to end
+                            if (this.value !== fixed) {
+                                this.value = fixed;
+                                this.selectionStart = position + 1;
+                                this.selectionEnd = position + 1;
+                            }
+                        });
+                    });
+                    $('.CodiceArticolo').html(product.CodiceArticolo);
+                    $('#suggest-price').modal('show');
+                }
+            } else if (response.indexOf("Login") > -1) {
+                document.location.href = "/login";
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -148,13 +190,17 @@ $(document).ready(function () {
         }).done(function (response) {
             if (response.status == "ERR") {
                 var err = JSON.parse(response.error);
-                $('.LoadedRows').html(0);
-                $('.RowsCount').html(0);
-                $('#load-data').hide();
-                /* Visualizza l'errore */
-                ShowError(err.message);
-                /* Nasconde il loader al termine del caricamento */
-                $('.spinner').hide();
+                if (err.message == "Session expired") {
+                    document.location.href = "/login";
+                } else {
+                    $('.LoadedRows').html(0);
+                    $('.RowsCount').html(0);
+                    $('#load-data').hide();
+                    /* Visualizza l'errore */
+                    ShowError(err.message);
+                    /* Nasconde il loader al termine del caricamento */
+                    $('.spinner').hide();
+                }
             } else if (response.status == "OK") {
                 if (Array.isArray(response.data)) {
                     $.each(response.data, function (key, product) {
@@ -190,54 +236,86 @@ $(document).ready(function () {
             templateString = response;
             var partialProduct = ejs.render(templateString, { product, user });
             $('.data-container').append(partialProduct);
-            $('.btn-detect-price').click(function () {
-                detectPrice($(this).data("codicearticolo"));
-            });
-            $('.btn-suggest-price').click(function () {
-                suggestPrice($(this).data("codicearticolo"));
-            });
+            $("#container-" + product.CodiceArticolo).find('.btn-detect-price').each(function () {
+                $(this).click(function () {
+                    detectPrice($(this).data("codicearticolo"));
+                });
+            })
+            $("#container-" + product.CodiceArticolo).find('.btn-suggest-price').each(function () {
+                $(this).click(function () {
+                    suggestPrice($(this).data("codicearticolo"));
+                });
+            })
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            //$("#container-" + product.CodiceArticolo).find('.btn').each(function () {
+            //    $(this).tooltip();
+            //})
         });
     }
-    detectPriceOk = function (CodiceArticolo) {
+    detectPriceOk = function (CodiceArticolo, ArticoloBrands) {
+
+        var ArticoloBrand = ArticoloBrands.split(",");
+        let jsonData = {}
+        $.each(ArticoloBrand, function (key, brand) {
+            jsonData["Prezzo" + brand.trim()] = $("#Prezzo" + brand.trim()).val();
+            jsonData["Note" + brand.trim()] = $("#Note" + brand.trim()).val();
+            jsonData["Url" + brand.trim()] = $("#Url" + brand.trim()).val();
+        });
+        jsonData["CodiceBrand"] = $('#CodiceBrand').val()
 
         var isvalidform = true;
-        const forms = document.querySelectorAll('.form-control-detect, .form-select-detect')
+        const forms = document.querySelectorAll('#tabpanel-detect-price-detail .form-control-detect, #tabpanel-detect-price-detail .form-select-detect')
         Array.from(forms).forEach(form => {
             if (!form.checkValidity()) {
                 isvalidform = false;
             }
         })
+        $('#tabpanel-detect-price-detail .decimal').each(function () {
+            if (eval($(this).val()) == 0) {
+                isvalidform = false;
+                ShowErrorValidation("Verificare la formattazione dei valori inseriti");
+            }
+        });
         /* Save data */
         if (isvalidform) {
             $.ajax({
                 url: "/detect-price/" + CodiceArticolo,
                 type: "POST",
-                data: {
-                    CodiceArticolo: CodiceArticolo,
-                    PrezzoFamily: $('#PrezzoFamily').val(),
-                    PrezzoIlomo: $('#PrezzoIlomo').val(),
-                    PrezzoSunlux: $('#PrezzoSunlux').val(),
-                },
+                data: jsonData,
             }).done(function (response) {
                 if (response.status == "ERR") {
-                    //console.log("response error: " + response.error);
-                    //console.log("JSON.parse error: " + JSON.parse(response.error));
-                    //console.log("JSON.parse error message: " + JSON.parse(response.error).message.Status);
                     var err = JSON.parse(response.error);
-                    $('.pnl-errors').html(err.message);
+                    $('.pnl-errors').html(err.message.Status);
                     $('.form-errors').show();
                 }
                 else if (response.status == "OK") {
                     /* Aaggiorna i prezzi nel jumbtron dello specifico articolo */
-                    $('#' + CodiceArticolo + '-PrezzoFamily').html($('#PrezzoFamily').val());
-                    $('#' + CodiceArticolo + '-PrezzoIlomo').html($('#PrezzoIlomo').val());
-                    $('#' + CodiceArticolo + '-PrezzoSunlux').html($('#PrezzoSunlux').val());
+                    $.each(ArticoloBrand, function (key, brand) {
+                        var htmlToAppend = '';
+                        if ($("#Url" + brand.trim()).val() != '') {
+                            htmlToAppend += '<a target="_blank" href="' + $("#Url" + brand.trim()).val() + '" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a>';
+                        } else {
+                            htmlToAppend += '<span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span>';
+                        }
+                        if ($("#Note" + brand.trim()).val() != '') {
+                            htmlToAppend += '<span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="' + $("#Note" + brand.trim()).val() + '"></span>';
+                        } else {
+                            htmlToAppend += '<span style="float:right;" class="bi bi-info-circle text-white"></span>';
+                        }
+                        if ($("#Prezzo" + brand.trim()).val() != '') {
+                            htmlToAppend += '<span style="float:right; margin-right:10px;" id="' + CodiceArticolo + '-Prezzo' + brand.trim() + '">' + $("#Prezzo" + brand.trim()).val() + '<span class="bi bi-currency-euro"></span></span>';
+                        } else {
+                            htmlToAppend += '<span style="float:right; margin-right:10px;" id="' + CodiceArticolo + '-Prezzo' + brand.trim() + '">0.00<span class="bi bi-currency-euro"></span></span>';
+                        }
+                        $('#td-' + CodiceArticolo + '-' + brand.trim()).empty().html(htmlToAppend);
+                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+                    });
                     $('#detect-price').modal('hide');
                 }
             })
         }
-
-
     }
     suggestPriceOk = function (CodiceArticolo) {
         var isvalidform = true;
@@ -247,6 +325,12 @@ $(document).ready(function () {
                 isvalidform = false;
             }
         })
+        $('.decimal').each(function () {
+            if (eval($(this).val()) == 0) {
+                isvalidform = false;
+                ShowErrorValidation("Verificare la formattazione dei valori inseriti");
+            }
+        });
         /* Save data */
         if (isvalidform) {
             $.ajax({
@@ -277,7 +361,7 @@ $(document).ready(function () {
         /* Visualizza il loader */
         $('.spinner').show();
         $.ajax({
-            url: "/detect-price-history/" + codicearticolo,
+            url: "/detect-price-history/" + codicearticolo + "/" + $('#CodiceBrand').val(),
             type: "GET",
             data: {},
         }).done(function (response) {
@@ -286,23 +370,12 @@ $(document).ready(function () {
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
             } else if (response.status == "OK") {
-                $('#detect-price-history-container').empty();
-                var partialProduct = '';
-                if (Array.isArray(response.data)) {
-                    $.each(response.data, function (key, product) {
-                        partialProduct +=
-                            '<tr>' +
-                                '<td scope="col">' + product.PrezzoFamily + ' <span class="bi bi-currency-euro"></span></td>' +
-                                '<td scope="col">' + product.PrezzoIlomo + ' <span class="bi bi-currency-euro"></span></td>' +
-                                '<td scope="col">' + product.PrezzoSunlux + ' <span class="bi bi-currency-euro"></span></td>' +
-                                '<td scope="col">' + product.DataRegistrazione + '</td>' +
-                                '<td scope="col">' + product.Utente + '</td>' +
-                            '</tr>'
-                    });
-                } else {
-                    loadProduct(response.data);
-                }
-                $('#detect-price-history-container').append(partialProduct);
+                var product = JSON.parse(JSON.stringify(response.data));                
+                $.get("../template/product-price-detect-history.ejs", function (templateResponse) {
+                    templateString = templateResponse;
+                    var partialProduct = ejs.render(templateString, { product });
+                    $('#tabpanel-detect-price-history').empty().append(partialProduct);
+                });
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -311,41 +384,8 @@ $(document).ready(function () {
 
         });
     }
-    $("input.decimal").bind("change keyup input", function () {
-        var position = this.selectionStart - 1;
-        //remove all but number and .
-        var fixed = this.value.replace(/[^0-9\.]/g, "");
-        if (fixed.charAt(0) === ".")
-            //can't start with .
-            fixed = fixed.slice(1);
-        var pos = fixed.indexOf(".") + 1;
-        if (pos >= 0)
-            //avoid more than one .
-            fixed = fixed.substr(0, pos) + fixed.slice(pos).replace(".", "");
-            //cancel sub input string
-        if (fixed.indexOf(".") > 0 && fixed.substr(pos).length > 2)
-            fixed = fixed.substr(0, pos) + '.' + fixed.substr(pos, 2);
-            //set cursor position to end
-        if (this.value !== fixed) {
-            this.value = fixed;
-            this.selectionStart = position + 1;
-            this.selectionEnd = position + 1;
-        }
-    });
-    $('#rbSuggestPrice').change(function () {
-        if ($("input[name=rbSuggestPrice]").prop("checked")) {
-            $('.btn-suggest-price-ok').removeClass('disabled');
-            $('.form-suggest-price-alert').show();
-        } else {
-            $('.btn-suggest-price-ok').addClass('disabled');
-            $('.form-suggest-price-alert').hide();
-        }
-    });
     $('#tab-detect-price-history').click(function () {
         detectPriceHistory($('.CodiceArticolo').html());
-    });
-    $('.btn-detect-price-ok').click(function () {
-        detectPriceOk($('.CodiceArticolo').html());
     });
     $('.btn-suggest-price-ok').click(function () {
         suggestPriceOk($('.CodiceArticolo').html());
@@ -370,10 +410,14 @@ $(document).ready(function () {
             type: "POST",
             data: {},
         }).done(function (response) {
-            $('#load-data').hide();
-            /* Carica la lista dei risultati */
-            $('.data-container').empty();
-            loadProducts($('#Fornitore').val(), $('#CodiceArticolo').val());
+            if (response.indexOf("Login") >-1) {
+                document.location.href = "/login";
+            } else {
+                $('#load-data').hide();
+                /* Carica la lista dei risultati */
+                $('.data-container').empty();
+                loadProducts($('#Fornitore').val(), $('#CodiceArticolo').val());
+            }
         })
     });
     $('#load-data').click(function () {
@@ -391,4 +435,6 @@ $(document).ready(function () {
     //    }
     //});
     loadBuyer();
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });

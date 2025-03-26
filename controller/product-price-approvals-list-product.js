@@ -106,7 +106,10 @@ $(document).ready(function () {
                 } else {
                     $('#PrezzoSunlux').val('');
                     $('.PrezzoSunlux').html('0.00');
-                }   
+                }
+
+
+
                 $('.PercentualeRicarico').html(product.PercentualeRicarico);
                 $('.Applicazione').html(product.Applicazione);
                 $('.Gamma').html(product.Gamma);
@@ -208,12 +211,16 @@ $(document).ready(function () {
             templateString = response;
             var partialProduct = ejs.render(templateString, { product, user });
             $('.data-container').append(partialProduct);
-                $('.btn-detect-price').click(function () {
+            $("#container-" + product.CodiceArticolo).find('.btn-detect-price').each(function () {
+                $(this).click(function () {
                     detectPrice($(this).data("codicearticolo"));
                 });
-                $('.btn-suggest-price').click(function () {
+            })
+            $("#container-" + product.CodiceArticolo).find('.btn-suggest-price').each(function () {
+                $(this).click(function () {
                     suggestPrice($(this).data("codicearticolo"));
                 });
+            })
         });
     }
     detectPriceOk = function (CodiceArticolo) {

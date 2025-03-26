@@ -278,10 +278,50 @@ function PostDetectPrice(myRequest) {
 
                     var request = new sql.Request();
 
-                    request.input('CodiceArticolo', sql.NVarChar(50), myBody.CodiceArticolo);
+                    request.input('CodiceArticolo', sql.NVarChar(50), myCodiceArticolo);
+                    request.input('CodiceBrand', sql.NVarChar(50), myBody.CodiceBrand);
                     request.input('PrezzoFamily', sql.Decimal(18,2), myBody.PrezzoFamily);
                     request.input('PrezzoIlomo', sql.Decimal(18,2), myBody.PrezzoIlomo);
-                    request.input('PrezzoSunlux', sql.Decimal(18,2), myBody.PrezzoSunlux);
+                    request.input('PrezzoSunlux', sql.Decimal(18, 2), myBody.PrezzoSunlux);
+                    request.input('PrezzoPapironia', sql.Decimal(18, 2), myBody.PrezzoPapironia);
+                    request.input('PrezzoScipioni', sql.Decimal(18, 2), myBody.PrezzoScipioni);
+                    request.input('PrezzoSacchettoDoro', sql.Decimal(18, 2), myBody.PrezzoSacchettoDoro);
+                    request.input('PrezzoMp', sql.Decimal(18, 2), myBody.PrezzoMp);
+                    request.input('PrezzoEurocom', sql.Decimal(18, 2), myBody.PrezzoEurocom);
+                    request.input('PrezzoModo', sql.Decimal(18, 2), myBody.PrezzoModo);
+                    request.input('PrezzoMichelle', sql.Decimal(18, 2), myBody.PrezzoMichelle);
+                    request.input('PrezzoEmBeauty', sql.Decimal(18, 2), myBody.PrezzoEmBeauty);
+                    request.input('PrezzoSusy', sql.Decimal(18, 2), myBody.PrezzoSusy);
+                    request.input('PrezzoTertio', sql.Decimal(18, 2), myBody.PrezzoTertio);
+
+                    request.input('NoteFamily', sql.NVarChar(10000), myBody.NoteFamily);
+                    request.input('NoteIlomo', sql.NVarChar(10000), myBody.NoteIlomo);
+                    request.input('NoteSunlux', sql.NVarChar(10000), myBody.NoteSunlux);
+                    request.input('NotePapironia', sql.NVarChar(10000), myBody.NotePapironia);
+                    request.input('NoteScipioni', sql.NVarChar(10000), myBody.NoteScipioni);
+                    request.input('NoteSacchettoDoro', sql.NVarChar(10000), myBody.NoteSacchettoDoro);
+                    request.input('NoteMp', sql.NVarChar(10000), myBody.NoteMp);
+                    request.input('NoteEurocom', sql.NVarChar(10000), myBody.NoteEurocom);
+                    request.input('NoteModo', sql.NVarChar(10000), myBody.NoteModo);
+                    request.input('NoteMichelle', sql.NVarChar(10000), myBody.NoteMichelle);
+                    request.input('NoteEmBeauty', sql.NVarChar(10000), myBody.NoteEmBeauty);
+                    request.input('NoteSusy', sql.NVarChar(10000), myBody.NoteSusy);
+                    request.input('NoteTertio', sql.NVarChar(10000), myBody.NoteTertio);
+
+                    request.input('URLFamily', sql.NVarChar(10000), myBody.UrlFamily);
+                    request.input('URLIlomo', sql.NVarChar(10000), myBody.UrlIlomo);
+                    request.input('URLSunlux', sql.NVarChar(10000), myBody.UrlSunlux);
+                    request.input('URLPapironia', sql.NVarChar(10000), myBody.UrlPapironia);
+                    request.input('URLScipioni', sql.NVarChar(10000), myBody.UrlScipioni);
+                    request.input('URLSacchettoDoro', sql.NVarChar(10000), myBody.UrlSacchettoDoro);
+                    request.input('URLMp', sql.NVarChar(10000), myBody.UrlMp);
+                    request.input('URLEurocom', sql.NVarChar(10000), myBody.UrlEurocom);
+                    request.input('URLModo', sql.NVarChar(10000), myBody.UrlModo);
+                    request.input('URLMichelle', sql.NVarChar(10000), myBody.UrlMichelle);
+                    request.input('URLEmBeauty', sql.NVarChar(10000), myBody.UrlEmBeauty);
+                    request.input('URLSusy', sql.NVarChar(10000), myBody.UrlSusy);
+                    request.input('URLTertio', sql.NVarChar(10000), myBody.UrlTertio);
+
                     request.input('FirstOwner', sql.NVarChar(50), myIdAccount);
                     request.input('Owner', sql.NVarChar(50), myIdAccount);
                     request.output('Status', sql.NVarChar(500))
@@ -379,7 +419,9 @@ function GetDetectPriceHistory(myRequest) {
     var myOffsetRows = myRequest.OffsetRows;
     var myNextRows = myRequest.NextRows;
     var myCodiceArticolo = myRequest.CodiceArticolo;
-    var myBody = myRequest.RequestBody;
+    var myCodiceBrand = myRequest.RequestBody;
+
+    //console.log("myBody: " + JSON.stringify(myCodiceBrand));
 
     const customPromise = new Promise((resolve, reject) => {
         try {
@@ -390,7 +432,8 @@ function GetDetectPriceHistory(myRequest) {
                     );
                 } else {
                     var request = new sql.Request();
-                    request.input('CodiceArticolo', sql.NVarChar(500), myCodiceArticolo)
+                    request.input('CodiceArticolo', sql.NVarChar(50), myCodiceArticolo)
+                    request.input('CodiceBrand', sql.NVarChar(50), myCodiceBrand)
 
                     request.execute("SP_DetectPriceHistory", function (err, response) {
                         if (err) {

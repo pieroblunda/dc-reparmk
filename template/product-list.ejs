@@ -1,36 +1,45 @@
-﻿<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+﻿<div id="container-<%= product.CodiceArticolo %>" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="jumbotron-product">
         <div class="container-fluid" style="padding:0 !important;">
             <% if (product.PercentualeSconto != '0.00') { %>
-            <h6 class="rounded" style="position:relative; margin:0; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:0; float:right; top:-10px; background-color:#0088ff; color:#fff;">
-                -<%= parseFloat(product.PercentualeSconto) %>%
-            </h6>
+                <h6 class="rounded" style="position:relative; margin:0; width:52px !important; height:20px !important; padding:4px; padding-left:6px; margin-right:0; float:right; top:-10px; background-color:#0088ff; color:#fff;">
+                    -<%= product.PercentualeSconto %>%
+                </h6>
             <% } %>
-            <h6 id="<%= product.CodiceArticolo %>-StatoArticolo" class="bi bi-circle-fill <% if (product.IdStatoApprovazioneArticolo == 1) { %>text-secondary<% } else if (product.IdStatoApprovazioneArticolo == 5) { %>text-warning<% } else { %> text-primary <% } %>" style="position:absolute; left:24px; top:-1px; z-index:1;"></h6>
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                <img src="https://ik.imagekit.io/dccasa/FOTODC_AGENTI/<%= product.CodiceArticolo %>.jpg" 
+            <h6 id="<%= product.CodiceArticolo %>-StatoArticolo" class="bi bi-circle-fill bullet-barcode <% if (product.IdStatoApprovazioneArticolo == 1) { %>text-secondary<% } else if (product.IdStatoApprovazioneArticolo == 5) { %>text-warning<% } else { %> text-primary <% } %>"></h6>
+            <span class="bullet-articolo"><%= product.CodiceArticolo %></span>&nbsp;
+            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+                <img src="http://cdn.dcgroup/images/<%= product.CodiceArticolo %>.jpg" 
                 onerror="this.onerror=null; this.src='images/image.png';"
                 class="img-fluid" />
             </div>
             <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
-                <h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<%= product.CodiceArticolo %></h5>
+                <h5 style="color:gray;"><span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<%= product.CodiceBarre %></h5>
                 <h6 class="text-primary">
-                    <i><%= product.DescrizioneSottocategoria %></i>
+                    <%= product.DescrizioneCategoria %>, <%= product.DescrizioneSottocategoria %>
                 </h6>
                 <h6>
                     <% if (product.CodiceFornitore != "") { %>
                         <%= product.RagioneSocialeFornitore %>
+                        <% if (product.ArtForn) { %> (<%= product.ArtForn %>) <% } %>
                     <% } else { %>
                         Fornitore non dispnonibile
                     <% } %>
                 </h6>
-                <h4 class="text-info" style="height:60px !important;">
-                    <a class="text-decoration-none;" href="/productDetail/<%= product.CodiceArticolo %>">
+                <h4 class="text-info">
+                    <span class="text-decoration-none;">
                         <b class="text-dark">
                             <%= product.Denominazione %>
                         </b>
-                    </a>
+                    </span>
                 </h4>
+                <div class="col-xs-12" style="padding:0;">
+                    <i class="bi bi-piggy-bank ricarico-icon"></i>
+                    <span class="rounded-circle ricarico">
+                        Ricarico<br>
+                         <b><%= product.PercentualeRicarico %>%</b>
+                    </span>
+                </div>
                 <!--h6 class="text-muted">
                     <% if (product.QuantitaPacco != product.QuantitaBox) { %>
                         <%= product.QuantitaPacco %> unit&agrave; / Confezione da <%= product.QuantitaBox %> PZ
@@ -39,58 +48,185 @@
                     <% } %>
                 </h6-->
             </div>
-            <div class="col-lg-4 col-md-5 col-sm-12 col-xs-12">
-                <table class="table table-sm" style="font-size:12px;">
+            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                <table class="table table-sm">
                     <tbody>
                         <tr>
-                            <td scope="row" rowspan="5" class="align-middle">
-                                <span class="badge bg-primary" style="display:block; width:90px; margin-bottom:-10px;">
+                            <td scope="row" rowspan="<%=product.ArticoloBrands.split(",").length+2%>" width="48%">
+                                <span class="badge bg-primary badge-price">
                                     Listino Base
                                 </span>
-                                <h2 class="text-primary">
-                                    <%= product.PrezzoListinoBase %><span class="bi bi-currency-euro"></span>
-                                </h2>
+                                <h1 class="primary-price">
+                                    <%= product.PrezzoListinoBase %><sup><span class="bi bi-currency-euro linea-prodotto"></sup>
+                                </h1>
+                                <span class="text-primary primary-price-badge">
+                                    <% if (product.LineaProdotto == "L06") { %>Da scontare <% } else { %>Prezzo netto <% } %></span>
+                                </span>
+                                <h4 class="primary-price-fornitore">
+                                    <%= product.PrezzoListinoFornitore%><span class="bi bi-currency-euro"></span>
+                                </h4>
+                                <span class="text-primary primary-price-fornitore-badge">
+                                    Prezzo Fornitore
+                                </span>
                             </td>
                         </tr>
                         <tr>
-                            <td scope="col">Fornitore</td>
-                            <td scope="col" class="text-right">
-                                <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="col">Family</td>
-                            <td scope="col" class="text-right">
-                                <% if (product.PrezzoFamily != undefined) { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoFamily"><%= product.PrezzoFamily %></span><span class="bi bi-currency-euro"></span>
-                                <% } else { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoFamily">0.00</span><span class="bi bi-currency-euro"></span>
+                            <td scope="col" colspan="2">
+                                <span class="primary-price-competitor-badge">
+                                    Competitor
+                                </span>
+                                <% if (product.DataUltimoRilevamentoPrezzo) { %>
+                                    <span style="margin:0; padding-top:6px; display:block; float:left;">
+                                        <i class="bi bi-clock-history"></i><span class="text-secondary last-update"> &nbsp;<%= product.DataUltimoRilevamentoPrezzo %></span>
+                                    </span>
                                 <% } %>
                             </td>
                         </tr>
-                        <tr>
-                            <td scope="col">Ilomo</td>
-                            <td scope="col" class="text-right">
-                                <% if (product.PrezzoIlomo != undefined) { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoIlomo"><%= product.PrezzoIlomo %></span><span class="bi bi-currency-euro"></span>
-                                <% } else { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoIlomo">0.00</span><span class="bi bi-currency-euro"></span>
-                                <% } %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="col">Sunlux</td>
-                            <td scope="col" class="text-right">
-                                <% if (product.PrezzoSunlux != undefined) { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoSunlux"><%= product.PrezzoSunlux %></span><span class="bi bi-currency-euro"></span>
-                                <% } else { %>
-                                    <span id="<%= product.CodiceArticolo %>-PrezzoSunlux">0.00</span><span class="bi bi-currency-euro"></span>
-                                <% } %>
-                            </td>
-                        </tr>
+                        <%
+                        if (product.ArticoloBrands) {
+                            let brands = product.ArticoloBrands.split(",");
+                            brands.forEach(function(brand) { %>
+                            <tr>
+                                <td scope="col">
+                                    <%=brand%>
+                                </td>
+                                <td id="td-<%= product.CodiceArticolo %>-<%= brand.trim() %>" scope="col" class="text-right">
+                                    <% if (brand.trim() == "Family") { %>
+                                        <% if (product.UrlFamily) { %> <a target="_blank" href="<%= product.UrlFamily %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteFamily) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteFamily %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoFamily) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoFamily %><span class="bi bi-currency-euro"></span></span> 
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Ilomo") { %>
+                                        <% if (product.UrlIlomo) { %> <a target="_blank" href="<%= product.UrlIlomo %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteIlomo) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteIlomo %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoIlomo) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoIlomo %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Sunlux") { %>
+                                        <% if (product.UrlSunlux) { %> <a target="_blank" href="<%= product.UrlSunlux %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteSunlux) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteSunlux %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoSunlux) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoSunlux %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Papironia") { %>
+                                        <% if (product.UrlPapironia) { %> <a target="_blank" href="<%= product.UrlPapironia %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NotePapironia) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NotePapironia %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoPapironia ) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoPapironia %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Scipioni") { %>
+                                        <% if (product.UrlScipioni) { %> <a target="_blank" href="<%= product.UrlScipioni %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteScipioni) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteScipioni %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoScipioni) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoScipioni %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "SacchettoDoro") { %>
+                                        <% if (product.UrlSacchettoDoro) { %> <a target="_blank" href="<%= product.UrlSacchettoDoro %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteSacchettoDoro) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteSacchettoDoro %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoSacchettoDoro) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoSacchettoDoro %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Mp") { %>
+                                        <% if (product.UrlMp) { %> <a target="_blank" href="<%= product.UrlMp %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteMp) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteMp %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoMp) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoMp %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Eurocom") { %>
+                                        <% if (product.UrlEurocom) { %> <a target="_blank" href="<%= product.UrlEurocom %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteEurocom) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteEurocom %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoEurocom) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoEurocom %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Modo") { %>
+                                        <% if (product.UrlModo) { %> <a target="_blank" href="<%= product.UrlModo %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteModo) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteModo %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoModo) { %>
+                                            <span style="float:right; margin-right:10px;" style="float:right; margin-right:10px; display:block;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoModo %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Michelle") { %>
+                                        <% if (product.UrlMichelle) { %> <a target="_blank" href="<%= product.UrlMichelle %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteMichelle) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteMichelle %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoMichelle) { %>
+                                            <span <% if (product.UrlMichelle) { %> target="_blank" href="<%= product.UrlMichelle %>" <% } %> style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoMichelle %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "EmBeauty") { %>
+                                        <% if (product.UrlEmBeauty) { %> <a target="_blank" href="<%= product.UrlEmBeauty %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteEmBeauty) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteEmBeauty %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoEmBeauty) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoEmBeauty %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Susy") { %>
+                                        <% if (product.UrlSusy) { %> <a target="_blank" href="<%= product.UrlSusy %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteSusy) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteSusy %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoSusy) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoSusy %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (brand.trim() == "Tertio") { %>
+                                        <% if (product.UrlTertio) { %> <a target="_blank" href="<%= product.UrlTertio %>" style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="Apri il link"></a> <% } else { %> <span style="float:right; font-size:16px; margin-left:4px; margin-top:-1px;" class="bi bi-link-45deg text-white"></span> <% } %>
+                                        <% if (product.NoteTertio) { %> <span style="float:right;" class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= product.NoteTertio %>"></span> <% } else { %> <span style="float:right;" class="bi bi-info-circle text-white"></span> <% } %>
+                                        <% if (product.PrezzoTertio) { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoTertio %><span class="bi bi-currency-euro"></span></span>
+                                        <% } else { %>
+                                            <span style="float:right; margin-right:10px;" id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00<span class="bi bi-currency-euro"></span></span>
+                                        <% } %>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <%  });
+                        }
+                        %>
                     </tbody>
                 </table>
-                <div class="col-xs-12" style="padding-right:0; margin-right:0;">
+            </div>
+            <div class="col-xs-12">
+                <div class="col-xs-6">
+                    <span class="bullet-brand text-secondary"><%= product.DescrizioneBrand %></span>
+                    <div style="display:none;" data-codicearticolo="<%= product.CodiceArticolo %>" class="btn btn-default btn-detect-price" data-toggle="tooltip" data-placement="top" title="Rileva prezzo competitor">
+                        <span class="bi bi-currency-euro"></span>
+                    </div>
+                    <div style="display:none;" data-codicearticolo="<%= product.CodiceArticolo %>" class="btn btn-default btn-suggest-price" data-toggle="tooltip" data-placement="top" title="Suggerisci prezzo di vendita">
+                        <span class="bi bi-piggy-bank"></span>
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding-right:0; margin-right:0;">
                     <div class="btn-group dropup align-bottom" style="display:block; width:100%; text-align:right;">
                         <button type="button" class="btn btn-default bi bi-three-dots-vertical rounded-circle"
                             data-bs-toggle="dropdown" style="width:34px; height:34px; padding:0; float:right;">
@@ -124,6 +260,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

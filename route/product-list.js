@@ -20,6 +20,10 @@ ProductList.get('/utility-script', (req, res) => {
     const filePath = path.resolve(__dirname, '../utils/utility.js');
     res.sendFile(filePath);
 });
+ProductList.get('/validation-script', (req, res) => {
+    const filePath = path.resolve(__dirname, '../utils/validation.js');
+    res.sendFile(filePath);
+});
 ProductList.get('/product-list', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
         res.set('Access-Control-Allow-Origin', '*');
@@ -58,7 +62,6 @@ ProductList.get('/product-list', function (req, res) {
 ProductList.get('/product-list/:codicearticolo', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
         res.set('Access-Control-Allow-Origin', '*');
-
         var myRequest = new productRequest(
             req.session.user.Id,
             req.session.user.LanguageContext,
@@ -106,12 +109,13 @@ ProductList.post('/product-list', function (req, res) {
                 new modelResponse('OK', JSON.parse(data["resultdata"]), null, data["rowscount"], req.session.user)
             );
         }).catch(err => {
-            console.log('Errors: ' + err)
             res.status(200).json(new modelResponse('ERR', null, err));
 
         }).finally(() => {
             //console.log("Code has been executed")
         })
+    } else {
+        res.status(200).json(new modelResponse('ERR', null, "Session expired"));
     }
 });
 ProductList.post('/detect-price/:codicearticolo', function (req, res) {
@@ -162,7 +166,7 @@ ProductList.post('/suggest-price/:codicearticolo', function (req, res) {
         });
     }
 });
-ProductList.get('/detect-price-history/:codicearticolo', function (req, res) {
+ProductList.get('/detect-price-history/:codicearticolo/:codicebrand', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
         res.set('Access-Control-Allow-Origin', '*');
         var myRequest = new productRequest(
@@ -171,7 +175,7 @@ ProductList.get('/detect-price-history/:codicearticolo', function (req, res) {
             req.session.user.OffsetRows,
             req.session.user.NextRows,
             req.params.codicearticolo,
-            req.body
+            req.params.codicebrand
         );
         crud.GetDetectPriceHistory(myRequest).then(listOf => {
             console.log(listOf);
@@ -214,7 +218,6 @@ ProductList.get('/fornitori/:CodiceBuyer', function (req, res) {
             req.session.user.Id,
             req.params.CodiceBuyer
         );
-        console.log(myRequest);
         /* Chiama la crud necessaria per il caricamento degli articoli */
         crud.GetFornitori(myRequest).then(listOf => {
             res.status(200).json(

@@ -1,0 +1,316 @@
+<input type="hidden" id="CodiceBrand" value="<%=product.CodiceBrand %>" />
+<div class="table-responsive">
+    <table class="table fa-check text-success table-border border-light">
+    <thead class="border-light">
+        <tr>
+        <th scope="col"></th>
+        <th scope="col">
+            <span class="badge bg-primary">Listino Base</span>
+        </th>
+        <%
+        if (product.ArticoloBrands) {
+            let brands = product.ArticoloBrands.split(",");
+            brands.forEach(function(brand) { %>
+            <th scope="col">
+                <strong><%=brand.trim() %></strong>
+            </th>
+
+        <%  });
+        }
+        %>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td scope="row">
+            <i class="bi bi-clock-history"></i><span class="text-secondary last-update"> &nbsp;Ultimo aggiornamento</span>
+        </td>
+        <td class="text-primary">
+            <span class="PrezzoListinoBase">
+                <%= product.PrezzoListinoBase %>
+            </span> <span class="bi bi-currency-euro"></span>
+        </td>
+        <%
+        if (product.ArticoloBrands) {
+            let brands = product.ArticoloBrands.split(",");
+            brands.forEach(function(brand) { %>
+            <td>
+                <span class="Prezzo<%=brand%>">
+                    <% if (brand.trim() == "Family") { %>
+                        <% if (product.PrezzoFamily) { %>
+                            <%= product.PrezzoFamily %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Ilomo") { %>
+                        <% if (product.PrezzoIlomo) { %>
+                            <%= product.PrezzoIlomo %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Sunlux") { %>
+                        <% if (product.PrezzoSunlux) { %>
+                            <%= product.PrezzoSunlux %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Papironia") { %>
+                        <% if (product.PrezzoPapironia) { %>
+                            <%= product.PrezzoPapironia %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Scipioni") { %>
+                        <% if (product.PrezzoScipioni) { %>
+                            <%= product.PrezzoScipioni %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim().replace("'", "") == "SacchettoDoro") { %>
+                        <% if (product.PrezzoSacchettoDoro) { %>
+                            <%= product.PrezzoSacchettoDoro %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Mp") { %>
+                        <% if (product.PrezzoMp) { %>
+                            <%= product.PrezzoMp %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Eurocom") { %>
+                        <% if (product.PrezzoEurocom) { %>
+                            <%= product.PrezzoEurocom %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Modo") { %>
+                        <% if (product.PrezzoModo) { %>
+                            <%= product.PrezzoModo %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Michelle") { %>
+                        <% if (product.PrezzoMichelle) { %>
+                            <%= product.PrezzoMichelle %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "EmBeauty") { %>
+                        <% if (product.PrezzoEmBeauty) { %>
+                            <%= product.PrezzoEmBeauty %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Susy") { %>
+                        <% if (product.PrezzoSusy) { %>
+                            <%= product.PrezzoSusy %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Tertio") { %>
+                        <% if (product.PrezzoTertio) { %>
+                            <%= product.PrezzoTertio %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                </span> <span class="bi bi-currency-euro"></span>
+            </td>
+        <%  });
+        }
+        %>
+        </tr>
+        <tr>
+            <td scope="row">
+                <i class="bi bi-piggy-bank" style="font-size:16px;"></i><span class="text-secondary last-update"> &nbsp;Ricarico</span>
+            </td>
+            <td>
+                <span class="PercentualeRicarico text-primary">
+                    <%= product.PercentualeRicarico %>
+                </span> <span class="bi bi bi-percent text-primary"></span>
+            </td>
+        <%
+        if (product.ArticoloBrands) {
+            let brands = product.ArticoloBrands.split(",");
+            brands.forEach(function(brand) { %>
+            <td>
+                <span class="PercentualeRicarico<%=brand%> text-secondary">
+                    <% if (brand.trim() == "Family") { %>
+                        <% if (product.PercentualeRicaricoFamily) { %>
+                            <%= product.PercentualeRicaricoFamily %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Ilomo") { %>
+                        <% if (product.PercentualeRicaricoIlomo) { %>
+                            <%= product.PercentualeRicaricoIlomo %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Sunlux") { %>
+                        <% if (product.PercentualeRicaricoSunlux) { %>
+                            <%= product.PercentualeRicaricoSunlux %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Papironia") { %>
+                        <% if (product.PercentualeRicaricoPapironia) { %>
+                            <%= product.PercentualeRicaricoPapironia %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Scipioni") { %>
+                        <% if (product.PercentualeRicaricoScipioni) { %>
+                            <%= product.PercentualeRicaricoScipioni %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "SacchettoDoro") { %>
+                        <% if (product.PercentualeRicaricoSacchettoDoro) { %>
+                            <%= product.PercentualeRicaricoSacchettoDoro %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Mp") { %>
+                        <% if (product.PercentualeRicaricoMp) { %>
+                            <%= product.PercentualeRicaricoMp %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Eurocom") { %>
+                        <% if (product.PercentualeRicaricoEurocom) { %>
+                            <%= product.PercentualeRicaricoEurocom %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Modo") { %>
+                        <% if (product.PercentualeRicaricoModo) { %>
+                            <%= product.PercentualeRicaricoModo %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Michelle") { %>
+                        <% if (product.PercentualeRicaricoMichelle) { %>
+                            <%= product.PercentualeRicaricoMichelle %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "EmBeauty") { %>
+                        <% if (product.PercentualeRicaricoEmBeauty) { %>
+                            <%= product.PercentualeRicaricoEmBeauty %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Susy") { %>
+                        <% if (product.PercentualeRicaricoSusy) { %>
+                            <%= product.PercentualeRicaricoSusy %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                    <% if (brand.trim() == "Tertio") { %>
+                        <% if (product.PercentualeRicaricoTertio) { %>
+                            <%= product.PercentualeRicaricoTertio %>
+                        <% } else { %>
+                            0.00
+                        <% } %>
+                    <% } %>
+                </span>  <span class="bi bi bi-percent text-secondary"></span>
+            </td>
+        <%  });
+        }
+        %>
+        </tr>
+    </tbody>
+    </table>
+</div>                                
+<table class="table table-striped" style="padding:2px !important;">
+    <tbody>
+        <tr>
+            <td scope="col">Prezzo Fornitore</td>
+            <td scope="col" class="text-right">
+                <span class="PrezzoListinoFornitore">
+                    <% if (product.PrezzoListinoFornitore) %>
+                        <%= product.PrezzoListinoFornitore %><span class="bi bi-currency-euro"></span>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col">Gamma</td>
+            <td scope="col" class="text-right">
+                <span class="Gamma">
+                    <%= product.Gamma %>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col">Media Vendita</td>
+            <td scope="col" class="text-right">
+                <span class="MediaVendita">
+                    <%= product.MediaVendita %>
+                </span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="form-group form-errors col-xs-12" style="display:none; padding:0;">
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <b>Attenzione</b>
+        </div>
+        <div class="panel-body pnl-errors"></div>
+    </div>
+</div>
+<div class="col-xs-6">
+    <div class="mb-3">
+        <label for="PrezzoSuggerito" class="col-form-label">Nuovo prezzo suggerito (DC Group):</label>
+        <input type="text" class="form-control form-control-suggest decimal" name="PrezzoSuggerito" id="PrezzoSuggerito" placeholder="es: 0.00" required>
+    </div>
+    <div class="mb-3">
+        <label for="Note" class="col-form-label">Note:</label>
+        <textarea class="form-control" id="Note" rows="5"></textarea>
+    </div>
+</div>
+<div class="col-xs-12">
+    <div class="form-check form-switch">
+        <label class="form-check-label text-dark" for="rbSuggestPrice">Condividi in approvazione</label>
+        <input class="form-check-input" type="checkbox" id="rbSuggestPrice" name="rbSuggestPrice">
+    </div>
+    <div class="form-group form-suggest-price-alert col-xs-12" style="display:none;">
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <b>Attenzione</b>
+            </div>
+            <div class="panel-body pnl-errors-suggest-price">
+                Confermando l&apos;operazione, il prezzo suggerito sar&agrave; inserito automaticamente in una richiesta di approvazione!
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12 text-right">
+    <input type="button" class="btn btn-primary btn-suggest-price-ok disabled" value="OK">
+</div>

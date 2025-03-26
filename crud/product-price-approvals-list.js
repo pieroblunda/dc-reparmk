@@ -52,8 +52,9 @@ function GetProductPriceApprovalsList(myRequest) {
                             if (JSON.parse(myResponse).recordset.length > 0) {
 
                                 var resultData = JSON.parse(myResponse).recordset;
-                                console.log("Crud resultData: " + resultData);
-                                console.log("Crud output: " + JSON.parse(myResponse).output.RowsCount);
+
+                                //console.log("Crud resultData: " + resultData);
+                                //console.log("Crud output: " + JSON.parse(myResponse).output.RowsCount);
 
                                 resolve(
                                     {

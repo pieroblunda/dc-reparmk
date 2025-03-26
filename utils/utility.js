@@ -19,7 +19,7 @@ $('#confirm-operation').on('show.bs.modal', function (e) {
 });
 ShowError = function (message) {
 	$('.pnl-errors').html('');
-	$('.pnl-errors').text(message);
+	$('.pnl-errors').html(message);
 	$('#system-message').show();
 	setTimeout(function () {
 		$('#system-message').fadeOut('slow');

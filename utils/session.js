@@ -2,7 +2,7 @@ function verifyUser(req, res) {
     if (req.session.user) {
         return true;
     } else {
-        res.redirect('/login');
+        res.status(200).render('login');
         return false;
     }
 }

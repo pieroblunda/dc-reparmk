@@ -283,6 +283,16 @@ function PostDetectPrice(myRequest) {
                     request.input('PrezzoFamily', sql.Decimal(18, 2), myBody.PrezzoFamily);
                     request.input('PrezzoIlomo', sql.Decimal(18, 2), myBody.PrezzoIlomo);
                     request.input('PrezzoSunlux', sql.Decimal(18, 2), myBody.PrezzoSunlux);
+                    request.input('PrezzoPapironia', sql.Decimal(18, 2), myBody.PrezzoPapironia);
+                    request.input('PrezzoScipioni', sql.Decimal(18, 2), myBody.PrezzoScipioni);
+                    request.input('PrezzoSacchettoDoro', sql.Decimal(18, 2), myBody.PrezzoSacchettoDoro);
+                    request.input('PrezzoMp', sql.Decimal(18, 2), myBody.PrezzoMp);
+                    request.input('PrezzoEurocom', sql.Decimal(18, 2), myBody.PrezzoEurocom);
+                    request.input('PrezzoModo', sql.Decimal(18, 2), myBody.PrezzoModo);
+                    request.input('PrezzoMichelle', sql.Decimal(18, 2), myBody.PrezzoMichelle);
+                    request.input('PrezzoEmBeauty', sql.Decimal(18, 2), myBody.PrezzoEmBeauty);
+                    request.input('PrezzoSusy', sql.Decimal(18, 2), myBody.PrezzoSusy);
+                    request.input('PrezzoTertio', sql.Decimal(18, 2), myBody.PrezzoTertio);
                     request.input('FirstOwner', sql.NVarChar(50), myIdAccount);
                     request.input('Owner', sql.NVarChar(50), myIdAccount);
                     request.output('Status', sql.NVarChar(500))

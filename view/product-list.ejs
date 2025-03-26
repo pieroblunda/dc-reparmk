@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <%- include('partials/head'); %>
     <script type="text/javascript" src="/utility-script"></script>
+    <script type="text/javascript" src="/validation-script"></script>
     <script type="text/javascript" src="/product-list-script"></script>
     <script type="text/javascript" src="/logout-script"></script>
 </head>
@@ -123,19 +124,11 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            <span class="bi bi-pen"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Rileva prezzo competitor
+                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Rileva prezzo competitor
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group form-errors col-xs-12" style="display:none;">
-                            <div class="panel panel-danger">
-                                <div class="panel-heading">
-                                    <b>Error</b>
-                                </div>
-                                <div class="panel-body pnl-errors"></div>
-                            </div>
-                        </div>
                         <ul id="nav-tabs-detect-price" class="nav nav-tabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" id="tab-detect-price-detail" data-bs-toggle="tab" href="#tabpanel-detect-price-detail" role="tab" aria-controls="tabpanel-detect-price-detail" aria-selected="true">
@@ -149,109 +142,11 @@
                             </li>
                         </ul>
                         <div class="tab-content pt-2" id="tab-content-detect-price">
+                            <!-- Detail -->
                             <div style="height:520px;" class="tab-pane active" id="tabpanel-detect-price-detail" role="tabpanel" aria-labelledby="tab-detect-price-detail">
-                                
-                                <div class="table-responsive">
-                                  <table class="table fa-check text-successtable-border border-light">
-                                    <thead class="border-light">
-                                      <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col">
-                                            <span class="badge bg-primary">Listino Base</span>
-                                        </th>
-                                        <th scope="col"><strong>Fornitore</strong></th>
-                                        <th scope="col"><strong>Family</strong></th>
-                                        <th scope="col"><strong>Ilomo</strong></th>
-                                        <th scope="col"><strong>Sunlux</strong></th>        
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr>
-                                        <td scope="row">
-                                            <i class="text-success">Ultimo<br>aggiornamento</i>
-                                        </td>
-                                        <td class="text-primary">
-                                            <span class="PrezzoListinoBase"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoListinoFornitore"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoFamily"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoIlomo"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoSunlux"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                
-                                
-                                <table class="table table-striped" style="padding:2px !important;">
-                                    <tbody>
-                                        <tr>
-                                            <td scope="col">Ricarico</td>
-                                            <td scope="col" class="text-right">
-                                                <span class="PercentualeRicarico"></span> <span class="bi bi bi-percent"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td scope="col">Applicazione</td>
-                                            <td scope="col" class="text-right">
-                                                <span class="Applicazione"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td scope="col">Gamma</td>
-                                            <td scope="col" class="text-right">
-                                                <span class="Gamma"></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td scope="col">Media Vendita</td>
-                                            <td scope="col" class="text-right">
-                                                <span class="MediaVendita"></span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="col-xs-6">
-                                    <div class="mb-3">
-                                        <label for="PrezzoFamily" class="col-form-label">Prezzo Family:</label>
-                                        <input type="text" class="form-control form-control-detect" id="PrezzoFamily" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="PrezzoIlomo" class="col-form-label">Prezzo Ilomo:</label>
-                                        <input type="text" class="form-control form-control-detect" id="PrezzoIlomo" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="PrezzoSunlux" class="col-form-label">Prezzo Sunlux:</label>
-                                        <input type="text" class="form-control form-control-detect" id="PrezzoSunlux" required>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 text-right">
-                                    <input type="button" class="btn btn-primary btn-detect-price-ok" value="OK">
-                                </div>
                             </div>
                             <!-- History -->
                             <div style="height:520px;" class="tab-pane" id="tabpanel-detect-price-history" role="tabpanel" aria-labelledby="tab-detect-price-history">
-                                <table class="table table-striped" style="padding:2px !important;">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Family</th>
-                                            <th scope="col">Ilomo</th>
-                                            <th scope="col">Sunlux</th>
-                                            <th scope="col">Data Registrazione</th>
-                                            <th scope="col">Utente</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detect-price-history-container">
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -266,19 +161,11 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            <span class="bi bi-pen"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Suggerisci prezzo di vendita
+                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Suggerisci prezzo di vendita
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group form-errors col-xs-12" style="display:none;">
-                            <div class="panel panel-danger">
-                                <div class="panel-heading">
-                                    <b>Error</b>
-                                </div>
-                                <div class="panel-body pnl-errors"></div>
-                            </div>
-                        </div>
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" id="tab-suggest-price-detail" data-bs-toggle="tab" href="#tabpanel-suggest-price-detail" role="tab" aria-controls="tabpanel-suggest-price-detail" aria-selected="true">
@@ -292,84 +179,12 @@
                             </li>
                         </ul>
                         <div class="tab-content pt-2" id="tab-content-suggest-price">
+                            <!-- Detail -->
                             <div style="height:450px;" class="tab-pane active" id="tabpanel-suggest-price-detail" role="tabpanel" aria-labelledby="tab-suggest-price-detail">
-                                
-                                <div class="table-responsive">
-                                  <table class="table fa-check text-successtable-border border-light">
-                                    <thead class="border-light">
-                                      <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col"><strong class="text-primary">DC Group</strong></th>
-                                        <th scope="col"><strong>Fornitore</strong></th>
-                                        <th scope="col"><strong>Family</strong></th>
-                                        <th scope="col"><strong>Ilomo</strong></th>
-                                        <th scope="col"><strong>Sunlux</strong></th>        
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr>
-                                        <td scope="row">
-                                            <i class="text-success">Ultimo<br>aggiornamento</i>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoListinoBase"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoListinoFornitore"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoFamily"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoIlomo"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                        <td>
-                                            <span class="PrezzoSunlux"></span> <span class="bi bi-currency-euro"></span>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                
-                                <div class="col-xs-6">
-                                    <div class="mb-3">
-                                        <label for="PrezzoSuggerito" class="col-form-label">Nuovo prezzo suggerito (DC Group):</label>
-                                        <input type="text" class="form-control form-control-suggest decimal" name="PrezzoSuggerito" id="PrezzoSuggerito" placeholder="es: 0.00" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="Note" class="col-form-label">Note:</label>
-                                        <textarea class="form-control" id="Note" rows="5"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12">
-                                    <div class="form-check form-switch">
-                                        <label class="form-check-label text-dark" for="rbSuggestPrice">Condividi in approvazione</label>
-                                        <input class="form-check-input" type="checkbox" id="rbSuggestPrice" name="rbSuggestPrice">
-                                    </div>
-                                    <div class="form-group form-suggest-price-alert col-xs-12" style="display:none;">
-                                        <div class="panel panel-danger">
-                                            <div class="panel-heading">
-                                                <b>Attenzione</b>
-                                            </div>
-                                            <div class="panel-body pnl-errors-suggest-price">
-                                                Confermando l&apos;operazione, il prezzo suggerito sar&agrave; inserito automaticamente in una richiesta di approvazione!
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
+                            <!-- History -->
                             <div style="height:450px;" class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
-                                
                             </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <div class="col-xs-6">
-                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">
-                                Annulla
-                            </button>
-                            <input type="button" class="btn btn-primary btn-suggest-price-ok disabled" value="OK">
                         </div>
                     </div>
                 </div>
