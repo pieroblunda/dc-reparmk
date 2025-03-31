@@ -9,29 +9,15 @@ const sessionUtil = require('../utils/session')
 const session = require('express-session');
 init.post('/init', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
-        /* Imposta il language dell'APP */
-        var languageContext = config.LanguageContext;
 
-        var NextRows = req.session.user.NextRows;
+        var NextRows = config.NextRows;
         if (req.body.NextRows != undefined) {
             NextRows = req.body.NextRows;
         }
-        /* Valorizza l'oggetto session dell'APP */
-        const user = {
-            Id: req.session.user.Id,
-            Username: req.session.user.Username,
-            Nominativo: req.session.user.Nominativo,
-            Ruolo: req.session.user.Ruolo,
-            Codice: req.session.user.Codice,
-            Supervisor: req.session.user.Supervisor,
-            LanguageContext: req.session.user.LanguageContext,
-            OffsetRows: -1,
-            NextRows: NextRows
-        };
-        req.session.user = JSON.parse(
-            JSON.stringify(user)
-        );
+        req.session.user.OffsetRows = -1;
+        req.session.user.NextRows = NextRows;
         req.session.save();
+
         res.status(200).send("OK");
     } else {
         res.status(200).json("ERR");

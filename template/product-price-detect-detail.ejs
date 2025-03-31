@@ -12,7 +12,7 @@
             let brands = product.ArticoloBrands.split(",");
             brands.forEach(function(brand) { %>
             <th scope="col">
-                <strong><%=brand.trim() %></strong>
+                <strong><%=brand.trim().replace("_", "&") %></strong>
             </th>
 
         <%  });
@@ -35,7 +35,7 @@
             let brands = product.ArticoloBrands.split(",");
             brands.forEach(function(brand) { %>
             <td>
-                <span class="Prezzo<%=brand%>">
+                <span class="Prezzo<%= brand.trim() %>">
                     <% if (brand.trim() == "Family") { %>
                         <% if (product.PrezzoFamily) { %>
                             <%= product.PrezzoFamily %>
@@ -99,9 +99,9 @@
                             0.00
                         <% } %>
                     <% } %>
-                    <% if (brand.trim() == "Michelle") { %>
-                        <% if (product.PrezzoMichelle) { %>
-                            <%= product.PrezzoMichelle %>
+                    <% if (brand.trim() == "Wynie") { %>
+                        <% if (product.PrezzoWynie) { %>
+                            <%= product.PrezzoWynie %>
                         <% } else { %>
                             0.00
                         <% } %>
@@ -113,9 +113,9 @@
                             0.00
                         <% } %>
                     <% } %>
-                    <% if (brand.trim() == "Susy") { %>
-                        <% if (product.PrezzoSusy) { %>
-                            <%= product.PrezzoSusy %>
+                    <% if (brand.trim() == "J_E") { %>
+                        <% if (product.PrezzoJ_E) { %>
+                            <%= product.PrezzoJ_E %>
                         <% } else { %>
                             0.00
                         <% } %>
@@ -212,9 +212,9 @@
                             0.00
                         <% } %>
                     <% } %>
-                    <% if (brand.trim() == "Michelle") { %>
-                        <% if (product.PercentualeRicaricoMichelle) { %>
-                            <%= product.PercentualeRicaricoMichelle %>
+                    <% if (brand.trim() == "Wynie") { %>
+                        <% if (product.PercentualeRicaricoWynie) { %>
+                            <%= product.PercentualeRicaricoWynie %>
                         <% } else { %>
                             0.00
                         <% } %>
@@ -226,9 +226,9 @@
                             0.00
                         <% } %>
                     <% } %>
-                    <% if (brand.trim() == "Susy") { %>
-                        <% if (product.PercentualeRicaricoSusy) { %>
-                            <%= product.PercentualeRicaricoSusy %>
+                    <% if (brand.trim() == "J_E") { %>
+                        <% if (product.PercentualeRicaricoJ_E) { %>
+                            <%= product.PercentualeRicaricoJ_E %>
                         <% } else { %>
                             0.00
                         <% } %>
@@ -292,7 +292,7 @@
         let brands = product.ArticoloBrands.split(",");
         brands.forEach(function(brand) { %>
         <div class="mb-3">
-            <label for="Prezzo<%=brand.trim() %>" class="col-form-label">Prezzo <%=brand.trim() %>:</label>
+            <label for="Prezzo<%=brand.trim() %>" class="col-form-label">Prezzo <%=brand.trim().replace("_", "&") %>:</label>
             <input type="text" class="form-control form-control-detect decimal" id="Prezzo<%=brand.trim() %>" placeholder="es: 0.00" required>
         </div>
     <%  });
@@ -305,7 +305,7 @@
         let brands = product.ArticoloBrands.split(",");
         brands.forEach(function(brand) { %>
         <div class="mb-3">
-            <label for="Note<%=brand.trim() %>" class="col-form-label">Note <%=brand.trim() %>:</label>
+            <label for="Note<%=brand.trim() %>" class="col-form-label">Note <%=brand.trim().replace("_", "&") %>:</label>
             <input type="text" class="form-control form-control-detect" id="Note<%=brand.trim() %>">
         </div>
     <%  });
@@ -318,7 +318,7 @@
         let brands = product.ArticoloBrands.split(",");
         brands.forEach(function(brand) { %>
         <div class="mb-3">
-            <label for="Url<%=brand.trim() %>" class="col-form-label">Link <%=brand.trim() %>:</label>
+            <label for="Url<%=brand.trim() %>" class="col-form-label">Link <%=brand.trim().replace("_", "&") %>:</label>
             <input type="text" class="form-control form-control-detect" id="Url<%=brand.trim() %>">
         </div>
     <%  });

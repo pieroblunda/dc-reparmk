@@ -9,7 +9,7 @@ let competitors = product[0].ArticoloCompetitors.split(","); %>
         <% 
             competitors.forEach(function(competitor) { %>
             <th scope="col">
-                <strong><%=competitor.trim() %></strong>
+                <strong><%=competitor.trim().replace("_", "&") %></strong>
             </th>
 
         <%  }); %>
@@ -93,9 +93,9 @@ let competitors = product[0].ArticoloCompetitors.split(","); %>
                                 0.00
                             <% } %>
                         <% } %>
-                        <% if (brand.trim() == "Michelle") { %>
-                            <% if (product.PrezzoMichelle) { %>
-                                <%= product.PrezzoMichelle %>
+                        <% if (brand.trim() == "Wynie") { %>
+                            <% if (product.PrezzoWynie) { %>
+                                <%= product.PrezzoWynie %>
                             <% } else { %>
                                 0.00
                             <% } %>
@@ -107,9 +107,9 @@ let competitors = product[0].ArticoloCompetitors.split(","); %>
                                 0.00
                             <% } %>
                         <% } %>
-                        <% if (brand.trim() == "Susy") { %>
-                            <% if (product.PrezzoSusy) { %>
-                                <%= product.PrezzoSusy %>
+                        <% if (brand.trim() == "J_E") { %>
+                            <% if (product.PrezzoJ_E) { %>
+                                <%= product.PrezzoJ_E %>
                             <% } else { %>
                                 0.00
                             <% } %>

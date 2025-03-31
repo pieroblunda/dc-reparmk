@@ -289,9 +289,9 @@ function PostDetectPrice(myRequest) {
                     request.input('PrezzoMp', sql.Decimal(18, 2), myBody.PrezzoMp);
                     request.input('PrezzoEurocom', sql.Decimal(18, 2), myBody.PrezzoEurocom);
                     request.input('PrezzoModo', sql.Decimal(18, 2), myBody.PrezzoModo);
-                    request.input('PrezzoMichelle', sql.Decimal(18, 2), myBody.PrezzoMichelle);
+                    request.input('PrezzoWynie', sql.Decimal(18, 2), myBody.PrezzoWynie);
                     request.input('PrezzoEmBeauty', sql.Decimal(18, 2), myBody.PrezzoEmBeauty);
-                    request.input('PrezzoSusy', sql.Decimal(18, 2), myBody.PrezzoSusy);
+                    request.input('PrezzoJ_E', sql.Decimal(18, 2), myBody.PrezzoJ_E);
                     request.input('PrezzoTertio', sql.Decimal(18, 2), myBody.PrezzoTertio);
                     request.input('FirstOwner', sql.NVarChar(50), myIdAccount);
                     request.input('Owner', sql.NVarChar(50), myIdAccount);

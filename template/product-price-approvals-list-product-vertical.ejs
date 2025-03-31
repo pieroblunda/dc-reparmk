@@ -89,7 +89,7 @@
                             brands.forEach(function(brand) { %>
                             <tr>
                                 <td scope="col">
-                                    <%=brand%>
+                                    <%=brand.trim().replace("_", "&")%>
                                 </td>
                                 <td scope="col" class="text-right">
                                     <% if (brand.trim() == "Family") { %>
@@ -155,9 +155,9 @@
                                             <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00</span><span class="bi bi-currency-euro"></span>
                                         <% } %>
                                     <% } %>
-                                    <% if (brand.trim() == "Michelle") { %>
-                                        <% if (product.PrezzoMichelle) { %>
-                                            <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoMichelle %></span><span class="bi bi-currency-euro"></span>
+                                    <% if (brand.trim() == "Wynie") { %>
+                                        <% if (product.PrezzoWynie) { %>
+                                            <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoWynie %></span><span class="bi bi-currency-euro"></span>
                                         <% } else { %>
                                             <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00</span><span class="bi bi-currency-euro"></span>
                                         <% } %>
@@ -169,9 +169,9 @@
                                             <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00</span><span class="bi bi-currency-euro"></span>
                                         <% } %>
                                     <% } %>
-                                    <% if (brand.trim() == "Susy") { %>
-                                        <% if (product.PrezzoSusy) { %>
-                                            <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoSusy %></span><span class="bi bi-currency-euro"></span>
+                                    <% if (brand.trim() == "J_E") { %>
+                                        <% if (product.PrezzoJ_E) { %>
+                                            <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>"><%= product.PrezzoJ_E %></span><span class="bi bi-currency-euro"></span>
                                         <% } else { %>
                                             <span id="<%= product.CodiceArticolo %>-Prezzo<%=brand.trim()%>">0.00</span><span class="bi bi-currency-euro"></span>
                                         <% } %>
