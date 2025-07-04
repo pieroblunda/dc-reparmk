@@ -6,3 +6,9 @@
 192.168.0.232 dc.app.monitor.giacenze
 192.168.0.232 dc.app.rilevamento.prezzi
 192.168.0.232 cdn.dcgroup
+
+## Install
+
+$ git clone xxx
+$ npm install
+$ node .\index.js
