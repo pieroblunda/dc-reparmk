@@ -21,3 +21,13 @@ $ node .\index.js
 acquisti2@dcgroupitalia.com
 Fed.Buy2024!
 ```
+
+Run app
+```
+Server running on port 5001
+
+Open http://localhost:5001/
+```
+
+![Screenshot 2025-07-04 152917](https://github.com/user-attachments/assets/81058005-49ea-4da7-a2d2-53aa201018ea)
+
