@@ -1,5 +1,9 @@
 # dc-it-web-app-monitor-rilevamento-prezzi
 
+## Architecture
+
+![Senza-architettura](https://github.com/user-attachments/assets/bec55523-85c8-41cc-8868-612f741abfc6)
+
 ## File Host
 ```
 192.168.0.232 dc.net.web.service
@@ -11,6 +15,8 @@
 ## Dependencies
 
 * [Driver - SQL Server Express Edition](https://www.microsoft.com/en-us/download/details.aspx?id=104781)
+* Repository [dc-net-web-service](https://github.com/dcgroupitalia/dc-net-web-service)
+* VPN to access to Company LAN
 * NodeJs
 
 ## Install
