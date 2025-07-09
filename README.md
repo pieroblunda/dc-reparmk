@@ -8,6 +8,11 @@
 192.168.0.232 cdn.dcgroup
 ```
 
+## Dependencies
+
+* [Driver - SQL Server Express Edition](https://www.microsoft.com/en-us/download/details.aspx?id=104781)
+* NodeJs
+
 ## Install
 ```
 $ git clone xxx
