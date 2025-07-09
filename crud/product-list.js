@@ -5,8 +5,14 @@ const sql = require('mssql/msnodesqlv8');
 const config = require('../utils/config')
 const soap = require('soap');
 var connection = require('../config.db');
+const Mock = require('../model/mock.server.model.js');
 
 function GetArticoli(myRequest) {
+
+    if(Mock.isActive()) {
+        const data = Mock.loadProductGetArticoliResponse();
+        return Promise.resolve(data);
+    }
 
     const sender = arguments.callee.name;
 
@@ -89,6 +95,11 @@ function GetArticoli(myRequest) {
 }
 function GetArticoliById(myRequest) {
 
+    if(Mock.isActive()) {
+        const data = Mock.loadProductGetArticoliByIdResponse();
+        return Promise.resolve(data);
+    }
+
     const sender = arguments.callee.name;
 
     var myIdAccount = myRequest.IdAccount;
@@ -150,6 +161,11 @@ function GetArticoliById(myRequest) {
 }
 function GetBuyer(myRequest) {
 
+    if(Mock.isActive()) {
+        const data = Mock.loadProductGetBuyerResponse();
+        return Promise.resolve(data);
+    }
+
     const sender = arguments.callee.name;
     var myIdAccount = myRequest.IdAccount;
 
@@ -201,6 +217,11 @@ function GetBuyer(myRequest) {
     return customPromise
 }
 function GetFornitori(myRequest) {
+
+    if(Mock.isActive()) {
+        const data = Mock.loadProductGetFornitoriResponse();
+        return Promise.resolve(data);
+    }
 
     const sender = arguments.callee.name;
 
@@ -411,6 +432,11 @@ function PostSuggestPrice(myRequest) {
     return customPromise
 }
 function GetDetectPriceHistory(myRequest) {
+
+    if(Mock.isActive()) {
+        const data = Mock.loadGetDetectPriceHistoryResponse();
+        return Promise.resolve(data);
+    }
 
     const sender = arguments.callee.name;
 

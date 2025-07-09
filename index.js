@@ -1,3 +1,4 @@
+process.loadEnvFile();
 const express = require('express');
 const app = express();
 app.set('views', __dirname + '/view');
@@ -67,4 +68,5 @@ app.use(function (req, res, next) {
 
 const server = app.listen(5001, () => {
     console.log('Server running on port 5001');
+    console.log(typeof parseInt(process.env.USE_MOCK), parseInt(process.env.USE_MOCK));
 });

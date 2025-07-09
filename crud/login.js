@@ -4,8 +4,14 @@ var exception = require('../model/exception');
 const sql = require('mssql/msnodesqlv8');
 const config = require('../utils/config')
 var connection = require('../config.db');
+const Mock = require('../model/mock.server.model.js');
 
 function login(myLogin) {
+
+    if(Mock.isActive()) {
+        const data = Mock.loadLoginResponse();
+        return Promise.resolve(data);
+    }
 
     const sender = arguments.callee.name;
 

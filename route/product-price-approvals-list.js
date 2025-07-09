@@ -102,6 +102,9 @@ ProductPriceApprovalsList.post('/product-price-approvals-list/:IdStatoApprovazio
     }
 });
 ProductPriceApprovalsList.put('/switch-approvals-state/:IdApprovazione', function (req, res) {
+
+    return
+
     if (sessionUtil.verifyUser(req, res)) {
         res.set('Access-Control-Allow-Origin', '*');
 
@@ -174,7 +177,7 @@ ProductPriceApprovalsList.post('/download-excel', async (req, res) => {
 
         worksheet.columns = [
             { header: 'Operatore', key: 'Operatore', width: 20 },
-            { header: 'Società', key: 'Societa', width: 20 },
+            { header: 'Societï¿½', key: 'Societa', width: 20 },
             { header: 'Codice Articolo', key: 'CodiceArticolo', width: 15 },
             { header: 'Descrizione', key: 'Denominazione', width: 60 },
             { header: 'Brand', key: 'DescrizioneBrand', width: 20 },

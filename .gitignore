@@ -4,3 +4,4 @@
 
 /.vs
 /config.db.js
+.env
