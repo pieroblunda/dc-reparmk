@@ -31,6 +31,7 @@ $ node .\index.js
 | Variable | Range | Dsc  |
 |---|---|
 | USE_MOCK | [0 \| 1]| Describes if System should use mocked data |
+| DB_PASSWORD | String | Password for the DB connection in config.db.js |
 
 ## User test
 
