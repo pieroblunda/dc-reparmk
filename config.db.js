@@ -1,7 +1,7 @@
 var connection = {
-    server: "192.168.0.232,1434",
+    server: process.env.DB_SERVER,
     database: "MonitorRilevamentoPrezzi",
-    user: "sa",
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     options: {
         //trustedConnection: true, // Set to true if using Windows Authentication

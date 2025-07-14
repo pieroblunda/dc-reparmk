@@ -2,8 +2,16 @@ let Fs = require('node:fs');
 
 class Mock {
 
-    static isActive() {
-        return Boolean(parseInt(process.env.USE_MOCK));
+    static isActive(mock) {
+
+        switch(mock) {
+            case 'products':
+                return Boolean(parseInt(process.env.USE_MOCK_PRODUCTS));
+                break;
+            default:
+                return Boolean(parseInt(process.env.USE_MOCK));
+                break;
+        }
     }
     
     static loadLoginResponse() {

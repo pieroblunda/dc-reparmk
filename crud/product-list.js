@@ -9,7 +9,7 @@ const Mock = require('../model/mock.server.model.js');
 
 function GetArticoli(myRequest) {
 
-    if(Mock.isActive()) {
+    if(Mock.isActive('products')) {
         const data = Mock.loadProductGetArticoliResponse();
         return Promise.resolve(data);
     }
@@ -95,7 +95,7 @@ function GetArticoli(myRequest) {
 }
 function GetArticoliById(myRequest) {
 
-    if(Mock.isActive()) {
+    if(Mock.isActive('products')) {
         const data = Mock.loadProductGetArticoliByIdResponse();
         return Promise.resolve(data);
     }
