@@ -2,7 +2,7 @@ var connection = {
     server: "192.168.0.232,1434",
     database: "MonitorRilevamentoPrezzi",
     user: "sa",
-    password: "sai.2010",
+    password: process.env.DB_PASSWORD,
     options: {
         //trustedConnection: true, // Set to true if using Windows Authentication
         trustServerCertificate: true, // Set to true if using self-signed certificates
