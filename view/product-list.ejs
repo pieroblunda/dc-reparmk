@@ -28,93 +28,74 @@
             </div>
         </div>
 
-        <div class="container-fluid">
-            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 filter">
-                <h5>
-                    <span class="glyphicon glyphicon-bookmark" style="color:#0088ff;"></span>&nbsp;<b>Catalogo /</b>
-                </h5>
-                <hr style="border: 1px solid #d1d1d1;" />
-                <div class="row">
-                    <label for="Buyer" class="col-form-label">Buyer</label>
-                </div>
-                <div class="row">
-                    <select name id="Buyer" class="form-select" style="font-size:15px;">
-                        <option value="">Tutti</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <label for="Fornitore" class="col-form-label">Fornitore</label>
-                </div>
-                <div class="row">
-                    <select name id="Fornitore" class="form-select" style="font-size:15px;">
-                        <option value="">Tutti</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <label for="CodiceArticolo" class="col-form-label">Codice Articolo</label>
-                </div>
-                <div class="row">
-                    <input type="text" id="CodiceArticolo" class="form-control" placeholder="es: 0005837">
-                </div>
-                <h6></h6>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_1" value="1">
-                    <label class="form-check-label" for="rbApprovalState_1">
-                    In lavorazione
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_5" value="5">
-                    <label class="form-check-label" for="rbApprovalState_5">
-                    In approvazione
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_0" checked value="0">
-                    <label class="form-check-label" for="rbApprovalState_0">
-                    Tutti
-                    </label>
-                </div>
-                <h6></h6> 
-                <div class="row">
-                    <button type="button" class="btn btn-primary btn-search">Cerca</button>
-                </div>
-                <h5 class="load-pager">
-                    <% if (user.NextRows > RowsCount) { %>
-                        <span class="LoadedRows"><%= RowsCount %></span>
-                    <% } else { %>
-                        <span class="LoadedRows"><%= user.NextRows %></span>
-                    <% } %>
-                    di <b><span class="RowsCount"><%= RowsCount %> </span></b> articoli
-                </h5>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <h4 class="text-primary">
+                <span class="glyphicon glyphicon-bookmark" style="color:#0088ff;"></span>&nbsp;<b>CATALOGO</b>
+            </h4>
+            <hr />
+            <div>
+                <label for="Fornitore" class="col-form-label py-3">Fornitore</label>
             </div>
-            <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12 col-lg-push-3 col-md-push-3 col-sm-push-6">
-
-                <!-- System message-->
-                <div id="system-message" style="display:none;">
-	                <div class="col-xs-12">
-		                <div class="form-group form-errors">
-			                <div class="panel panel-danger">
-				                <div class="panel-heading">
-					                <b>Messaggio di sistema</b>
-				                </div>
-				                <div class="panel-body pnl-errors"></div>
-			                </div>
-		                </div>
-	                </div>
-                </div>
-                <div class="data-container">
-                    <% if (Array.isArray(products)) { %>
-                        <% products.forEach(function(product) { %>
-                             <%- include('../template/product-list', {product: product}); %>
-                          <% }); %>
-                    <% } else { %>
-                        <%- include('../template/product-list', {product: products}); %>
-                    <% } %>
-                </div>
-                <%- include('../template/bottom-pager', {product: products}); %>
+            <div>
+                <select name id="Fornitore" class="form-select" style="font-size:15px;">
+                    <option value="">Tutti</option>
+                </select>
             </div>
-
+            <div>
+                <label for="CodiceArticolo" class="col-form-label py-3">Codice Articolo</label>
+            </div>
+            <div>
+                <input type="text" id="CodiceArticolo" class="form-control" placeholder="es: 0005837">
+            </div>
+            <div>
+                <label for="CodiceFornitore" class="col-form-label py-3">Codice Fornitore</label>
+            </div>
+            <div>
+                <input type="text" id="CodiceFornitore" class="form-control" placeholder="es: 0005837">
+            </div>
+             <div>
+                <label for="NomeProdotto" class="col-form-label py-3">Nome Prodotto</label>
+            </div>
+            <div>
+                <input type="text" id="NomeProdotto" class="form-control" placeholder="es: 0005837">
+            </div>
+            <h6></h6> 
+            <div>
+                <button type="button" class="btn btn-primary btn-search w-100">Cerca</button>
+            </div>
+            <h5 class="load-pager">
+                <% if (user.NextRows > RowsCount) { %>
+                    <span class="LoadedRows"><%= RowsCount %></span>
+                <% } else { %>
+                    <span class="LoadedRows"><%= user.NextRows %></span>
+                <% } %>
+                di <b><span class="RowsCount"><%= RowsCount %> </span></b> articoli
+            </h5>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12">
+            <!-- System message-->
+            <div id="system-message" style="display:none;">
+                <div class="col-xs-12">
+                    <div class="form-group form-errors">
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                <b>Messaggio di sistema</b>
+                            </div>
+                            <div class="panel-body pnl-errors"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="data-container">
+                <% if (Array.isArray(products)) { %>
+                    <% products.forEach(function(product) { %>
+                            <%- include('../template/product-list', {product: product}); %>
+                        <% }); %>
+                <% } else { %>
+                    <%- include('../template/product-list', {product: products}); %>
+                <% } %>
+            </div>
+            <%- include('../template/bottom-pager', {product: products}); %>
         </div>
     </form>
 
@@ -190,7 +171,80 @@
                 </div>
             </div>
         </div>
-        
+    </form>
+
+    <form name="frmSuggestedPriceCompetitor" class="was-validated" novalidate>
+        <div class="modal" id="suggested-price-competitor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Storico di prezzi suggeriti
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="tab-suggest-price-detail" data-bs-toggle="tab" href="#tabpanel-suggest-price-detail" role="tab" aria-controls="tabpanel-suggest-price-detail" aria-selected="true">
+                                    Competitor 1
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">
+                                    Competitor 2
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2" id="tab-content-suggest-price">
+                            <!-- Detail -->
+                            <div style="height:450px;" class="tab-pane active" id="tabpanel-suggest-price-detail" role="tabpanel" aria-labelledby="tab-suggest-price-detail">
+                            </div>
+                            <!-- History -->
+                            <div style="height:450px;" class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form name="frmProductCompetitorUrl" class="was-validated" novalidate>
+        <div class="modal" id="product-competitor-url" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <span class="bi bi-link-45deg"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> Modificare URL
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label for="old-competitor-url" class="col-form-label">Competitor URL</label>
+                            <input
+                                id="old-competitor-url"
+                                type="text"
+                                class="form-control"
+                                readonly
+                            >
+                        </div>
+                        <div>
+                            <label for="new-competitor-url" class="col-form-label">Antico Competitor URL</label>
+                            <input
+                                id="new-competitor-url"
+                                type="text"
+                                class="form-control"
+                                required
+                                placeholder="es: https://www.example.com/product"
+                            >
+                        </div>
+                    </div>
+                    <div id="competitor-url-footer"></div>
+                </div>
+            </div>
+        </div>
     </form>
 
 </body>

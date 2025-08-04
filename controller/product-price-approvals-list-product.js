@@ -33,10 +33,6 @@ $(document).ready(function () {
                 var err = JSON.parse(response.error);
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
-            } else if (response.status == "OK") {
-                $.each(response.data, function (key, buyer) {
-                    $("#Buyer").append(new Option(buyer.Nominativo, buyer.CodiceBuyer));
-                })
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -388,14 +384,6 @@ $(document).ready(function () {
     });
     $('.btn-suggest-price').click(function () {
         suggestPrice($(this).data("codicearticolo"));
-    });
-    $('#Buyer').change(function () {
-        if ($(this).val() == '') {
-            $("#Fornitore").empty();
-            $("#Fornitore").append(new Option('Tutti', ''));
-        } else {
-            loadFornitori($('#Buyer').val());
-        }
     });
     $('.btn-search').click(function () {
         $.ajax({

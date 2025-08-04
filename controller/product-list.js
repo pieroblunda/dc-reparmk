@@ -1,4 +1,60 @@
 $(document).ready(function () {
+    getAllProducts = function () {
+        fetch('/product-list', {
+            method: 'POST', // o 'GET'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                CodiceFornitore: 'valor',
+                CodiceArticolo: 'valor'
+            })
+        })
+        .then(res => res.json())
+        .then(response => {
+            fetch('../template/product-list.ejs')
+                .then(response => response.text())
+                .then(templateString => {
+                    const product = response.data;
+                    const user = response.user;
+                    if (product && user) {
+                        var partialProduct = ejs.render(templateString, { product, user });
+                        $('.data-container').append(partialProduct);
+
+                        $('.form-control[data-original-value]').on('input', function() {
+                            var $input = $(this);
+                            var price = parseFloat($input.val()) || 0;
+                            var $row = $input.closest('tr');
+                            var basePrice = parseFloat($input.data('product-base-price'));
+                            var $spanPerc = $row.find('td:eq(2) span');
+
+                            if ($input.attr('id').includes('-Note')) {
+                                return;
+                            }
+
+                            if (price > 0 && basePrice > 0) {
+                                var perc = ((basePrice * 100 / price) - 100);
+                                var percClass = perc < 0 ? 'text-success' : 'text-danger';
+                                $spanPerc.text(perc.toFixed(2) + '%').removeClass('text-success text-danger').addClass(percClass);
+                            } else {
+                                $spanPerc.text('-').removeClass('text-success text-danger');
+                            }
+
+                            var $container = $input.closest('[id^="container-"]');
+                            var articleCode = $container.attr('id').replace('container-', '');
+                            var prices = [];
+                            $container.find('input[id^="' + articleCode + '-Prezzo"]').each(function() {
+                                var val = parseFloat($(this).val());
+                                if (val > 0) prices.push(val);
+                            });
+                            var average = prices.length > 0 ? (prices.reduce(function(a, b) { return a + b; }, 0) / prices.length) : 0;
+                            $('#average-competitor-price-' + articleCode + ' strong').text(average.toFixed(2));
+                        });
+                    }
+                });
+        })
+        .catch(err => console.error(err));
+    }
     loadBuyer = function () {
         /* Visualizza il loader */
         $('.spinner').show();
@@ -11,10 +67,6 @@ $(document).ready(function () {
                 var err = JSON.parse(response.error);
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
-            } else if (response.status == "OK") {
-                $.each(response.data, function (key, buyer) {
-                    $("#Buyer").append(new Option(buyer.Nominativo, buyer.CodiceBuyer));
-                })
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -97,6 +149,138 @@ $(document).ready(function () {
                     });
                     $('.CodiceArticolo').html(product.CodiceArticolo);
                     $('#detect-price').modal('show');
+                }
+            } else if (response.indexOf("Login") > -1) {
+                document.location.href = "/login";
+            }
+            /* Nasconde il loader al termine del caricamento */
+            $('.spinner').hide();
+        }).fail(function (xhr, status, errorThrown) {
+        }).always(function (xhr, status) {
+
+        });
+    }
+    suggestedPriceCompetitor = function (codicearticolo) {
+        /* Visualizza il loader */
+        $('.spinner').show();
+        $.ajax({
+            url: "/product-list/" + codicearticolo,
+            type: "GET",
+            data: {},
+        }).done(function (response) {
+            if (typeof response == "object") {
+                if (response.status == "ERR") {
+                    var err = JSON.parse(response.error);
+                    $('.pnl-errors').html(err.message);
+                    $('.form-errors').show();
+                } else if (response.status == "OK") {
+                    var product = JSON.parse(response.data);
+                    $.get("../template/product-suggest-price-history.ejs", function (response) {
+                        templateString = response;
+                        var partialProduct = ejs.render(templateString, { product });
+                        $('#tabpanel-suggest-price-detail').empty().append(partialProduct);
+                        $('.btn-suggest-price-ok').click(function () {
+                            suggestPriceOk($('.CodiceArticolo').html());
+                        });
+                        $('#rbSuggestPrice').change(function () {
+                            if ($("input[name=rbSuggestPrice]").prop("checked")) {
+                                $('.btn-suggest-price-ok').removeClass('disabled');
+                                $('.form-suggest-price-alert').show();
+                            } else {
+                                $('.btn-suggest-price-ok').addClass('disabled');
+                                $('.form-suggest-price-alert').hide();
+                            }
+                        });
+                        $("input.decimal").bind("change keyup input", function () {
+                            var position = this.selectionStart - 1;
+                            //remove all but number and .
+                            var fixed = this.value.replace(/[^0-9\.]/g, "");
+                            if (fixed.charAt(0) === ".")
+                                //can't start with .
+                                fixed = fixed.slice(1);
+                            var pos = fixed.indexOf(".") + 1;
+                            if (pos >= 0)
+                                //avoid more than one .
+                                fixed = fixed.substr(0, pos) + fixed.slice(pos).replace(".", "");
+                            //cancel sub input string
+                            if (fixed.indexOf(".") > 0 && fixed.substr(pos).length > 2)
+                                fixed = fixed.substr(0, pos) + '.' + fixed.substr(pos, 2);
+                            //set cursor position to end
+                            if (this.value !== fixed) {
+                                this.value = fixed;
+                                this.selectionStart = position + 1;
+                                this.selectionEnd = position + 1;
+                            }
+                        });
+                    });
+                    $('.CodiceArticolo').html(product.CodiceArticolo);
+                    $('#suggested-price-competitor').modal('show');
+                }
+            } else if (response.indexOf("Login") > -1) {
+                document.location.href = "/login";
+            }
+            /* Nasconde il loader al termine del caricamento */
+            $('.spinner').hide();
+        }).fail(function (xhr, status, errorThrown) {
+        }).always(function (xhr, status) {
+
+        });
+    }
+    competitorHistory = function (codicearticolo) {
+        /* Visualizza il loader */
+        $('.spinner').show();
+        $.ajax({
+            url: "/product-list/" + codicearticolo,
+            type: "GET",
+            data: {},
+        }).done(function (response) {
+            if (typeof response == "object") {
+                if (response.status == "ERR") {
+                    var err = JSON.parse(response.error);
+                    $('.pnl-errors').html(err.message);
+                    $('.form-errors').show();
+                } else if (response.status == "OK") {
+                    var product = JSON.parse(response.data);
+                    $.get("../template/product-competitor-history.ejs", function (response) {
+                        templateString = response;
+                        var partialProduct = ejs.render(templateString, { product });
+                        $('#tabpanel-suggest-price-detail').empty().append(partialProduct);
+                        $('.btn-suggest-price-ok').click(function () {
+                            suggestPriceOk($('.CodiceArticolo').html());
+                        });
+                        $('#rbSuggestPrice').change(function () {
+                            if ($("input[name=rbSuggestPrice]").prop("checked")) {
+                                $('.btn-suggest-price-ok').removeClass('disabled');
+                                $('.form-suggest-price-alert').show();
+                            } else {
+                                $('.btn-suggest-price-ok').addClass('disabled');
+                                $('.form-suggest-price-alert').hide();
+                            }
+                        });
+                        $("input.decimal").bind("change keyup input", function () {
+                            var position = this.selectionStart - 1;
+                            //remove all but number and .
+                            var fixed = this.value.replace(/[^0-9\.]/g, "");
+                            if (fixed.charAt(0) === ".")
+                                //can't start with .
+                                fixed = fixed.slice(1);
+                            var pos = fixed.indexOf(".") + 1;
+                            if (pos >= 0)
+                                //avoid more than one .
+                                fixed = fixed.substr(0, pos) + fixed.slice(pos).replace(".", "");
+                            //cancel sub input string
+                            if (fixed.indexOf(".") > 0 && fixed.substr(pos).length > 2)
+                                fixed = fixed.substr(0, pos) + '.' + fixed.substr(pos, 2);
+                            //set cursor position to end
+                            if (this.value !== fixed) {
+                                this.value = fixed;
+                                this.selectionStart = position + 1;
+                                this.selectionEnd = position + 1;
+                            }
+                        });
+                    });
+                    $('.CodiceArticolo').html(product.CodiceArticolo);
+                    $('#suggest-price').modal('show');
                 }
             } else if (response.indexOf("Login") > -1) {
                 document.location.href = "/login";
@@ -384,6 +568,23 @@ $(document).ready(function () {
 
         });
     }
+    loadCompetitor = function (payload) {
+        fetch('/product-price/' + payload.product_code, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Datos guardados correctamente', data);
+            getAllProducts();
+        })
+        .catch(error => {
+            console.error('Error al guardar los datos', error);
+        });
+    }
     $('#tab-detect-price-history').click(function () {
         detectPriceHistory($('.CodiceArticolo').html());
     });
@@ -396,13 +597,11 @@ $(document).ready(function () {
     $('.btn-suggest-price').click(function () {
         suggestPrice($(this).data("codicearticolo"));
     });
-    $('#Buyer').change(function () {
-        if ($(this).val() == '') {
-            $("#Fornitore").empty();
-            $("#Fornitore").append(new Option('Tutti', ''));
-        } else {
-            loadFornitori($('#Buyer').val());
-        }
+    $('.btn-history-competitor').click(function () {
+        // competitorHistory($(this).data("codicearticolo"));
+    });
+    $('.btn-suggested-price-competitor').click(function () {
+        // suggestedPriceCompetitor($(this).data("codicearticolo"));
     });
     $('.btn-search').click(function () {
         $.ajax({
@@ -426,7 +625,122 @@ $(document).ready(function () {
         if ($('.LoadedRows').html() != $('.RowsCount').html()) {
             loadProducts($('#Fornitore').val(), $('#CodiceArticolo').val());
         }
-    })
+    });
+    $('.btn-download-excel').click(function () {
+        var $btn = $(this);
+        var originalText = $btn.html();
+        $btn.html("<i class='bi bi-arrow-repeat spin'></i> Loading...").prop('disabled', true);
+
+        fetch('/download-excel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                CodiceFornitore: 'valor',
+                CodiceArticolo: 'valor'
+            })
+        })
+        .then(res => res.blob())
+        .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'report.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            $btn.html(originalText).prop('disabled', false);
+        })
+        .catch(() => {
+            $btn.html(originalText).prop('disabled', false);
+        });
+    });
+    $('.btn-submit-changes').click(function () {
+        var $container = $(this).closest('[id^="container-"]');
+        var productArticleCode = $container.attr('id').replace('container-', '');
+        var $infoTesting = $('#' + productArticleCode + '-testing').val() || null;
+        var $infoPackaging = $('#' + productArticleCode + '-packaging').val() || null;
+        var $infoSuggested = $('#' + productArticleCode + '-suggested-price').val() || 0.00;
+        var competitorData = [];
+
+        $container.find('tbody tr#competitor-info-' + productArticleCode).each(function() {
+            var $row = $(this);
+            var competitorName = $row.find('[data-competitor-name]').data('competitor-name') || null;
+            var competitorProductId = $row.find('[data-competitor-product-id]').data('competitor-product-id') || null;
+            var url = $('#competitor-name-' + competitorProductId).data('competitor-product-url') || null;
+
+            var $priceInput = $row.find('input[id^="' + productArticleCode + '-Prezzo' + competitorName + '"]');
+            var price = $priceInput.val();
+            var originalPrice = $priceInput.data('original-value');
+
+            var $noteInput = $row.find('input[placeholder="Note"]');
+            var note = $noteInput.val();
+            var originalNote = $noteInput.data('original-value');
+
+            competitorData.push({
+                competitor_product_id: competitorProductId,
+                price: price,
+                note: note,
+                url: url,
+            });
+        });
+
+        loadCompetitor({
+            product_code: productArticleCode,
+            packaging_info: $infoPackaging,
+            testing_info: $infoTesting,
+            competitor_price: competitorData,
+            suggested_price: $infoSuggested,
+        });
+    });
+    $('.btn-competitor-url').click(function () {
+        var productUrl = $(this).data('competitor-product-url');
+        var competitorProductId = $(this).next().data('competitor-product-id');
+        var elementId = '#product-competitor-url';
+        $.get('../template/product-competitor-url.ejs', function (response) {
+            templateString = response;
+            var partialProduct = ejs.render(templateString, { productUrl });
+            $('#competitor-url-footer').empty().html(partialProduct);
+
+            $('.btn-competitor-url-ok').click(function () {
+                var competitorUrl = $('#new-competitor-url').val();
+                if (competitorUrl) {
+                    $('#competitor-name-' + competitorProductId).attr('data-competitor-product-url', competitorUrl);
+                    console.log('Competitor URL:', competitorUrl);
+                    $(elementId).modal('hide');
+                }
+            });
+        });
+
+        $('#old-competitor-url').val(productUrl);
+        $(elementId).modal('show');
+    });
+    $('.btn-set-suggested-price').on('input', function() {
+        var suggested = parseFloat($(this).val().replace(',', '.')) || 0;
+        var base = parseFloat($(this).data('fornitore-price')) || 0;
+        var perc = base > 0 ? ((suggested - base) / base) * 100 : 0;
+        var percText = perc.toFixed(2) + '% di ricarico';
+        var percClass = perc < 0 ? 'text-danger' : 'text-success';
+
+        var $span = $('#' + $(this).data('product-code') + '-suggested-price-di-ricarico');
+        $span.text(percText).removeClass('text-success text-danger').addClass(percClass);
+    });
+    $('input.number-validation').on('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+
+        var parts = this.value.split('.');
+        if (parts.length > 2) {
+            this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+    });
+    $('input.number-validation').on('blur', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        if (this.value === '') {
+            this.value = '0.00';
+        }
+    });
     //$(window).scroll(function (e) {
     //    if (($(window).scrollTop() + $(window).height()) >= $(document).height()) {
     //        if ($('.LoadedRows').html() != $('.RowsCount').html()) {
@@ -435,6 +749,7 @@ $(document).ready(function () {
     //    }
     //});
     loadBuyer();
+    getAllProducts();
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });

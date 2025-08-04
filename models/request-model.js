@@ -1,4 +1,6 @@
-class baseRequest {
+'use strict';
+
+class RequestModel {
   constructor(IdAccount, LanguageContext, OffsetRows, NextRows, CodiceFornitore, CodiceArticolo, IdStatoApprovazioneArticolo) {
     this.IdAccount = IdAccount;
     this.LanguageContext = LanguageContext;
@@ -10,4 +12,4 @@ class baseRequest {
   }
 }
 
-module.exports = baseRequest;
+module.exports = RequestModel;
