@@ -1,6 +1,10 @@
 @import url(//fonts.googleapis.com/css?family=Montserrat:300,400,500);
 @import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700,800,900);
 
+body {
+    padding-top: 80px;
+}
+
 span div table tr td th {
     font-family: "Montserrat", sans-serif;
     font-weight: 300;
@@ -361,4 +365,12 @@ input[type='number'] {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+}
+
+.navbar-fixed-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
 }

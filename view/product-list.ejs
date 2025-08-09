@@ -28,17 +28,24 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
             <h4 class="text-primary">
                 <span class="glyphicon glyphicon-bookmark" style="color:#0088ff;"></span>&nbsp;<b>CATALOGO</b>
             </h4>
-            <hr />
             <div>
-                <label for="Fornitore" class="col-form-label py-3">Fornitore</label>
+                <label for="Supplier" class="col-form-label py-3">Fornitore</label>
             </div>
             <div>
-                <select name id="Fornitore" class="form-select" style="font-size:15px;">
+                <select name id="Supplier" class="form-select" style="font-size:15px; cursor: pointer;">
                     <option value="">Tutti</option>
+                </select>
+            </div>
+            <div>
+                <label for="Category" class="col-form-label py-3">Categoria</label>
+            </div>
+            <div>
+                <select name id="Category" class="form-select" style="font-size:15px; cursor: pointer;">
+                    <option value="">Categoria 1</option>
                 </select>
             </div>
             <div>
@@ -59,6 +66,18 @@
             <div>
                 <input type="text" id="NomeProdotto" class="form-control" placeholder="es: 0005837">
             </div>
+            <div class="radio py-2">
+                <label class="form-check-label" for="rbApprovalState_1">
+                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_1" value="1">
+                    Ha un prezzo suggerito
+                </label>
+            </div>
+            <div class="radio py-2">
+                <label class="form-check-label" for="rbApprovalState_2">
+                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_2" value="2">
+                    Ha un prezzo competitor
+                </label>
+            </div>
             <h6></h6> 
             <div>
                 <button type="button" class="btn btn-primary btn-search w-100">Cerca</button>
@@ -72,7 +91,7 @@
                 di <b><span class="RowsCount"><%= RowsCount %> </span></b> articoli
             </h5>
         </div>
-        <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12">
+        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
             <!-- System message-->
             <div id="system-message" style="display:none;">
                 <div class="col-xs-12">
@@ -136,75 +155,33 @@
         </div>  
     </form>
 
-    <form name="frmSuggestPrice" class="was-validated" novalidate>
-        <div class="modal" id="suggest-price" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <form name="frmCompetitorPriceHistory" class="was-validated" novalidate>
+        <div class="modal" id="competitor-price-history" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Suggerisci prezzo di vendita
+                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary product-code"></span> / Storico di prezzi competitor
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="tab-suggest-price-detail" data-bs-toggle="tab" href="#tabpanel-suggest-price-detail" role="tab" aria-controls="tabpanel-suggest-price-detail" aria-selected="true">
-                                    Dettaglio
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">
-                                    History
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content pt-2" id="tab-content-suggest-price">
-                            <!-- Detail -->
-                            <div style="height:450px;" class="tab-pane active" id="tabpanel-suggest-price-detail" role="tabpanel" aria-labelledby="tab-suggest-price-detail">
-                            </div>
-                            <!-- History -->
-                            <div style="height:450px;" class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
-                            </div>
-                        </div>
-                    </div>
+                    <div class="modal-body" id="competitor-product-price-history-body" style="height:320px;"></div>
                 </div>
             </div>
         </div>
     </form>
 
-    <form name="frmSuggestedPriceCompetitor" class="was-validated" novalidate>
-        <div class="modal" id="suggested-price-competitor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <form name="frmProductPriceHistory" class="was-validated" novalidate>
+        <div class="modal" id="product-price-history" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> / Storico di prezzi suggeriti
+                            <span class="glyphicon glyphicon-barcode"></span>&nbsp;&nbsp;<span class="text-primary product-article-code"></span> / Storico di prezzi suggeriti
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="tab-suggest-price-detail" data-bs-toggle="tab" href="#tabpanel-suggest-price-detail" role="tab" aria-controls="tabpanel-suggest-price-detail" aria-selected="true">
-                                    Competitor 1
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">
-                                    Competitor 2
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content pt-2" id="tab-content-suggest-price">
-                            <!-- Detail -->
-                            <div style="height:450px;" class="tab-pane active" id="tabpanel-suggest-price-detail" role="tabpanel" aria-labelledby="tab-suggest-price-detail">
-                            </div>
-                            <!-- History -->
-                            <div style="height:450px;" class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
-                            </div>
-                        </div>
-                    </div>
+                    <div class="modal-body" id="product-price-history-body"></div>
                 </div>
             </div>
         </div>
@@ -216,22 +193,13 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">
-                            <span class="bi bi-link-45deg"></span>&nbsp;&nbsp;<span class="text-primary CodiceArticolo"></span> Modificare URL
+                            <span class="bi bi-link-45deg"></span><span class="text-primary"></span> Modificare URL
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div>
-                            <label for="old-competitor-url" class="col-form-label">Competitor URL</label>
-                            <input
-                                id="old-competitor-url"
-                                type="text"
-                                class="form-control"
-                                readonly
-                            >
-                        </div>
-                        <div>
-                            <label for="new-competitor-url" class="col-form-label">Antico Competitor URL</label>
+                            <label for="new-competitor-url" class="col-form-label">Competitor URL</label>
                             <input
                                 id="new-competitor-url"
                                 type="text"
@@ -242,6 +210,32 @@
                         </div>
                     </div>
                     <div id="competitor-url-footer"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form name="frmZoomImage" class="was-validated" novalidate>
+        <div class="modal" id="imageModal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <span class="bi bi-image"></span><span class="text-primary"></span> Immagine
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <img 
+                                id="modalImage" 
+                                src="" 
+                                onerror="this.onerror=null; this.src='images/image.png';" 
+                                class="img-responsive center-block" 
+                                style="max-height: 80vh; border-radius: 10px;"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

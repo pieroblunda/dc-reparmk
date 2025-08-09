@@ -185,12 +185,6 @@ const getAllProducts = async (req, res) => {
             row.PercentualeRicaricoCalcolata = ((row.PrezzoListinoBase - row.PrezzoListinoFornitore) / row.PrezzoListinoFornitore) * 100;
         }
 
-        row.PercentualeRicaricoSuggerito = 0;
-
-        if (row.PrezzoListinoFornitore && row.PrezzoSuggerito) {
-            row.PercentualeRicaricoSuggerito = ((row.PrezzoSuggerito - row.PrezzoListinoFornitore) / row.PrezzoListinoFornitore) * 100;
-        }
-
         return row;
     });
 

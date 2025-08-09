@@ -2,9 +2,12 @@
     <div class="jumbotron-product">
         <div class="container-fluid" style="padding:0 !important;">
             <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
-                <img src="http://cdn.dcgroup/images/<%= product.CodiceArticolo %>.jpg" 
-                onerror="this.onerror=null; this.src='images/image.png';"
-                class="img-fluid" />
+                <img 
+                    src="http://cdn.dcgroup/images/<%= product.CodiceArticolo %>.jpg" 
+                    onerror="this.onerror=null; this.src='images/image.png';"
+                    class="img-fluid zoom-image"
+                    style="cursor: zoom-in;"
+                />
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <h4 class="text-info">
@@ -101,15 +104,24 @@
                                     >
                                     <button 
                                         type="button" 
-                                        class="btn btn-default bi bi-clock text-primary btn-suggested-price-competitor" 
-                                        style="border: 0; width: 36px; height: 30px; margin-top: 27px; padding: 0;">
+                                        class="btn btn-default bi bi-clock text-primary btn-product-price-history"
+                                        style="border: 0; width: 36px; height: 30px; margin-top: 27px; padding: 0;"
+                                        data-product-article-code="<%= product.CodiceArticolo %>">
                                     </button>
                                 </div>
                                 <span style="width: 110px;" class="badge bg-success badge-price">
                                     Prezzo suggerito
                                 </span>
                                 <span class="text-success primary-price-di-ricarico fw-normal" id="<%= product.CodiceArticolo %>-suggested-price-di-ricarico">
-                                    <%= (typeof product.PercentualeRicaricoSuggerito === 'number' ? product.PercentualeRicaricoSuggerito.toFixed(2) : '0.00') %>% di ricarico
+                                    <% 
+                                        var perc = 0;
+                                        if (Number(product.suggested_price) === 0) {
+                                            perc = 0;
+                                        } else if (Number(product.PrezzoListinoFornitore) > 0) {
+                                            perc = ((Number(product.suggested_price) - Number(product.PrezzoListinoFornitore)) / Number(product.PrezzoListinoFornitore)) * 100;
+                                        }
+                                    %>
+                                    <%= perc.toFixed(2) %>% di ricarico
                                 </span>
                             </td>
                         </tr>
@@ -135,45 +147,46 @@
                         <% product.competitor_prices.forEach(function(comp) { %>
                             <tr id="competitor-info-<%= product.CodiceArticolo %>">
                                 <td scope="col" style="vertical-align: middle;">
-                                    <% if (comp.url) { 
-                                        var url = comp.url.startsWith('http') ? comp.url : 'https://' + comp.url;
+                                    <% 
+                                        var url = comp.url 
+                                            ? (comp.url.startsWith('http') ? comp.url : 'https://' + comp.url) 
+                                            : null;
                                     %>
-                                        <button
-                                            type="button"
-                                            class="btn btn-default bi bi-link-45deg text-primary btn-competitor-url"
-                                            style="border: 0; width: 25px;height: 25px; padding: 0;"
-                                            data-competitor-product-url="<%= url %>"
-                                        ></button>
-                                        <a 
-                                            id="competitor-name-<%= product.CodiceArticolo %>"
-                                            href="<%= url %>" 
-                                            target="_blank" 
-                                            class="fw-bold text-primary text-decoration-underline"
-                                            data-competitor-name="<%= comp.competitor_name %>"
-                                            data-competitor-id="<%= comp.competitor_id %>"
-                                            data-competitor-product-id="<%= comp.competitor_product_id %>"
-                                            data-competitor-product-url="<%= url %>"
-                                        >
-                                            <%= comp.competitor_name %>
-                                        </a>
-                                    <% } else { %>
-                                        <button
-                                            type="button"
-                                            class="btn btn-default bi bi-link-45deg text-primary btn-competitor-url"
-                                            style="border: 0; width: 25px;height: 25px; padding: 0;"
-                                            data-competitor-product-url="vuoto"
-                                        ></button>
-                                        <spanid="competitor-name-<%= comp.competitor_product_id %>"
-                                            id="competitor-name-<%= comp.competitor_product_id %>"
-                                            class="fw-bold"
-                                            data-competitor-name="<%= comp.competitor_name %>"
-                                            data-competitor-id="<%= comp.competitor_id %>"
-                                            data-competitor-product-id="<%= comp.competitor_product_id %>"
-                                            data-competitor-product-url
-                                        >
-                                            <%= comp.competitor_name %>
-                                        </span>
-                                    <% } %>
+                                    <button
+                                        type="button"
+                                        class="btn btn-default bi bi-clock text-primary btn-competitor-product-price-history"
+                                        style="border: 0; width: 25px; height: 25px; padding: 0;"
+                                        data-competitor-id="<%= comp.competitor_id %>"
+                                        data-product-code="<%= product.CodiceArticolo %>"
+                                    ></button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-default bi bi-link-45deg text-primary btn-competitor-url"
+                                        style="border: 0; width: 25px;height: 25px; padding: 0;"
+                                        data-competitor-product-url="<%= url %>"
+                                    ></button>
+                                    <span 
+                                        id="competitor-name-label-<%= comp.competitor_product_id %>"
+                                        class="fw-bold <%= url ? 'hidden' : '' %>"
+                                        data-competitor-name="<%= comp.competitor_name %>"
+                                        data-competitor-id="<%= comp.competitor_id %>"
+                                        data-competitor-product-id="<%= comp.competitor_product_id %>"
+                                        data-competitor-product-url="<%= url || '' %>"
+                                    >
+                                        <%= comp.competitor_name %>
+                                    </span>
+                                    <a 
+                                        id="competitor-name-link-<%= comp.competitor_product_id %>"
+                                        href="<%= url %>"
+                                        target="_blank" 
+                                        class="fw-bold text-primary text-decoration-underline <%= url ? '' : 'hidden' %>"
+                                        data-competitor-name="<%= comp.competitor_name %>"
+                                        data-competitor-id="<%= comp.competitor_id %>"
+                                        data-competitor-product-id="<%= comp.competitor_product_id %>"
+                                        data-competitor-product-url="<%= url || '' %>"
+                                    >
+                                        <%= comp.competitor_name %>
+                                    </a>
                                 </td>
                                 <td id="td-<%= product.CodiceArticolo %>-<%= comp.competitor_name %>" scope="col" class="text-right" data-prezzo-competitor>
                                     <input 
@@ -237,38 +250,6 @@
                             Prezzo medio del competitor <strong><%= averagePrice.toFixed(2) %></strong>
                         </div>
                         <div class="btn-group dropup">
-                            <button 
-                                type="button" 
-                                class="btn btn-default bi bi-clock text-primary btn-history-competitor" 
-                                style="margin-right: 1rem;"
-                            >
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-lg-end" style="width:250px;">
-                                <li>
-                                    <div class="col-xs-12">
-                                        <b>Articolo <%= product.CodiceArticolo %></b>
-                                    </div>
-                                </li>
-                                <li class="dropdown-item">
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li class="dropdown-item">
-                                    <button data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-detect-price">
-                                        Rileva prezzo competitor
-                                    </button>
-                                </li>
-                                <li class="dropdown-item">
-                                    <% if (product.IdStatoApprovazioneArticolo == 1 || product.IdStatoApprovazioneArticolo == 5) { %>
-                                        <button id="<%= product.CodiceArticolo %>-btn-suggest-price" data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-suggest-price disabled">
-                                            Suggerisci prezzo di vendita
-                                        </button>
-                                    <% } else { %>
-                                        <button id="<%= product.CodiceArticolo %>-btn-suggest-price" data-codicearticolo="<%= product.CodiceArticolo %>" type="button" class="btn btn-light col-xs-12 btn-suggest-price disabled">
-                                            Suggerisci prezzo di vendita
-                                        </button>
-                                    <% } %>
-                                </li>
-                            </ul>
                             <button 
                                 type="button" 
                                 class="btn btn-primary bi bi-floppy btn-submit-changes" 
