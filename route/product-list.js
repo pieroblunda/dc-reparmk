@@ -1,4 +1,4 @@
-'use strict';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +37,8 @@ const {
 } = require('../controller/product-list-controller');
 
 const userAuth = require('../middlewares/user-auth-middleware');
+const { getUserSuppliers } = require('../controller/supplier-controller');
+const { getUserCategories } = require('../controller/category-controller');
 
 /*
 |--------------------------------------------------------------------------
@@ -273,6 +275,7 @@ router.get('/buyer', function (req, res) {
   }
 });
 
+/*
 router.get('/fornitori/:CodiceBuyer', function (req, res) {
   if (sessionUtil.verifyUser(req, res)) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -295,6 +298,10 @@ router.get('/fornitori/:CodiceBuyer', function (req, res) {
       //console.log("Code has been executed")
     })
   }
-});
+});*/
+
+router.get('/fornitori/:CodiceBuyer', userAuth, getUserSuppliers);
+
+router.get('/categoria/:CodiceBuyer', userAuth, getUserCategories);
 
 module.exports = router;

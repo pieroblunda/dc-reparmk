@@ -54,12 +54,12 @@
             <div>
                 <input type="text" id="CodiceArticolo" class="form-control" placeholder="es: 0005837">
             </div>
-            <div>
+            <!--<div>
                 <label for="CodiceFornitore" class="col-form-label py-3">Codice Fornitore</label>
             </div>
             <div>
                 <input type="text" id="CodiceFornitore" class="form-control" placeholder="es: 0005837">
-            </div>
+            </div> -->
              <div>
                 <label for="NomeProdotto" class="col-form-label py-3">Nome Prodotto</label>
             </div>
@@ -67,28 +67,41 @@
                 <input type="text" id="NomeProdotto" class="form-control" placeholder="es: 0005837">
             </div>
             <div class="radio py-2">
-                <label class="form-check-label" for="rbApprovalState_1">
-                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_1" value="1">
+                <label class="form-check-label" for="withPrice_0">
+                    <input class="form-check-input" type="radio" name="withPrice" id="withPrice_0" value checked>
+                    Tutti
+                </label>
+            </div>
+            <div class="radio py-2">
+                <label class="form-check-label" for="withPrice_1">
+                    <input class="form-check-input" type="radio" name="withPrice" id="withPrice_1" value="suggested_price">
                     Ha un prezzo suggerito
                 </label>
             </div>
             <div class="radio py-2">
-                <label class="form-check-label" for="rbApprovalState_2">
-                    <input class="form-check-input" type="radio" name="IdStatoApprovazione" id="rbApprovalState_2" value="2">
+                <label class="form-check-label" for="withPrice_2">
+                    <input class="form-check-input" type="radio" name="withPrice" id="withPrice_2" value="competitor_price">
                     Ha un prezzo competitor
                 </label>
             </div>
             <h6></h6> 
             <div>
-                <button type="button" class="btn btn-primary btn-search w-100">Cerca</button>
+                <button 
+                    type="button" 
+                    class="btn btn-primary btn-search w-100" 
+                    data-offset-rows
+                    data-next-rows
+                >
+                    Cerca
+                </button>
             </div>
             <h5 class="load-pager">
                 <% if (user.NextRows > RowsCount) { %>
-                    <span class="LoadedRows"><%= RowsCount %></span>
+                    <span class="LoadedRows"><%= rows_count %></span>
                 <% } else { %>
-                    <span class="LoadedRows"><%= user.NextRows %></span>
+                    <span class="LoadedRows"><%= next_rows %></span>
                 <% } %>
-                di <b><span class="RowsCount"><%= RowsCount %> </span></b> articoli
+                di <b><span class="RowsCount"><%= total %> </span></b> articoli
             </h5>
         </div>
         <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
@@ -108,8 +121,8 @@
             <div class="data-container">
                 <% if (Array.isArray(products)) { %>
                     <% products.forEach(function(product) { %>
-                            <%- include('../template/product-list', {product: product}); %>
-                        <% }); %>
+                        <%- include('../template/product-list', {product: product}); %>
+                    <% }); %>
                 <% } else { %>
                     <%- include('../template/product-list', {product: products}); %>
                 <% } %>
@@ -197,19 +210,8 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <div>
-                            <label for="new-competitor-url" class="col-form-label">Competitor URL</label>
-                            <input
-                                id="new-competitor-url"
-                                type="text"
-                                class="form-control"
-                                required
-                                placeholder="es: https://www.example.com/product"
-                            >
-                        </div>
+                    <div class="modal-body" id="competitor-url-body">
                     </div>
-                    <div id="competitor-url-footer"></div>
                 </div>
             </div>
         </div>

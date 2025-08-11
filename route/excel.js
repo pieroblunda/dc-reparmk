@@ -1,12 +1,10 @@
-'use strict';
-
 /*
 |--------------------------------------------------------------------------
 | NODE MODULES
 |--------------------------------------------------------------------------
 */
 
-const router     = require('express').Router();
+const router = require('express').Router();
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +21,6 @@ const { downloadExcel } = require('../controller/excel-controller');
 |--------------------------------------------------------------------------
 */
 
-router.post('/download-excel', userAuth, downloadExcel);
+router.post('/download-excel', /* userAuth, */ downloadExcel);
 
 module.exports = router;

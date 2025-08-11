@@ -1,5 +1,3 @@
-'use strict';
-
 class ResponseModel {
   constructor(status, data, error, rowscount, user) {
     this.status = status;

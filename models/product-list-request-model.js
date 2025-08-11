@@ -1,4 +1,4 @@
-'use strict';
+
 
 class ProductListRequestModel {
   constructor(IdAccount, LanguageContext, OffsetRows, NextRows, CodiceArticolo, RequestBody) {

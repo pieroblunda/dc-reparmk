@@ -262,7 +262,7 @@ input[id="rbApprovalState_4"]:after {
     visibility: visible;
     border: 2px solid #3c763d;
 }
-input[id="rbApprovalState_2"]:checked:after,
+input[id="withPrice_1"]:checked:after,
 input[id="rbApprovalState_4"]:checked:after {
     width: 18px;
     height: 18px;
@@ -290,7 +290,7 @@ input[id="rbApprovalState_3"]:after {
     border: 2px solid #dc3545;
 }
 
-input[id="rbApprovalState_3"]:checked:after {
+input[id="withPrice_2"]:checked:after {
     width: 18px;
     height: 18px;
     border-radius: 18px;
@@ -344,6 +344,7 @@ input[id="rbApprovalState_0"]:after {
     border: 2px solid #0088ff;
 }
 
+input[id="withPrice_0"]:checked:after,
 input[id="rbApprovalState_0"]:checked:after {
     width: 18px;
     height: 18px;

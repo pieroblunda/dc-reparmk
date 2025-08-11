@@ -1,7 +1,7 @@
 <nav class="navbar navbar-dark container-fluid navbar-fixed-custom" style="background-color:#000; border-radius:0;">
     <div class="container-fluid" style="background-color:#000;">
         <div class="d-flex flex-wrap w-100 justify-content-between align-items-center" id="menu">
-            <div>
+            <div class="hidden-xs">
                 <a class="navbar-brand hidden-xs" href="/product-list" style="padding:0;">
                     <img src="../../images/dc-group.png" alt="Logo" style="height:40px; margin-right:10px; margin-top: 4px;">
                 </a>
@@ -24,8 +24,11 @@
 
             <ul class="navbar-nav d-flex flex-row flex-wrap align-items-center" style="gap: 3rem;">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary btn-download-excel" style="border-radius: 20px;">
-                        Scarica excel
+                    <button type="button" class="btn btn-primary btn-download-excel hidden-xs" style="border-radius: 20px;">
+                        <span class="glyphicon glyphicon-download-alt mx-2"></span> Scarica excel
+                    </button>
+                    <button type="button" class="btn btn-primary btn-download-excel visible-xs" style="border-radius: 50%; padding: 8px 12px;">
+                        <span class="glyphicon glyphicon-download-alt"></span>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -33,7 +36,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-decoration-none" id="logout" href="#">
-                        <span class="glyphicon glyphicon-log-out text-white" style="font-size: 30px;"></span>
+                        <span class="glyphicon glyphicon-log-out text-white" style="font-size: 20px;"></span>
                     </a>
                 </li>
             </ul>

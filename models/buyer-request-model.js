@@ -1,4 +1,4 @@
-'use strict';
+
 
 class BuyerRequestModel {
   constructor(IdAccount) {

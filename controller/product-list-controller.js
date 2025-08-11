@@ -1,8 +1,6 @@
-'use strict';
-
 /*
 |--------------------------------------------------------------------------
-| Node Modules
+| NODE MODULES
 |--------------------------------------------------------------------------
 */
 
@@ -12,20 +10,208 @@ const path = require('path');
 
 /*
 |--------------------------------------------------------------------------
-| Custom Modules
+| CUSTOM MODULES
 |--------------------------------------------------------------------------
 */
 
 const BuyerRequestModel = require('../models/buyer-request-model');
 const FornitoreRequestModel = require('../models/fornitore-request-model');
+const ProductIndexRequest = require('../models/product-index-request');
 const ProductListRequestModel = require('../models/product-list-request-model');
 const RequestModel = require('../models/request-model');
 const ResponseModel = require('../models/response-model');
 const { getProducts, findProductById } = require('../crud/product-list');
+const service = require('../services/soap');
 const connection = require('../config.db');
 
+/*
+|--------------------------------------------------------------------------
+| UTILS
+|--------------------------------------------------------------------------
+*/
 
-const fetchProducts = async (requestParams, brandId) => {
+const fetchProducts = async (
+  {
+    userId,
+    languageContext,
+    offsetRows = 0,
+    supplierCode,
+    categoryCode,
+    productCode,
+    productName,
+    withPrice,
+    approvalStatusId
+  },
+  connectionPool,
+  sqlDriver
+) => {
+  const PER_PAGE = 25;
+
+  const buildCTEJoins = () => {
+    let joins = [];
+
+    if (supplierCode) {
+      joins.push(
+        'join product_supplier ps on p.id = ps.product_id',
+        'join suppliers s on ps.supplier_id = s.id'
+      );
+    }
+
+    if (categoryCode) {
+      joins.push(
+        'join category_product cp on p.id = cp.product_id',
+        'join categories ca on cp.category_id = ca.id'
+      )
+    }
+
+    if (withPrice === 'competitor_price') {
+      joins.push(
+        `
+          join (
+            select distinct cmp.product_id
+            from competitor_product cmp
+            where coalesce(cmp.price,0) > 0
+          ) cp2 on p.id = cp2.product_id
+        `
+      )
+    }
+
+    return joins.length ? joins.join(' ') : '';
+  };
+
+  const buildCTEConditions = () => {
+    let conditions = ['cu.user_id = @user_id'];
+
+    if (supplierCode) {
+      conditions.push(`(s.code = @supplier_code or s.code like '%' + @supplier_code + '%')`);
+    }
+
+    if (categoryCode) {
+      conditions.push('ca.code = @category_code');
+    }
+
+    if (productCode) {
+      conditions.push(`(p.code = @product_code or p.code like '%' + @product_code + '%')`);
+    }
+
+    if (withPrice === 'suggested_price') {
+        conditions.push('coalesce(p.suggested_price,0) > 0');
+    }
+
+    if (approvalStatusId) {
+      // conditions.push("sp.approval_status_id = @approval_status_id");
+    }
+
+    return ` where ${conditions.join(' AND ')} `;
+  }
+
+  const baseCTE = `
+    with cte_products as (
+      select distinct p.soap_product_id
+      from products p
+      join company_user cu ON p.company_id = cu.company_id
+      ${buildCTEJoins()}
+      ${buildCTEConditions()}
+    )
+  `;
+
+  const buildFilters = () => {
+    let conditions = [];
+
+    if (productName) {
+      conditions.push(`sp.Denominazione like '%' + @product_name + '%'`);
+    }
+
+    return conditions.length ? ` where ${conditions.join(' AND ')}` : '';
+  };
+
+  const createRequest = () => {
+    let req = connectionPool.request().input('user_id', sqlDriver.Int(), userId);
+
+    if (supplierCode) {
+      req.input('supplier_code', sqlDriver.VarChar(), supplierCode);
+    }
+
+    if (categoryCode) {
+      req.input('category_code', sqlDriver.VarChar(), categoryCode);
+    }
+
+    if (productCode) {
+      req.input('product_code', sqlDriver.VarChar(), productCode);
+    }
+
+    if (productName) {
+      req.input('product_name', sqlDriver.VarChar(), productName);
+    }
+
+    if (approvalStatusId) {
+      // req.input("approval_status_id", sqlDriver.Int(), approvalStatusId);
+    }
+
+    return req;
+  };
+
+  const totalQuery = `
+    ${baseCTE}
+    select count(*) as total
+    from soap_products sp
+    join cte_products cte ON sp.id = cte.soap_product_id
+    ${buildFilters()}
+  `;
+
+  const listQuery = `
+    ${baseCTE}
+    select sp.*
+    from soap_products sp
+    join cte_products cte on sp.id = cte.soap_product_id
+    ${buildFilters()}
+    order by sp.id
+    offset @offset rows fetch next @limit rows only
+  `;
+
+  const totalItems = (await createRequest().query(totalQuery)).recordset[0]?.total || 0;
+
+  let data = [];
+
+  if (totalItems > 0) {
+    data = (
+      await createRequest()
+        .input('offset', sqlDriver.Int(), offsetRows)
+        .input('limit', sqlDriver.Int(), PER_PAGE)
+        .query(listQuery)
+    ).recordset;
+  }
+
+  const from        = offsetRows + 1;
+  const to          = offsetRows + data.length;
+  const hasNextPage = (totalItems - from) > PER_PAGE;
+  const nextOffset  = hasNextPage ? to : null;
+
+  return {
+    data/* ,
+    links: { prev: null, next: null } */,
+    meta: {
+      path: '/product-list',
+      total: totalItems,
+      per_page: PER_PAGE,
+      from,
+      to
+    },
+    pagination: {
+      total: totalItems,
+      per_page: PER_PAGE/* ,
+      next_page_url: null,
+      prev_page_url: null */,
+      from,
+      to,
+      has_next_page: hasNextPage,
+      next_offset: nextOffset
+    }
+  };
+};
+
+const fetchProductsFromService = async (requestParams, brandId) => {
+  // const fetchSoap = await service.fetchProducts(requestParams);
   const fetchSoap = await getProducts(requestParams);
   const result = JSON.parse(JSON.stringify(fetchSoap));
 
@@ -41,7 +227,7 @@ const mapCompetitorsPricesForProducts = async (products, connectionPool, sqlDriv
   let productIdx = {};
 
   const productCode = products.map((row, idx) => {
-    const code = row.CodiceArticolo.trim();
+    const code = row.CodiceArticolo;
 
     productIdx[code] = idx;
 
@@ -100,15 +286,19 @@ const mapCompetitorsPricesForProducts = async (products, connectionPool, sqlDriv
       }
 
       const competitorProduct = {
-        product_code: row.product_code,
-        competitor_product_id: row.competitor_product_id,
-        competitor_id: row.competitor_id,
-        product_id: row.product_id,
-        competitor_name: row.competitor_name,
-        price: row.price,
-        note: row.note,
-        url: row.url
+        product_code          : row.product_code,
+        competitor_product_id : row.competitor_product_id,
+        competitor_id         : row.competitor_id,
+        product_id            : row.product_id,
+        competitor_name       : row.competitor_name,
+        price                 : row.price,
+        note                  : row.note,
+        url                   : row.url
       };
+
+      if (!products[idx].hasOwnProperty('competitor_prices')) {
+        products[idx].competitor_prices = [];
+      }
 
       products[idx].competitor_prices.push(competitorProduct);
     }
@@ -118,6 +308,12 @@ const mapCompetitorsPricesForProducts = async (products, connectionPool, sqlDriv
 
   return products;
 }
+
+/*
+|--------------------------------------------------------------------------
+| MODULE EXPORTS
+|--------------------------------------------------------------------------
+*/
 
 const productListScript = (req, res) => {
   const filePath = path.resolve(__dirname, './product-list.js');
@@ -143,7 +339,7 @@ const getAllProducts = async (req, res) => {
     req.session.user.OffsetRows = 0;
     req.session.save();
 
-    const pool = await sql.connect(connection);
+    const pool = await sql.connect(connection);/*
 
     const queryResult = await pool.request()
       .input('user_id', sql.Int(), authUserId)
@@ -175,8 +371,23 @@ const getAllProducts = async (req, res) => {
       req.body.CodiceArticolo
     );
 
-    let fetchResult = await fetchProducts(request, brandId);
-    let products    = await mapCompetitorsPricesForProducts(fetchResult, pool, sql);
+    const fetchResult = await fetchProductsFromService(request, brandId);*/
+
+    const request = new ProductIndexRequest({
+      userId           : req.session?.user?.Id,
+      languageContext  : req.session?.user?.LanguageContext || false,
+      offsetRows       : req.body.offset_rows || false,
+      supplierCode     : req.body.supplier_code || false,
+      categoryCode     : req.body.category_code || false,
+      productCode      : req.body.product_code || false,
+      productName      : req.body.product_name || false,
+      withPrice        : req.body.with_price || false,
+      approvalStatusId : req.body.IdStatoApprovazioneArticolo || false
+    });
+
+    const fetchResult = await fetchProducts(request, pool, sql);
+
+    const products = await mapCompetitorsPricesForProducts(fetchResult.data, pool, sql);
 
     products.map(row => {
         row.PercentualeRicaricoCalcolata = 0;
@@ -191,7 +402,11 @@ const getAllProducts = async (req, res) => {
     res.status(200).render('product-list', {
       user: req.session.user,
       products: products,
-      RowsCount: products.length
+      RowsCount: products.length,
+      total: fetchResult?.meta?.total || 0,
+      has_next_page: fetchResult?.pagination?.has_next_page || false,
+      next_rows: fetchResult?.pagination?.nextRows || 0,
+      rows_count: fetchProducts?.pagination?.rowsCount || 0
     });
   } catch (err) {
     console.log('Errors: ' + err);
@@ -224,7 +439,7 @@ const getOneProductByCode = async (req, res) => {
 
 const searchProducts = async (req, res) => {
   try {
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Origin', '*');/*
 
     const { Id: authUserId } = req.session.user;
 
@@ -232,9 +447,9 @@ const searchProducts = async (req, res) => {
       req.session.user.OffsetRows = 0;
     } else {
       req.session.user.OffsetRows = req.session.user.OffsetRows + req.session.user.NextRows;
-    }
+    }*/
 
-    const pool = await sql.connect(connection);
+    const pool = await sql.connect(connection);/*
 
     const queryResult = await pool.request()
       .input('user_id', sql.Int(), authUserId)
@@ -263,8 +478,23 @@ const searchProducts = async (req, res) => {
       req.body.IdStatoApprovazioneArticolo
     );
 
-    let fetchResult = await fetchProducts(request, brandId);
-    let products    = await mapCompetitorsPricesForProducts(fetchResult, pool, sql);
+    let fetchResult = await fetchProductsFromService(request, brandId);*/
+
+    const request = new ProductIndexRequest({
+      userId           : req.session?.user?.Id || req.body.user_id,
+      languageContext  : req.session?.user?.LanguageContext || false,
+      offsetRows       : req.body.offset_rows || false,
+      supplierCode     : req.body.supplier_code || false,
+      categoryCode     : req.body.category_code || false,
+      productCode      : req.body.product_code || false,
+      productName      : req.body.product_name || false,
+      withPrice        : req.body.with_price || false,
+      approvalStatusId : req.body.IdStatoApprovazioneArticolo || false
+    });
+
+    const fetchResult = await fetchProducts(request, pool, sql);
+
+    const products = await mapCompetitorsPricesForProducts(fetchResult.data, pool, sql);
 
     products.map(row => {
         row.PercentualeRicaricoCalcolata = 0;
@@ -282,7 +512,18 @@ const searchProducts = async (req, res) => {
         return row;
     });
 
-    res.status(200).json(new ResponseModel('OK', products, null, products.length, req.session.user));
+    const response = {
+      status     : 'OK',
+      data       : products,
+      error      : null,
+      rowscount  : products.length,
+      user       : req.session?.user,
+      links      : fetchResult.links,
+      meta       : fetchResult.meta,
+      pagination : fetchResult.pagination
+    };
+
+    res.status(200).json(response);
   } catch (err) {
     console.log('Errors: ' + err);
     res.status(500).json(new ResponseModel('ERR', null, err));

@@ -1,5 +1,3 @@
-'use strict';
-
 class RequestModel {
   constructor(IdAccount, LanguageContext, OffsetRows, NextRows, CodiceFornitore, CodiceArticolo, IdStatoApprovazioneArticolo) {
     this.IdAccount = IdAccount;
