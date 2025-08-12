@@ -252,6 +252,7 @@ router.get('/detect-price-history/:codicearticolo/:codicebrand', function (req, 
   }
 });
 
+/*
 router.get('/buyer', function (req, res) {
   if (sessionUtil.verifyUser(req, res)) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -272,6 +273,25 @@ router.get('/buyer', function (req, res) {
     }).finally(() => {
       //console.log("Code has been executed")
     })
+  }
+});*/
+
+router.get('/buyer', userAuth, async (req, res) => {
+  try {
+    res.set('Access-Control-Allow-Origin', '*');
+
+    const fakeData = [
+      {
+        attributes: { "diffgr:id": "Buyer1", "msdata:rowOrder": "0" },
+        CodiceBuyer: "201",
+        Nominativo: "Buyer Min Min"
+      }
+    ];
+
+    res.status(200).json( new modelResponse('OK', fakeData, null));
+  } catch (err) {
+    console.log('Errors: ' + err.message)
+    res.status(500).json(new modelResponse('ERR', null, err.message));
   }
 });
 

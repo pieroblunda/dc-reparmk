@@ -1,5 +1,3 @@
-'use strict'
-
 class Exception {
   constructor(sender, message, name, stack) {
     this.sender = sender;

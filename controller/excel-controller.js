@@ -148,18 +148,55 @@ const fetchProducts = async (
     return req;
   };
 
+  const getCompetitorsSql = `
+    select
+        concat('competitor_', id, '_', rtrim(ltrim(lower(replace(name, ' ', '_'))))) as colName
+    from competitors
+    order by name
+  `;
+
+  const competitors = (await connectionPool.request().query(getCompetitorsSql)).recordset;
+
+  const colList = competitors.map(row => `[${row.colName}]`).join(', ');
+
   const listQuery = `
     ${baseCTE}
-    select sp.*
+    select
+      sp.*,
+      nullif(pt.suggested_price, 0.00) as suggested_price,
+      iif(sp.PrezzoListinoFornitore > 0
+        AND coalesce(pt.suggested_price, 0) > 0,
+        cast(((pt.suggested_price - sp.PrezzoListinoFornitore) / sp.PrezzoListinoFornitore) * 100 as decimal(18,2)),
+        null
+      ) as new_ric,
+      ${competitors.map(c => `nullif(pt.${c.colName}, 0.00) as ${c.colName}`).join(', ')}
     from soap_products sp
     join cte_products cte on sp.id = cte.soap_product_id
+    left join (
+      select
+        soap_product_id,
+        suggested_price,
+        ${competitors.map(c => `[${c.colName}] as ${c.colName}`).join(', ')}
+      from (
+        select
+          p.soap_product_id,
+          p.suggested_price,
+          concat_ws('_', 'competitor', c.id, rtrim(ltrim(lower(replace(c.name, ' ', '_'))))) as competitor_name,
+          cp.price
+        from products p
+        left join competitor_product cp on p.id = cp.product_id
+        left join competitors c on cp.competitor_id = c.id
+      ) as source
+      pivot (
+        max(price)
+        for competitor_name in (${colList})
+      ) as pvt
+    ) pt on sp.id = pt.soap_product_id
     ${buildFilters()}
     order by sp.id
   `;
 
-  let data = (await createRequest().query(listQuery)).recordset;
-
-  return data;;
+  return (await createRequest().query(listQuery)).recordset;
 };
 
 const fetchProductsFromService = async (requestParams, brandId) => {
@@ -188,8 +225,13 @@ const mapCompetitorsPricesForProducts = async (products, connectionPool, sqlDriv
   return products;
 }
 
+/**
+ * @param {*} connectionPool
+ * @param {*} sqlDriver
+ * @returns {Array}
+ */
 const getColumns = async (connectionPool, sqlDriver) => {
-  return [
+  let colunmsConfig = [
       { header: 'FORNITORE', key: 'RagioneSocialeFornitore', width: 35 },
       { header: 'COD ART', key: 'CodiceArticolo', width: 15 },
       { header: 'DESCRIZIONE', key: 'Denominazione', width: 60 },
@@ -197,33 +239,20 @@ const getColumns = async (connectionPool, sqlDriver) => {
       { header: 'ART FORN', key: 'CodiceFornitore', width: 20 },
       { header: 'CATEGORIA', key: 'DescrizioneCategoria', width: 25 },
       { header: 'COD DC CASA', key: 'CodiceProduttore', width: 25 },
-      { header: 'GRUPPO MECEOLOGICO', key: 'averiguar2', width: 25 },
-      { header: 'STATO', key: 'averiguar3', width: 25 },
+      { header: 'GRUPPO MECEOLOGICO', key: 'Gamma', width: 25 },/*
+      { header: 'STATO', key: 'averiguar3', width: 25 },*/
       { header: 'PREZZO LIS FORN', key: 'PrezzoListinoFornitore', width: 25 },
-      { header: 'PREZZO LIS FORN CIF', key: 'averiguar5', width: 25 },
+      { header: 'PREZZO LIS FORN CIF', key: 'PrezzoListinoFornitore', width: 25 },
       { header: 'PREZZO LS', key: 'PrezzoListinoBase', width: 25 },
       { header: 'LISTINO', key: 'LineaProdotto', width: 25 },
-      { header: 'RIC LS', key: 'averiguar8', width: 25 },
-      { header: 'CAMBIO PREZZO LS', key: 'averiguar8', width: 25 },
-      { header: 'NEW RICARICO', key: 'averiguar9', width: 25 },
-      // { header: 'Operatore', key: 'Operatore', width: 20 },
-      // { header: 'Societ�', key: 'Societa', width: 20 },
+      { header: 'RIC LS', key: 'PercentualeRicarico', width: 25 },
+      { header: 'CAMBIO PREZZO LS', key: 'suggested_price', width: 25 },
+      { header: 'NEW RICARICO', key: 'new_ric', width: 25 },
       // { header: 'Brand', key: 'DescrizioneBrand', width: 20 },
       // { header: 'Codice Categoria', key: 'CodiceCategoria', width: 18 },
       // { header: 'Categoria', key: 'DescrizioneCategoria', width: 25 },
       // { header: 'Codice Fornitore', key: 'CodiceFornitore', width: 20 },
       // { header: 'Prezzo Suggerito', key: 'PrezzoSuggerito', width: 16 },
-      // { header: 'Prezzo Family', key: 'PrezzoFamily', width: 16 },
-      // { header: 'Prezzo Ilomo', key: 'PrezzoIlomo', width: 16 },
-      // { header: 'Prezzo Sunlux', key: 'PrezzoSunlux', width: 16 },
-      // { header: 'Prezzo Papironia', key: 'PrezzoPapironia', width: 16 },
-      // { header: 'Prezzo Sacchetto Doro', key: 'PrezzoSacchettoDoro', width: 25 },
-      // { header: 'Prezzo Mp', key: 'PrezzoMp', width: 16 },
-      // { header: 'Prezzo Eurocom', key: 'PrezzoEurocom', width: 16 },
-      // { header: 'Prezzo Modo', key: 'PrezzoModo', width: 16 },
-      // { header: 'Prezzo Wynie', key: 'PrezzoWynie', width: 16 },
-      // { header: 'Prezzo Em Beauty', key: 'PrezzoEmBeauty', width: 16 },
-      // { header: 'Prezzo J&E', key: 'PrezzoJ_E', width: 16 },
       // { header: 'Prezzo Tertio', key: 'PrezzoTertio', width: 16 },
       // { header: 'Percentuale Sconto', key: 'PercentualeSconto', width: 10 },
       // { header: 'Prezzo Base Dc Group', key: 'PrezzoListinoBase', width: 20 },
@@ -233,6 +262,22 @@ const getColumns = async (connectionPool, sqlDriver) => {
       // { header: 'Stato', key: 'Stato', width: 15 },
       // { header: 'Note', key: 'Note', width: 50 },
     ];
+
+  const getCompetitorsSql = `
+    select
+        concat('competitor_', id, '_', rtrim(ltrim(lower(replace(name, ' ', '_'))))) as colName,
+        concat('PREZZO ', upper(rtrim(ltrim(name)))) as colLabel
+    from competitors
+    order by name
+  `;
+
+  const competitors = (await connectionPool.request().query(getCompetitorsSql)).recordset;
+
+  for (const row of competitors) {
+    colunmsConfig.push({ header: row.colLabel, key: row.colName, width: 20 });
+  }
+
+  return colunmsConfig;
 };
 
 const fillWorksheet = async (worksheet, columns, rows) => {
@@ -281,6 +326,9 @@ const downloadExcel = async (req, res) => {
 
     const pool = await sql.connect(connection);
 
+    // await fetchCompetitorPivot(pool, sql);
+    // return;
+
     const request = new ProductIndexRequest({
       userId           : req.session?.user?.Id,
       languageContext  : req.session?.user?.LanguageContext || false,
@@ -300,9 +348,8 @@ const downloadExcel = async (req, res) => {
       return;
     }
 
-    let product = fetchResult[0];
-
     const workbook = new ExcelJS.Workbook();
+
     let worksheet = workbook.addWorksheet('Anomalie Giacenze');
 
     const columns = await getColumns(pool, sql);

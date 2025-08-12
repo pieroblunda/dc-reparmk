@@ -35,7 +35,7 @@ $(document).ready(function () {
                         products.forEach(product => {
                             const partialProduct = ejs.render(templateString, { product, user });
                             $('.data-container').append(partialProduct);
-                            
+
                             const prices = [];
                             product.competitor_prices.forEach(function(comp) {
                                 const val = parseFloat(comp.price);
@@ -294,7 +294,7 @@ $(document).ready(function () {
             $('.spinner').hide();
         })
         .catch(error => {})
-        .finally(() => {    
+        .finally(() => {
             $('.spinner').hide();
         });
     }
@@ -560,7 +560,7 @@ $(document).ready(function () {
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
             } else if (response.status == "OK") {
-                var product = JSON.parse(JSON.stringify(response.data));                
+                var product = JSON.parse(JSON.stringify(response.data));
                 $.get("../template/product-price-detect-history.ejs", function (templateResponse) {
                     templateString = templateResponse;
                     var partialProduct = ejs.render(templateString, { product });
@@ -645,7 +645,7 @@ $(document).ready(function () {
                         products.forEach(product => {
                             const partialProduct = ejs.render(templateString, { product, user });
                             $('.data-container').append(partialProduct);
-                            
+
                             const prices = [];
                             product.competitor_prices.forEach(function(comp) {
                                 const val = parseFloat(comp.price);
@@ -863,7 +863,7 @@ $(document).ready(function () {
     getAllProducts(null, function (user) {
         loadSupplier(user.Codice);
         loadCategories(user.Codice);
-    }); 
+    });
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
