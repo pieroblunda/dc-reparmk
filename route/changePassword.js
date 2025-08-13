@@ -2,7 +2,7 @@ const express = require('express');
 const changePassword = express.Router();
 var response = require('../model/response');
 //const crud = require('../crud/userAccount');
-const sessionUtil = require('../utils/session')
+const sessionUtil = require('../utils/session');
 const session = require('express-session');
 
 // Define routes
@@ -19,7 +19,7 @@ changePassword.get('/changePassword', function (req, res) {
 });
 changePassword.post('/changePassword', function (req, res) {
     if (sessionUtil.verifyUser(req, res)) {
-        
+
     }
 });
 

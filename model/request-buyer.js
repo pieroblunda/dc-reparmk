@@ -1,6 +1,7 @@
 class BuyerRequest {
-    constructor(IdAccount) {
-        this.IdAccount = IdAccount;
-    }
+  constructor(IdAccount) {
+    this.IdAccount = IdAccount;
+  }
 }
+
 module.exports = BuyerRequest;
