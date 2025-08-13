@@ -26,6 +26,20 @@ $ npm install
 $ node .\index.js
 ```
 
+## Environment variables
+
+| Variable | Range | Dsc  |
+|---|---|
+| USE_MOCK | [0 \| 1] | Describes if System should use mocked data for internal database |
+| USE_MOCK_PRODUCTS | [0 \| 1] | Describes if System should use mocked data for reading products from external database |
+| DB_PASSWORD | String | Password for the DB connection in config.db.js |
+| DB_USER | String | User used in the database connection string |
+| DB_SERVER | String | IP SERVER used in the database connection string |
+
+## Database
+
+Restore the DB located in `/fixtures/db-prezzi.bak`
+
 ## User test
 
 ```
