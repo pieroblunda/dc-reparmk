@@ -1,4 +1,105 @@
+let allProducts = new Map();
+
 $(document).ready(function () {
+    getAllProducts = function (payload = {}, callback) {
+        fetch('/product-list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            ...(payload ? { body: JSON.stringify(payload) } : {})
+        })
+        .then(res => res.json())
+        .then(response => {
+            fetch('../template/product-list.ejs')
+                .then(res => res.text())
+                .then(templateString => {
+                    const products = response.data || [];
+                    const user = response.user;
+                    const pagination = response.pagination;
+
+                    products.forEach(p => {
+                        allProducts.set(p.product_code || p.CodiceArticolo, p);
+                    });
+
+                    $('#load-data')
+                        .data('nextOffset', pagination?.next_offset || 0)
+                        .toggleClass('hidden', !pagination?.has_next_page);
+
+                    $('.btn-search')
+                        .data('offsetRows', pagination?.next_offset || 0);
+
+                    if (products.length && user) {
+                        $('.data-container').empty();
+                        const products = Array.from(allProducts.values());
+                        products.forEach(product => {
+                            const partialProduct = ejs.render(templateString, { product, user });
+                            $('.data-container').append(partialProduct);
+
+                            const prices = [];
+                            product.competitor_prices.forEach(function(comp) {
+                                const val = parseFloat(comp.price);
+                                if (val > 0) prices.push(val);
+                            });
+                            const average = prices.length > 0
+                                ? (prices.reduce((a, b) => a + b, 0) / prices.length)
+                                : 0;
+                            $(`#average-competitor-price-${product.CodiceArticolo} strong`).text(average.toFixed(2));
+                        });
+
+                        $('.form-control[data-original-value]').on('input', function() {
+                            const $input = $(this);
+                            const price = parseFloat($input.val()) || 0;
+                            const $row = $input.closest('tr');
+                            const basePrice = parseFloat($input.data('product-base-price'));
+                            const $spanPerc = $row.find('td:eq(2) span');
+
+                            if ($input.attr('id').includes('-Note')) return;
+
+                            if (price > 0 && basePrice > 0) {
+                                const perc = ((basePrice * 100 / price) - 100);
+                                const percClass = perc < 0 ? 'text-success' : 'text-danger';
+                                $spanPerc.text(perc.toFixed(2) + '%')
+                                        .removeClass('text-success text-danger')
+                                        .addClass(percClass);
+                            } else {
+                                $spanPerc.text('-').removeClass('text-success text-danger');
+                            }
+
+                            const $container = $input.closest('[id^="container-"]');
+                            const articleCode = $container.attr('id').replace('container-', '');
+                            const prices = [];
+                            $container.find(`input[id^="${articleCode}-Prezzo"]`).each(function() {
+                                const val = parseFloat($(this).val());
+                                if (val > 0) prices.push(val);
+                            });
+                            const average = prices.length > 0
+                                ? (prices.reduce((a, b) => a + b, 0) / prices.length)
+                                : 0;
+                            $(`#average-competitor-price-${articleCode} strong`).text(average.toFixed(2));
+                        });
+
+                        const totalRows = response.pagination?.total;
+                        const loadedRows = response.pagination?.next_offset;
+
+                        const formattedTotalRows = totalRows.toLocaleString('it-IT');
+                        const formattedLoadedRows = Math.min(loadedRows, totalRows).toLocaleString('it-IT');
+
+                        $('.LoadedRows').html(formattedLoadedRows);
+                        $('.RowsCount').html(formattedTotalRows);
+
+                        if (typeof callback === 'function') {
+                            callback(user);
+                        }
+                    }  else {
+                        $('.data-container')
+                            .empty()
+                            .append('<h3 class="text-center">Nessun risultato trovato</h3>');
+                    }
+                });
+        })
+        .catch(err => {});
+    };
     loadBuyer = function () {
         /* Visualizza il loader */
         $('.spinner').show();
@@ -11,10 +112,6 @@ $(document).ready(function () {
                 var err = JSON.parse(response.error);
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
-            } else if (response.status == "OK") {
-                $.each(response.data, function (key, buyer) {
-                    $("#Buyer").append(new Option(buyer.Nominativo, buyer.CodiceBuyer));
-                })
             }
             /* Nasconde il loader al termine del caricamento */
             $('.spinner').hide();
@@ -23,31 +120,53 @@ $(document).ready(function () {
 
         });
     }
-    loadFornitori = function (CodiceBuyer) {
-        /* Visualizza il loader */
-        $('.spinner').show();
-        $.ajax({
-            url: "/fornitori/" + CodiceBuyer,
-            type: "GET",
-            data: {},
-        }).done(function (response) {
-            if (response.status == "ERR") {
-                var err = JSON.parse(response.error);
-                $('.pnl-errors').html(err.message);
-                $('.form-errors').show();
-            } else if (response.status == "OK") {
-                $("#Fornitore").empty();
-                $("#Fornitore").append(new Option('Tutti', ''));
-                $.each(response.data, function (key, fornitore) {
-                    $("#Fornitore").append(new Option(fornitore.RagioneSocialeFornitore, fornitore.CodiceFornitore));
+    loadSupplier = function (buyerCode) {
+        fetch('/fornitori/' + buyerCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status == 'ERR') return;
+            if (response.status == 'OK') {
+                $('#Supplier').empty();
+                $('#Supplier').append(new Option('Tutti', ''));
+
+                const supplierList = [...response.data].sort(function (a, b) {
+                    return a.RagioneSocialeFornitore.localeCompare(
+                        b.RagioneSocialeFornitore,
+                        { sensitivity: 'base' }
+                    )
+                });
+
+                $.each(supplierList, function (key, fornitore) {
+                    $('#Supplier').append(new Option(fornitore.RagioneSocialeFornitore, fornitore.CodiceFornitore));
+                });
+            }
+        })
+        .catch(err => {});
+    }
+    loadCategories = function (buyerCode) {
+        fetch('/categoria/' + buyerCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status == 'ERR') return;
+            if (data.status == 'OK') {
+                $('#Category').empty();
+                $('#Category').append(new Option('Tutti', ''));
+                $.each(data.data, function (key, fornitore) {
+                    $('#Category').append(new Option(fornitore.RagioneSocialeFornitore, fornitore.CodiceFornitore));
                 })
             }
-            /* Nasconde il loader al termine del caricamento */
-            $('.spinner').hide();
-        }).fail(function (xhr, status, errorThrown) {
-        }).always(function (xhr, status) {
-
-        });
+        })
+        .catch(err => {});
     }
     detectPrice = function (codicearticolo) {
         /* Visualizza il loader */
@@ -106,6 +225,77 @@ $(document).ready(function () {
         }).fail(function (xhr, status, errorThrown) {
         }).always(function (xhr, status) {
 
+        });
+    }
+    productPriceHistory = function (productCode) {
+        /* Visualizza il loader */
+        $('.spinner').show();
+        fetch('/product-price-history/' + productCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (typeof response == 'object') {
+                if (response.status == 'ERR') return;
+                if (response.status == 'OK') {
+                    var priceHistory = response.data;
+                    var elementId = '#product-price-history';
+                    $.get('../template/product-price-history.ejs', function (data) {
+                        templateString = data;
+                        var partialProduct = ejs.render(templateString, { priceHistory });
+                        $('#product-price-history-body').empty().html(partialProduct);
+
+                        $('.btn-product-price-history-ok').click(function () {
+                            $(elementId).modal('hide');
+                        });
+                    });
+                    $('.product-article-code').html(productCode);
+                    $(elementId).modal('show');
+                }
+            }
+            $('.spinner').hide();
+        })
+        .catch(error => {})
+        .finally(() => {
+            $('.spinner').hide();
+        });
+    }
+    competitorProductPriceHistory = function (productCode, competitorId) {
+        /* Visualizza il loader */
+        $('.spinner').show();
+        fetch('/competitor-product-price-history/' + productCode + '/' + competitorId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (typeof response == 'object') {
+                if (response.status == 'ERR') return;
+                if (response.status == 'OK') {
+                    var competitorPriceHistory = response.data;
+                    $.get('../template/product-competitor-price-history.ejs', function (response) {
+                        templateString = response;
+                        var partialProduct = ejs.render(templateString, { competitorPriceHistory, competitorId });
+                        $('#competitor-product-price-history-body').empty().append(partialProduct);
+
+                        $('.btn-product-price-history-ok').click(function () {
+                            $('#competitor-price-history').modal('hide');
+                        });
+                    });
+                    $('.product-code').html(productCode);
+                    $('#competitor-price-history').modal('show');
+                }
+            }
+            $('.spinner').hide();
+        })
+        .catch(error => {})
+        .finally(() => {
+            $('.spinner').hide();
         });
     }
     suggestPrice = function (codicearticolo) {
@@ -370,7 +560,7 @@ $(document).ready(function () {
                 $('.pnl-errors').html(err.message);
                 $('.form-errors').show();
             } else if (response.status == "OK") {
-                var product = JSON.parse(JSON.stringify(response.data));                
+                var product = JSON.parse(JSON.stringify(response.data));
                 $.get("../template/product-price-detect-history.ejs", function (templateResponse) {
                     templateString = templateResponse;
                     var partialProduct = ejs.render(templateString, { product });
@@ -384,6 +574,20 @@ $(document).ready(function () {
 
         });
     }
+    loadCompetitor = function (payload) {
+        fetch('/product-price/' + payload.product_code, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            getAllProducts();
+        })
+        .catch(error => {});
+    }
     $('#tab-detect-price-history').click(function () {
         detectPriceHistory($('.CodiceArticolo').html());
     });
@@ -396,37 +600,268 @@ $(document).ready(function () {
     $('.btn-suggest-price').click(function () {
         suggestPrice($(this).data("codicearticolo"));
     });
-    $('#Buyer').change(function () {
-        if ($(this).val() == '') {
-            $("#Fornitore").empty();
-            $("#Fornitore").append(new Option('Tutti', ''));
-        } else {
-            loadFornitori($('#Buyer').val());
-        }
+    $(document).on('click', '.btn-competitor-product-price-history', function () {
+        competitorProductPriceHistory($(this).data('productCode'), $(this).data('competitorId'));
     });
-    $('.btn-search').click(function () {
-        $.ajax({
-            url: '/init',
-            type: "POST",
-            data: {},
-        }).done(function (response) {
-            if (response.indexOf("Login") >-1) {
-                document.location.href = "/login";
-            } else {
-                $('#load-data').hide();
-                /* Carica la lista dei risultati */
-                $('.data-container').empty();
-                loadProducts($('#Fornitore').val(), $('#CodiceArticolo').val());
-            }
+    $(document).on('click', '.btn-product-price-history', function () {
+        productPriceHistory($(this).data('product-article-code'));
+    });
+    $(document).on('click', '.btn-search', function () {
+        const inputValue = $('input[name="withPrice"]:checked').val() === '' ? null : $('input[name="withPrice"]:checked').val();
+        const payload = {
+            supplier_code: $('#Supplier').val(),
+            category_code: $('#Category').val(),
+            product_code: $('#CodiceArticolo').val(),
+            product_name: $('#NomeProdotto').val(),
+            supplier_code_text: $('#CodiceFornitore').val(),
+            with_price: inputValue,
+            // offset_rows: $(this).data('offsetRows'),
+            // next_rows: $(this).data('nextRows'),
+        };
+        fetch('/product-list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            ...(payload ? { body: JSON.stringify(payload) } : {})
         })
+        .then(res => res.json())
+        .then(response => {
+            fetch('../template/product-list.ejs')
+                .then(res => res.text())
+                .then(templateString => {
+                    const products = response.data || [];
+                    const user = response.user;
+                    const pagination = response.pagination;
+
+                    $('#load-data')
+                        .data('nextOffset', pagination?.next_offset || 0)
+                        .toggleClass('hidden', !pagination?.has_next_page);
+
+                    $('.btn-search')
+                        .data('offsetRows', pagination?.next_offset || 0);
+
+                    if (products.length && user) {
+                        $('.data-container').empty();
+                        products.forEach(product => {
+                            const partialProduct = ejs.render(templateString, { product, user });
+                            $('.data-container').append(partialProduct);
+
+                            const prices = [];
+                            product.competitor_prices.forEach(function(comp) {
+                                const val = parseFloat(comp.price);
+                                if (val > 0) prices.push(val);
+                            });
+                            const average = prices.length > 0
+                                ? (prices.reduce((a, b) => a + b, 0) / prices.length)
+                                : 0;
+                            $(`#average-competitor-price-${product.CodiceArticolo} strong`).text(average.toFixed(2));
+                        });
+
+                        $('.form-control[data-original-value]').on('input', function() {
+                            const $input = $(this);
+                            const price = parseFloat($input.val()) || 0;
+                            const $row = $input.closest('tr');
+                            const basePrice = parseFloat($input.data('product-base-price'));
+                            const $spanPerc = $row.find('td:eq(2) span');
+
+                            if ($input.attr('id').includes('-Note')) return;
+
+                            if (price > 0 && basePrice > 0) {
+                                const perc = ((basePrice * 100 / price) - 100);
+                                const percClass = perc < 0 ? 'text-success' : 'text-danger';
+                                $spanPerc.text(perc.toFixed(2) + '%')
+                                        .removeClass('text-success text-danger')
+                                        .addClass(percClass);
+                            } else {
+                                $spanPerc.text('-').removeClass('text-success text-danger');
+                            }
+
+                            const $container = $input.closest('[id^="container-"]');
+                            const articleCode = $container.attr('id').replace('container-', '');
+                            const prices = [];
+                            $container.find(`input[id^="${articleCode}-Prezzo"]`).each(function() {
+                                const val = parseFloat($(this).val());
+                                if (val > 0) prices.push(val);
+                            });
+                            const average = prices.length > 0
+                                ? (prices.reduce((a, b) => a + b, 0) / prices.length)
+                                : 0;
+                            $(`#average-competitor-price-${articleCode} strong`).text(average.toFixed(2));
+                        });
+
+                        const totalRows = response.pagination?.total;
+                        const loadedRows = response.pagination?.next_offset;
+
+                        const formattedTotalRows = totalRows.toLocaleString('it-IT');
+                        const formattedLoadedRows = Math.min(loadedRows, totalRows).toLocaleString('it-IT');
+
+                        $('.LoadedRows').html(formattedLoadedRows);
+                        $('.RowsCount').html(formattedTotalRows);
+
+                        if (typeof callback === 'function') {
+                            callback(user);
+                        }
+                    } else {
+                        $('.data-container')
+                            .empty()
+                            .append('<h3 class="text-center">Nessun risultato trovato</h3>');
+                    }
+                });
+        })
+        .catch(err => {});
     });
     $('#load-data').click(function () {
-        $('#load-data').hide();
+        const nextOffset = $(this).data('nextOffset') || 0;
         /* Carica la lista dei risultati */
-        if ($('.LoadedRows').html() != $('.RowsCount').html()) {
-            loadProducts($('#Fornitore').val(), $('#CodiceArticolo').val());
+        getAllProducts({
+            supplier_code: $('#Supplier').val(),
+            category_code: $('#Category').val(),
+            product_code: $('#CodiceArticolo').val(),
+            product_name: $('#NomeProdotto').val(),
+            supplier_code_text: $('#CodiceFornitore').val(),
+            with_price: $('input[name="withPrice"]:checked').val(),
+            offset_rows: nextOffset,
+            next_rows: nextOffset,
+        });
+    });
+    $('.btn-download-excel').click(function () {
+        var $btn = $(this);
+        var originalText = $btn.html();
+        $btn.html("<i class='bi bi-arrow-repeat spin'></i> Loading...").prop('disabled', true);
+
+        fetch('/download-excel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                supplier_code: $('#Supplier').val(),
+                category_code: $('#Category').val(),
+                product_code: $('#CodiceArticolo').val(),
+                product_name: $('#NomeProdotto').val(),
+                supplier_code_text: $('#CodiceFornitore').val(),
+                with_price: $('input[name="withPrice"]:checked').val(),
+                offset_rows: $(this).data('offsetRows'),
+                next_rows: $(this).data('nextRows'),
+            })
+        })
+        .then(res => res.blob())
+        .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'report.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            $btn.html(originalText).prop('disabled', false);
+        })
+        .catch(() => {
+            $btn.html(originalText).prop('disabled', false);
+        });
+    });
+    $(document).on('click', '.btn-submit-changes', function () {
+        var $container = $(this).closest('[id^="container-"]');
+        var productArticleCode = $container.attr('id').replace('container-', '');
+        var $infoTesting = $('#' + productArticleCode + '-testing').val() || null;
+        var $infoPackaging = $('#' + productArticleCode + '-packaging').val() || null;
+        var $infoSuggested = $('#' + productArticleCode + '-suggested-price').val() || 0.00;
+        var competitorData = [];
+
+        $container.find('tbody tr#competitor-info-' + productArticleCode).each(function() {
+            var $row = $(this);
+            var competitorName = $row.find('[data-competitor-name]').data('competitor-name') || null;
+            var competitorProductId = $row.find('[data-competitor-product-id]').data('competitor-product-id') || null;
+            var url = $('#competitor-name-link-' + competitorProductId).data('competitor-product-url') || null;
+
+            var $priceInput = $row.find('input[id^="' + productArticleCode + '-Prezzo' + competitorName + '"]');
+            var price = $priceInput.val();
+
+            var $noteInput = $row.find('input[placeholder="Note"]');
+            var note = $noteInput.val();
+
+            competitorData.push({
+                competitor_product_id: competitorProductId,
+                price: price,
+                note: note,
+                url: url,
+            });
+        });
+
+        loadCompetitor({
+            product_code: productArticleCode,
+            packaging_info: $infoPackaging,
+            testing_info: $infoTesting,
+            competitor_price: competitorData,
+            suggested_price: $infoSuggested,
+        });
+    });
+    $(document).on('click', '.btn-competitor-url', function () {
+        var competitorProductId = $(this).next().data('competitor-product-id');
+        var productUrl = $('#competitor-name-link-' + competitorProductId).attr('data-competitor-product-url') || '';
+        var elementId = '#product-competitor-url';
+        $.get('../template/product-competitor-url.ejs', function (response) {
+            templateString = response;
+            var partialProduct = ejs.render(templateString, { productUrl });
+            $('#competitor-url-body').empty().html(partialProduct);
+
+            $('.btn-competitor-url-ok').click(function () {
+                const $label = $('#competitor-name-label-' + competitorProductId);
+                const $link  = $('#competitor-name-link-' + competitorProductId);
+                var competitorUrl = $('#new-competitor-url').val();
+                if (competitorUrl) {
+                    $label.addClass('hidden');
+                    $link.removeClass('hidden')
+                        .attr('href', competitorUrl)
+                        .attr('data-competitor-product-url', competitorUrl);
+                } else {
+                    $label.removeClass('hidden');
+                    $link.addClass('hidden')
+                        .attr('href', '')
+                        .attr('data-competitor-product-url', '');
+                }
+
+                $('.btn-competitor-url[data-competitor-product-id="' + competitorProductId + '"]')
+                    .attr('data-competitor-product-url', competitorUrl)
+                    .data('competitor-product-url', competitorUrl);
+
+                $(elementId).modal('hide');
+            });
+        });
+
+        $(elementId).modal('show');
+    });
+    $(document).on('input', '.btn-set-suggested-price', function() {
+        var suggested = parseFloat($(this).val().replace(',', '.')) || 0;
+        var base = parseFloat($(this).data('fornitore-price')) || 0;
+        var perc = base > 0 ? ((suggested - base) / base) * 100 : 0;
+        var percText = perc.toFixed(2) + '% di ricarico';
+        var percClass = perc < 0 ? 'text-danger' : 'text-success';
+
+        var $span = $('#' + $(this).data('product-code') + '-suggested-price-di-ricarico');
+        $span.text(percText).removeClass('text-success text-danger').addClass(percClass);
+    });
+    $('input.number-validation').on('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+
+        var parts = this.value.split('.');
+        if (parts.length > 2) {
+            this.value = parts[0] + '.' + parts.slice(1).join('');
         }
-    })
+    });
+    $('input.number-validation').on('blur', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        if (this.value === '') {
+            this.value = '0.00';
+        }
+    });
+    $(document).on('click', '.zoom-image', function() {
+        var src = $(this).attr('src');
+        $('#modalImage').attr('src', src);
+        $('#imageModal').modal('show');
+    });
     //$(window).scroll(function (e) {
     //    if (($(window).scrollTop() + $(window).height()) >= $(document).height()) {
     //        if ($('.LoadedRows').html() != $('.RowsCount').html()) {
@@ -435,6 +870,10 @@ $(document).ready(function () {
     //    }
     //});
     loadBuyer();
+    getAllProducts(null, function (user) {
+        loadSupplier(user.Codice);
+        loadCategories(user.Codice);
+    });
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });

@@ -1,4 +1,6 @@
-class RequestProductList {
+
+
+class ProductListRequestModel {
   constructor(IdAccount, LanguageContext, OffsetRows, NextRows, CodiceArticolo, RequestBody) {
     this.IdAccount = IdAccount;
     this.LanguageContext = LanguageContext;
@@ -9,4 +11,4 @@ class RequestProductList {
   }
 }
 
-module.exports = RequestProductList;
+module.exports = ProductListRequestModel;

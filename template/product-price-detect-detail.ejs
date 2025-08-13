@@ -293,7 +293,7 @@
         brands.forEach(function(brand) { %>
         <div class="mb-3">
             <label for="Prezzo<%=brand.trim() %>" class="col-form-label">Prezzo <%=brand.trim().replace("_", "&") %>:</label>
-            <input type="text" class="form-control form-control-detect decimal" id="Prezzo<%=brand.trim() %>" placeholder="es: 0.00" required>
+            <input type="text" class="form-control form-control-detect decimal" id="Prezzo<%=brand.trim() %>" placeholder="es: 0.00">
         </div>
     <%  });
     }
