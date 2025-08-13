@@ -36,6 +36,7 @@ const fetchProducts = async (
     languageContext,
     offsetRows = 0,
     supplierCode,
+    supplierCodeText,
     categoryCode,
     productCode,
     productName,
@@ -50,7 +51,7 @@ const fetchProducts = async (
   const buildCTEJoins = () => {
     let joins = [];
 
-    if (supplierCode) {
+    if (supplierCode || supplierCodeText) {
       joins.push(
         'join product_supplier ps on p.id = ps.product_id',
         'join suppliers s on ps.supplier_id = s.id'
@@ -86,6 +87,10 @@ const fetchProducts = async (
       conditions.push(`(s.code = @supplier_code or s.code like '%' + @supplier_code + '%')`);
     }
 
+    if (supplierCodeText) {
+      conditions.push(`(s.code = @supplier_code_text or s.code like '%' + @supplier_code_text + '%')`);
+    }
+
     if (categoryCode) {
       conditions.push('ca.code = @category_code');
     }
@@ -107,7 +112,7 @@ const fetchProducts = async (
 
   const baseCTE = `
     with cte_products as (
-      select distinct p.soap_product_id
+      select distinct p.sap_product_id
       from products p
       join company_user cu ON p.company_id = cu.company_id
       ${buildCTEJoins()}
@@ -132,6 +137,10 @@ const fetchProducts = async (
       req.input('supplier_code', sqlDriver.VarChar(), supplierCode);
     }
 
+    if (supplierCodeText) {
+      req.input('supplier_code_text', sqlDriver.VarChar(), supplierCodeText);
+    }
+
     if (categoryCode) {
       req.input('category_code', sqlDriver.VarChar(), categoryCode);
     }
@@ -154,16 +163,16 @@ const fetchProducts = async (
   const totalQuery = `
     ${baseCTE}
     select count(*) as total
-    from soap_products sp
-    join cte_products cte ON sp.id = cte.soap_product_id
+    from sap_products sp
+    join cte_products cte ON sp.id = cte.sap_product_id
     ${buildFilters()}
   `;
 
   const listQuery = `
     ${baseCTE}
     select sp.*
-    from soap_products sp
-    join cte_products cte on sp.id = cte.soap_product_id
+    from sap_products sp
+    join cte_products cte on sp.id = cte.sap_product_id
     ${buildFilters()}
     order by sp.id
     offset @offset rows fetch next @limit rows only
@@ -375,14 +384,14 @@ const getAllProducts = async (req, res) => {
 
     const request = new ProductIndexRequest({
       userId           : req.session?.user?.Id,
-      languageContext  : req.session?.user?.LanguageContext || false,
+      languageContext  : req.session?.user?.LanguageContext || false/* ,
       offsetRows       : req.body.offset_rows || false,
       supplierCode     : req.body.supplier_code || false,
       categoryCode     : req.body.category_code || false,
       productCode      : req.body.product_code || false,
       productName      : req.body.product_name || false,
       withPrice        : req.body.with_price || false,
-      approvalStatusId : req.body.IdStatoApprovazioneArticolo || false
+      approvalStatusId : req.body.IdStatoApprovazioneArticolo || false */
     });
 
     const fetchResult = await fetchProducts(request, pool, sql);
@@ -485,6 +494,7 @@ const searchProducts = async (req, res) => {
       languageContext  : req.session?.user?.LanguageContext || false,
       offsetRows       : req.body.offset_rows || false,
       supplierCode     : req.body.supplier_code || false,
+      supplierCodeText : req.body.supplier_code_text || false,
       categoryCode     : req.body.category_code || false,
       productCode      : req.body.product_code || false,
       productName      : req.body.product_name || false,

@@ -5,6 +5,7 @@ class ProductIndexRequest {
     offsetRows,
     nextRows,
     supplierCode,
+    supplierCodeText,
     categoryCode,
     productCode,
     productName,
@@ -29,6 +30,10 @@ class ProductIndexRequest {
 
     if (supplierCode) {
       this.supplierCode = supplierCode;
+    }
+
+    if (supplierCodeText) {
+      this.supplierCodeText = supplierCodeText;
     }
 
     if (categoryCode) {

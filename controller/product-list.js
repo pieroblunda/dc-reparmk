@@ -613,6 +613,7 @@ $(document).ready(function () {
             category_code: $('#Category').val(),
             product_code: $('#CodiceArticolo').val(),
             product_name: $('#NomeProdotto').val(),
+            supplier_code_text: $('#CodiceFornitore').val(),
             with_price: inputValue,
             // offset_rows: $(this).data('offsetRows'),
             // next_rows: $(this).data('nextRows'),
@@ -718,6 +719,7 @@ $(document).ready(function () {
             category_code: $('#Category').val(),
             product_code: $('#CodiceArticolo').val(),
             product_name: $('#NomeProdotto').val(),
+            supplier_code_text: $('#CodiceFornitore').val(),
             with_price: $('input[name="withPrice"]:checked').val(),
             offset_rows: nextOffset,
             next_rows: nextOffset,
@@ -738,6 +740,7 @@ $(document).ready(function () {
                 category_code: $('#Category').val(),
                 product_code: $('#CodiceArticolo').val(),
                 product_name: $('#NomeProdotto').val(),
+                supplier_code_text: $('#CodiceFornitore').val(),
                 with_price: $('input[name="withPrice"]:checked').val(),
                 offset_rows: $(this).data('offsetRows'),
                 next_rows: $(this).data('nextRows'),
@@ -796,8 +799,8 @@ $(document).ready(function () {
         });
     });
     $(document).on('click', '.btn-competitor-url', function () {
-        var productUrl = $(this).data('competitor-product-url');
         var competitorProductId = $(this).next().data('competitor-product-id');
+        var productUrl = $('#competitor-name-link-' + competitorProductId).attr('data-competitor-product-url') || '';
         var elementId = '#product-competitor-url';
         $.get('../template/product-competitor-url.ejs', function (response) {
             templateString = response;
@@ -805,19 +808,26 @@ $(document).ready(function () {
             $('#competitor-url-body').empty().html(partialProduct);
 
             $('.btn-competitor-url-ok').click(function () {
+                const $label = $('#competitor-name-label-' + competitorProductId);
+                const $link  = $('#competitor-name-link-' + competitorProductId);
                 var competitorUrl = $('#new-competitor-url').val();
                 if (competitorUrl) {
-                    const $label = $('#competitor-name-label-' + competitorProductId);
-                    const $link  = $('#competitor-name-link-' + competitorProductId);
-
-                    $label.toggleClass('hidden');
-                    $link
-                        .toggleClass('hidden')
+                    $label.addClass('hidden');
+                    $link.removeClass('hidden')
                         .attr('href', competitorUrl)
-                        .data('competitor-product-url', competitorUrl);
-
-                    $(elementId).modal('hide');
+                        .attr('data-competitor-product-url', competitorUrl);
+                } else {
+                    $label.removeClass('hidden');
+                    $link.addClass('hidden')
+                        .attr('href', '')
+                        .attr('data-competitor-product-url', '');
                 }
+
+                $('.btn-competitor-url[data-competitor-product-id="' + competitorProductId + '"]')
+                    .attr('data-competitor-product-url', competitorUrl)
+                    .data('competitor-product-url', competitorUrl);
+
+                $(elementId).modal('hide');
             });
         });
 
