@@ -6,5 +6,5 @@
 /.idea
 /config.db.js
 .env
-node_modules/
+node_modules
 */**/*.sql
