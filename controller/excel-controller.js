@@ -241,11 +241,11 @@ const mapCompetitorsPricesForProducts = async (products, connectionPool, sqlDriv
  */
 const getColumns = async (connectionPool, sqlDriver) => {
   let colunmsConfig = [
+      { header: 'ART FORN', key: 'CodiceFornitore', width: 20 },
       { header: 'FORNITORE', key: 'RagioneSocialeFornitore', width: 35 },
       { header: 'COD ART', key: 'CodiceArticolo', width: 15 },
       { header: 'DESCRIZIONE', key: 'Denominazione', width: 60 },
       { header: 'COD EAN', key: 'CodiceBarre', width: 20 },
-      { header: 'ART FORN', key: 'CodiceFornitore', width: 20 },
       { header: 'CATEGORIA', key: 'DescrizioneCategoria', width: 25 },
       { header: 'COD DC CASA', key: 'CodiceProduttore', width: 25 },
       { header: 'GRUPPO MECEOLOGICO', key: 'Gamma', width: 25 },/*
