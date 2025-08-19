@@ -251,7 +251,6 @@ const getColumns = async (connectionPool, sqlDriver) => {
       { header: 'GRUPPO MECEOLOGICO', key: 'Gamma', width: 25 },/*
       { header: 'STATO', key: 'averiguar3', width: 25 },*/
       { header: 'PREZZO LIS FORN', key: 'PrezzoListinoFornitore', width: 25 },
-      { header: 'PREZZO LIS FORN CIF', key: 'PrezzoListinoFornitore', width: 25 },
       { header: 'PREZZO LS', key: 'PrezzoListinoBase', width: 25 },
       { header: 'LISTINO', key: 'LineaProdotto', width: 25 },
       { header: 'RIC LS', key: 'PercentualeRicarico', width: 25 },
@@ -272,13 +271,22 @@ const getColumns = async (connectionPool, sqlDriver) => {
       // { header: 'Note', key: 'Note', width: 50 },
     ];
 
-  const getCompetitorsSql = `
-    select
-        concat('competitor_', id, '_', rtrim(ltrim(lower(replace(name, ' ', '_'))))) as colName,
-        concat('PREZZO ', upper(rtrim(ltrim(name)))) as colLabel
-    from competitors
-    order by name
-  `;
+  const getCompetitorsSql = `SELECT DISTINCT
+[price_tracking_monitor].[dbo].[users].id,
+[price_tracking_monitor].[dbo].[users].name,
+[price_tracking_monitor].[dbo].[brands].name as brandName,
+[price_tracking_monitor].[dbo].[brands].code as brandCode,
+[price_tracking_monitor].[dbo].[brand_competitor].competitor_id as competitorId,
+[price_tracking_monitor].[dbo].[competitors].name as competitorName,
+concat('competitor_', [price_tracking_monitor].[dbo].[brand_competitor].competitor_id, '_', rtrim(ltrim(lower(replace([price_tracking_monitor].[dbo].[competitors].name, ' ', '_'))))) as colName,
+concat('PREZZO ', upper(rtrim(ltrim([price_tracking_monitor].[dbo].[competitors].name)))) as colLabel
+FROM [price_tracking_monitor].[dbo].[users]
+LEFT JOIN [price_tracking_monitor].[dbo].[brand_user] ON [price_tracking_monitor].[dbo].[brand_user].brand_id=[price_tracking_monitor].[dbo].[users].id
+LEFT JOIN [price_tracking_monitor].[dbo].[brands] ON [price_tracking_monitor].[dbo].[brand_user].brand_id=[price_tracking_monitor].[dbo].[brands].id
+LEFT JOIN [price_tracking_monitor].[dbo].[brand_competitor] ON [price_tracking_monitor].[dbo].[brand_competitor].brand_id=[price_tracking_monitor].[dbo].[brand_user].brand_id
+LEFT JOIN [price_tracking_monitor].[dbo].[competitors] ON [price_tracking_monitor].[dbo].[competitors].id=[price_tracking_monitor].[dbo].[brand_competitor].competitor_id
+WHERE [price_tracking_monitor].[dbo].[users].id=3
+AND [price_tracking_monitor].[dbo].[brand_user].user_id=3`;
 
   const competitors = (await connectionPool.request().query(getCompetitorsSql)).recordset;
 
