@@ -10,17 +10,20 @@
                 />
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <h4 class="text-info">
+                <h4 class="text-info title">
                     <span class="text-decoration-none;">
                         <b class="text-dark">
                             <%= product.Denominazione %>
                         </b>
                     </span>
                 </h4>
-                <h6 class="text-primary">
+                <h6 class="text-primary category">
                     <%= product.DescrizioneCategoria %>, <%= product.DescrizioneSottocategoria %>
                 </h6>
-                <h5 style="color:black;"><span class="glyphicon glyphicon-barcode"></span><strong>&nbsp;&nbsp;<%= product.CodiceBarre %></strong></h5>
+                
+                <h6 style="color:gray;">Codice a barre</h6>
+                <h5 style="color:black;"><%= product.CodiceBarre %></h5>
+                
                 <h6 style="color:gray;">
                     Fornitore
                 </h6>
@@ -45,7 +48,7 @@
                     <%= product.DescrizioneBrand %>
                 </h5>
                 <div>
-                    <label for="<%= product.CodiceArticolo %>-packaging" class="col-form-label">Informazione packaging</label>
+                    <h6 style="color:gray;">Informazione packaging</h6>
                     <textarea 
                         rows="3" 
                         id="<%= product.CodiceArticolo %>-packaging" 
@@ -54,7 +57,7 @@
                     ><%= product.packaging_info || '' %></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="<%= product.CodiceArticolo %>-testing" class="col-form-label">Informazione testing</label>
+                    <h6 style="color:gray;">Informazione testing</h6>
                     <textarea 
                         rows="3" 
                         id="<%= product.CodiceArticolo %>-testing" 

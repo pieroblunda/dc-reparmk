@@ -72,6 +72,20 @@ li.submenu a[role="button"].show::after {
     font-family: "Roboto", sans-serif;
     font-weight: 400;
 }
+.jumbotron-product h4.title {
+    margin-bottom: 2px;
+}
+.jumbotron-product h6.category {
+    margin-top: 0px;
+    margin-bottom: 16px;
+}
+.jumbotron-product h5 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+.jumbotron-product h6 {
+    margin-bottom: 2px;
+}
 .ricarico {
     display: block;
     padding: 6px;
