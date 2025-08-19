@@ -1,7 +1,7 @@
 ﻿<div id="container-<%= product.CodiceArticolo || '' %>">
     <div class="jumbotron-product">
         <div class="container-fluid" style="padding:0 !important;">
-            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                 <img 
                     src="http://192.168.0.232:3005/images/<%= product.CodiceArticolo %>.jpg" 
                     onerror="this.onerror=null; this.src='images/image.png';"
@@ -9,7 +9,7 @@
                     style="cursor: zoom-in;"
                 />
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <h4 class="text-info title">
                     <span class="text-decoration-none;">
                         <b class="text-dark">
@@ -21,12 +21,7 @@
                     <%= product.DescrizioneCategoria %> / <%= product.DescrizioneSottocategoria %>
                 </h6>
                 
-                <h6 style="color:gray;">Codice a barre</h6>
-                <h5 style="color:black;"><%= product.CodiceBarre %></h5>
-                
-                <h6 style="color:gray;">
-                    Fornitore
-                </h6>
+                <h6 style="color:gray;">Fornitore</h6>
                 <h5 style="color:black;">
                     <% if (product.CodiceFornitore != "") { %>
                         <%= product.RagioneSocialeFornitore %>
@@ -35,30 +30,47 @@
                         Fornitore non dispnonibile
                     <% } %>
                 </h5>
-                <h6 style="color:gray;">
-                    Codice
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.CodiceArticolo %>
-                </h5>
-                <h6 style="color:gray;">
-                    Brand
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.DescrizioneBrand %>
-                </h5>
-                <h6 style="color:gray;">
-                    Societa
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.Societa %>
-                </h5>
-                <h6 style="color:gray;">
-                    Gamma
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.Gamma %>
-                </h5>
+                
+                <div class="uncompact-version" style="display:none;">
+                    <h6 style="color:gray;">Codice a barre</h6>
+                    <h5 style="color:black;"><%= product.CodiceBarre %></h5>
+                    
+                    <h6 style="color:gray;">Codice</h6>
+                    <h5 style="color:black;"><%= product.CodiceArticolo %></h5>
+                    
+                    <h6 style="color:gray;">Brand</h6>
+                    <h5 style="color:black;"><%= product.DescrizioneBrand %></h5>
+                    
+                    <h6 style="color:gray;">Societa</h6>
+                    <h5 style="color:black;"><%= product.Societa %></h5>
+                    
+                    <h6 style="color:gray;">Gamma</h6>
+                    <h5 style="color:black;"><%= product.Gamma %></h5>
+                </div>
+
+                <div class="compact-version">
+                    <table class="table info-product">
+                        <thead>
+                            <tr>
+                                <td>Codice Prodotto</td>
+                                <td>Codice a barre</td>
+                                <td>Brand</td>
+                                <td>Societa</td>
+                                <td>Gamma</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><%= product.CodiceArticolo %></td>
+                                <td><%= product.CodiceBarre %></td>
+                                <td><%= product.DescrizioneBrand %></td>
+                                <td><%= product.Societa %></td>
+                                <td><%= product.Gamma %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div>
                     <h6 style="color:gray;">Informazione packaging</h6>
                     <textarea 
@@ -78,7 +90,7 @@
                     ><%= product.testing_info || '' %></textarea>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="padding-right:0;">
+            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12" style="padding-right:0;">
                 <table class="table table-sm table-delta-price">
                     <tbody>
                         <tr>
@@ -258,16 +270,9 @@
                                 : 0;
                             %>
                             Prezzo medio del competitor <strong><%= averagePrice.toFixed(2) %></strong>
+                            <button type="button" class="btn btn-primary bi bi-floppy btn-submit-changes pull-right"></button>
                     </caption>
                 </table>
-                <div class="btn-group dropup">
-                    <button 
-                        type="button" 
-                        class="btn btn-primary bi bi-floppy btn-submit-changes" 
-                        style="margin-right: 1rem;"
-                    >
-                    </button>
-                </div>
             </div>
         </div>
     </div>
