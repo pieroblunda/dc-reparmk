@@ -18,7 +18,7 @@
                     </span>
                 </h4>
                 <h6 class="text-primary category">
-                    <%= product.DescrizioneCategoria %>, <%= product.DescrizioneSottocategoria %>
+                    <%= product.DescrizioneCategoria %> / <%= product.DescrizioneSottocategoria %>
                 </h6>
                 
                 <h6 style="color:gray;">Codice a barre</h6>
@@ -66,8 +66,8 @@
                     ><%= product.testing_info || '' %></textarea>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                <table class="table table-sm table-bordered">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="padding-right:0;">
+                <table class="table table-sm table-delta-price">
                     <tbody>
                         <tr>
                             <td scope="row" rowspan="<%= (product.ArticoloBrands ? product.ArticoloBrands.split(',').length : 1) + 2 %>" width="33.33%" class="text-center">
@@ -101,14 +101,14 @@
                                         id="<%= product.CodiceArticolo %>-suggested-price"
                                         class="form-control text-success text-center number-validation btn-set-suggested-price" 
                                         value="<%= product.suggested_price || "0.00" %>" 
-                                        style="margin: 25px 0 10px 10px; font-size: 36px;"
+                                        style="margin: 10px 0 10px 10px; font-size: 36px;"
                                         data-product-code="<%= product.CodiceArticolo %>"
                                         data-fornitore-price="<%= product.PrezzoListinoFornitore %>"
                                     >
                                     <button 
                                         type="button" 
                                         class="btn btn-default bi bi-clock text-primary btn-product-price-history"
-                                        style="border: 0; width: 36px; height: 30px; margin-top: 27px; padding: 0;"
+                                        style="border: 0; width: 36px; height: 30px; margin-top: 12px; padding: 0;"
                                         data-product-article-code="<%= product.CodiceArticolo %>">
                                     </button>
                                 </div>
@@ -130,7 +130,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="table table-sm" style="margin-bottom: 10px;">
+                <table class="table table-sm table-competitor" style="margin-bottom: 10px;">
                     <colgroup>
                         <col>                      
                         <col style="width: 80px;">
@@ -230,14 +230,8 @@
                         <% }); %>
                     <% } %>
                     </tbody>
-                </table>
-            </div>
-            <div class="col-xs-12">
-                <div class="col-md-6"></div>
-                <div class="col-md-6 col-xs-12" style="padding-right:0; margin-right:0;">
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <div id="average-competitor-price-<%= product.CodiceArticolo %>">
-                            <%
+                    <caption id="average-competitor-price-<%= product.CodiceArticolo %>">
+                        <%
                             var prices = [
                                 Number(product.PrezzoIlomo) || 0,
                                 Number(product.PrezzoSunlux) || 0,
@@ -251,16 +245,15 @@
                                 : 0;
                             %>
                             Prezzo medio del competitor <strong><%= averagePrice.toFixed(2) %></strong>
-                        </div>
-                        <div class="btn-group dropup">
-                            <button 
-                                type="button" 
-                                class="btn btn-primary bi bi-floppy btn-submit-changes" 
-                                style="margin-right: 1rem;"
-                            >
-                            </button>
-                        </div>
-                    </div>
+                    </caption>
+                </table>
+                <div class="btn-group dropup">
+                    <button 
+                        type="button" 
+                        class="btn btn-primary bi bi-floppy btn-submit-changes" 
+                        style="margin-right: 1rem;"
+                    >
+                    </button>
                 </div>
             </div>
         </div>
