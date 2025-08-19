@@ -29,7 +29,13 @@ $ npm run start
 | DB_PASSWORD | String | Password for the DB connection in config.db.js |
 
 ## Database
-Restore the DB located in `/fixtures/db-prezzi.bak`
+Run the script in order
+```
+scripts/1.db_price_tracking_monitor.sql
+scripts/2.insert_soap_products.sql
+scripts/3.insert_base_records.sql
+scripts/4.insert_product_related_records.sql
+```
 
 ## User test
 > [!WARNING]
