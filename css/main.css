@@ -80,6 +80,12 @@ li.submenu a[role="button"].show::after {
         position: fixed;
     }
 }
+div.sidebar {
+    max-width: 320px;
+}
+.main-area {
+    width: calc(100% - 320px)!important;
+}
 .sidebar label.col-form-label[for] {
     padding-bottom: 2px;
 }

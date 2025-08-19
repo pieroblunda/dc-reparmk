@@ -1,7 +1,7 @@
 ﻿<div id="container-<%= product.CodiceArticolo || '' %>">
     <div class="jumbotron-product">
         <div class="container-fluid" style="padding:0 !important;">
-            <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                 <img 
                     src="http://192.168.0.232:3005/images/<%= product.CodiceArticolo %>.jpg" 
                     onerror="this.onerror=null; this.src='images/image.png';"
@@ -9,7 +9,7 @@
                     style="cursor: zoom-in;"
                 />
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <h4 class="text-info title">
                     <span class="text-decoration-none;">
                         <b class="text-dark">
@@ -21,12 +21,7 @@
                     <%= product.DescrizioneCategoria %> / <%= product.DescrizioneSottocategoria %>
                 </h6>
                 
-                <h6 style="color:gray;">Codice a barre</h6>
-                <h5 style="color:black;"><%= product.CodiceBarre %></h5>
-                
-                <h6 style="color:gray;">
-                    Fornitore
-                </h6>
+                <h6 style="color:gray;">Fornitore</h6>
                 <h5 style="color:black;">
                     <% if (product.CodiceFornitore != "") { %>
                         <%= product.RagioneSocialeFornitore %>
@@ -35,6 +30,10 @@
                         Fornitore non dispnonibile
                     <% } %>
                 </h5>
+                
+                <h6 style="color:gray;">Codice a barre</h6>
+                <h5 style="color:black;"><%= product.CodiceBarre %></h5>
+                
                 <h6 style="color:gray;">
                     Codice
                 </h6>
@@ -78,7 +77,7 @@
                     ><%= product.testing_info || '' %></textarea>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="padding-right:0;">
+            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12" style="padding-right:0;">
                 <table class="table table-sm table-delta-price">
                     <tbody>
                         <tr>
