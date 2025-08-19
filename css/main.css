@@ -14,6 +14,25 @@ span div table tr td th {
     font-weight: 300;
     font-size: 12px;
 }
+table.info-product thead tr td {
+    color: gray;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: "Roboto", sans-serif;
+    padding: 0;
+    border-bottom: 0;
+}
+table.info-product tbody tr td {
+    color: #000;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "Roboto", sans-serif;
+    padding: 0;
+    border-top: 0;
+}
+table.info-product>:not(caption)>*>* {
+    border-bottom-width: 0;
+}
 table.table-delta-price {
     margin-bottom: 16px;
 }

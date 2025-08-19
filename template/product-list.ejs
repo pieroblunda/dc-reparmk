@@ -31,33 +31,46 @@
                     <% } %>
                 </h5>
                 
-                <h6 style="color:gray;">Codice a barre</h6>
-                <h5 style="color:black;"><%= product.CodiceBarre %></h5>
-                
-                <h6 style="color:gray;">
-                    Codice
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.CodiceArticolo %>
-                </h5>
-                <h6 style="color:gray;">
-                    Brand
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.DescrizioneBrand %>
-                </h5>
-                <h6 style="color:gray;">
-                    Societa
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.Societa %>
-                </h5>
-                <h6 style="color:gray;">
-                    Gamma
-                </h6>
-                <h5 style="color:black;">
-                    <%= product.Gamma %>
-                </h5>
+                <div class="uncompact-version" style="display:none;">
+                    <h6 style="color:gray;">Codice a barre</h6>
+                    <h5 style="color:black;"><%= product.CodiceBarre %></h5>
+                    
+                    <h6 style="color:gray;">Codice</h6>
+                    <h5 style="color:black;"><%= product.CodiceArticolo %></h5>
+                    
+                    <h6 style="color:gray;">Brand</h6>
+                    <h5 style="color:black;"><%= product.DescrizioneBrand %></h5>
+                    
+                    <h6 style="color:gray;">Societa</h6>
+                    <h5 style="color:black;"><%= product.Societa %></h5>
+                    
+                    <h6 style="color:gray;">Gamma</h6>
+                    <h5 style="color:black;"><%= product.Gamma %></h5>
+                </div>
+
+                <div class="compact-version">
+                    <table class="table info-product">
+                        <thead>
+                            <tr>
+                                <td>Codice Prodotto</td>
+                                <td>Codice a barre</td>
+                                <td>Brand</td>
+                                <td>Societa</td>
+                                <td>Gamma</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><%= product.CodiceArticolo %></td>
+                                <td><%= product.CodiceBarre %></td>
+                                <td><%= product.DescrizioneBrand %></td>
+                                <td><%= product.Societa %></td>
+                                <td><%= product.Gamma %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div>
                     <h6 style="color:gray;">Informazione packaging</h6>
                     <textarea 
@@ -257,16 +270,9 @@
                                 : 0;
                             %>
                             Prezzo medio del competitor <strong><%= averagePrice.toFixed(2) %></strong>
+                            <button type="button" class="btn btn-primary bi bi-floppy btn-submit-changes pull-right"></button>
                     </caption>
                 </table>
-                <div class="btn-group dropup">
-                    <button 
-                        type="button" 
-                        class="btn btn-primary bi bi-floppy btn-submit-changes" 
-                        style="margin-right: 1rem;"
-                    >
-                    </button>
-                </div>
             </div>
         </div>
     </div>
