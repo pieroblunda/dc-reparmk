@@ -263,41 +263,45 @@ $(document).ready(function () {
             $('.spinner').hide();
         });
     }
-    competitorProductPriceHistory = function (productCode, competitorId) {
-        /* Visualizza il loader */
-        $('.spinner').show();
-        fetch('/competitor-product-price-history/' + productCode + '/' + competitorId, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(response => {
-            if (typeof response == 'object') {
-                if (response.status == 'ERR') return;
-                if (response.status == 'OK') {
-                    var competitorPriceHistory = response.data;
-                    $.get('../template/product-competitor-price-history.ejs', function (response) {
-                        templateString = response;
-                        var partialProduct = ejs.render(templateString, { competitorPriceHistory, competitorId });
-                        $('#competitor-product-price-history-body').empty().append(partialProduct);
-
-                        $('.btn-product-price-history-ok').click(function () {
-                            $('#competitor-price-history').modal('hide');
-                        });
+  competitorProductPriceHistory = function (productCode, competitorId, competitorName) {  // Add parameter
+    /* Visualizza il loader */
+    $('.spinner').show();
+    fetch('/competitor-product-price-history/' + productCode + '/' + competitorId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(response => {
+        if (typeof response == 'object') {
+            if (response.status == 'ERR') return;
+            if (response.status == 'OK') {
+                var competitorPriceHistory = response.data;
+                $.get('../template/product-competitor-price-history.ejs', function (response) {
+                    templateString = response;
+                    var partialProduct = ejs.render(templateString, { 
+                        competitorPriceHistory, 
+                        competitorId,
+                        competitor_name: competitorName  // Use the parameter
                     });
-                    $('.product-code').html(productCode);
-                    $('#competitor-price-history').modal('show');
-                }
+                    $('#competitor-product-price-history-body').empty().append(partialProduct);
+                    $('.btn-product-price-history-ok').click(function () {
+                        $('#competitor-price-history').modal('hide');
+                    });
+                });
+                $('.product-code').html(productCode);
+                $('.competitor_name').html(competitorName);  // Use the parameter
+                $('#competitor-price-history').modal('show');
             }
-            $('.spinner').hide();
-        })
-        .catch(error => {})
-        .finally(() => {
-            $('.spinner').hide();
-        });
-    }
+        }
+        $('.spinner').hide();
+    })
+    .catch(error => {})
+    .finally(() => {
+        $('.spinner').hide();
+    });
+}
     suggestPrice = function (codicearticolo) {
         /* Visualizza il loader */
         $('.spinner').show();
@@ -600,9 +604,14 @@ $(document).ready(function () {
     $('.btn-suggest-price').click(function () {
         suggestPrice($(this).data("codicearticolo"));
     });
-    $(document).on('click', '.btn-competitor-product-price-history', function () {
-        competitorProductPriceHistory($(this).data('productCode'), $(this).data('competitorId'));
-    });
+$(document).on('click', '.btn-competitor-product-price-history', function () {
+    var competitorName = $(this).data('competitor-name') || 'Unknown Competitor';
+    competitorProductPriceHistory(
+        $(this).data('productCode'), 
+        $(this).data('competitorId'),
+        competitorName  // Pass the third parameter
+    );
+});
     $(document).on('click', '.btn-product-price-history', function () {
         productPriceHistory($(this).data('product-article-code'));
     });
