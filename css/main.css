@@ -111,6 +111,9 @@ div.sidebar {
 .sidebar .input-wrapper {
     margin-bottom: 16px;
 }
+.sidebar .radio-wrapper {
+    margin: 0;
+}
 .jumbotron-product {
     padding-left: 0;
     padding-right: 0;
