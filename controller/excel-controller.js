@@ -257,6 +257,7 @@ const getColumns = async (connectionPool, sqlDriver) => {
       { header: 'RIC LS', key: 'PercentualeRicarico', width: 25 },
       { header: 'CAMBIO PREZZO LS', key: 'suggested_price', width: 25 },
       { header: 'NEW RICARICO', key: 'new_ric', width: 25 },
+      { header: 'PREZZO MEDIO CONCORRENTI', key: 'average_competitor_price', width: 25 },
       // { header: 'Brand', key: 'DescrizioneBrand', width: 20 },
       // { header: 'Codice Categoria', key: 'CodiceCategoria', width: 18 },
       // { header: 'Categoria', key: 'DescrizioneCategoria', width: 25 },
@@ -357,6 +358,27 @@ const downloadExcel = async (req, res) => {
 
       return;
     }
+    //start Calculate average competitor price zaky 19.08.2025
+   const getCompetitorsSql = `
+      select concat('competitor_', id, '_', rtrim(ltrim(lower(replace(name, ' ', '_'))))) as colName
+      from competitors order by name
+    `;
+    const competitors = (await pool.request().query(getCompetitorsSql)).recordset;
+
+    // Calculate average for each row
+    fetchResult.forEach(row => {
+      const competitorPrices = competitors
+        .map(c => row[c.colName])           // Get all competitor prices for this row
+        .filter(price => price && price > 0); // Remove null/zero prices
+      
+      // Calculate average or set to null if no valid prices
+      row.average_competitor_price = competitorPrices.length > 0 
+        ? parseFloat((competitorPrices.reduce((sum, price) => sum + price, 0) / competitorPrices.length).toFixed(2))
+        : null;
+    });
+
+
+  //end Calculate average competitor price zaky 19.08.2025
 
     const workbook = new ExcelJS.Workbook();
 
