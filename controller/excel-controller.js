@@ -251,7 +251,6 @@ const getColumns = async (connectionPool, sqlDriver) => {
       { header: 'GRUPPO MECEOLOGICO', key: 'Gamma', width: 25 },/*
       { header: 'STATO', key: 'averiguar3', width: 25 },*/
       { header: 'PREZZO LIS FORN', key: 'PrezzoListinoFornitore', width: 25 },
-      { header: 'PREZZO LIS FORN CIF', key: 'PrezzoListinoFornitore', width: 25 },
       { header: 'PREZZO LS', key: 'PrezzoListinoBase', width: 25 },
       { header: 'LISTINO', key: 'LineaProdotto', width: 25 },
       { header: 'RIC LS', key: 'PercentualeRicarico', width: 25 },
