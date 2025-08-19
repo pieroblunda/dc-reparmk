@@ -10,19 +10,19 @@
                 />
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                <h4 class="text-info title">
+                <h4 class="text-info title"  title="ReparMK - Colonna T (Articolo)">
                     <span class="text-decoration-none;">
                         <b class="text-dark">
                             <%= product.Denominazione %>
                         </b>
                     </span>
                 </h4>
-                <h6 class="text-primary category">
+                <h6 class="text-primary category" title="ReparMK - Colonna C (Categoria)">
                     <%= product.DescrizioneCategoria %> / <%= product.DescrizioneSottocategoria %>
                 </h6>
                 
-                <h6 style="color:gray;">Fornitore</h6>
-                <h5 style="color:black;">
+                <h6 style="color:gray;" title="ReparMK - Colonna J (Fornitore)">Fornitore</h6>
+                <h5 style="color:black;" title="ReparMK - Colonna J (Fornitore)">
                     <% if (product.CodiceFornitore != "") { %>
                         <%= product.RagioneSocialeFornitore %>
                         <% if (product.ArtForn) { %> (<%= product.ArtForn %>) <% } %>
@@ -52,20 +52,20 @@
                     <table class="table info-product">
                         <thead>
                             <tr>
-                                <td>Codice Prodotto</td>
+                                <td title="ReparMK - Colonna S (Codice Articolo)">Codice Prodotto</td>
                                 <td>Codice a barre</td>
-                                <td>Brand</td>
-                                <td>Societa</td>
-                                <td>Gamma</td>
+                                <td title="ReparMK - Colonna BJ (Brand)">Brand</td>
+                                <td title="ReparMK - Colonna H (Azienda)">Societa</td>
+                                <td title="ReparMK - Colonna BK (Gamma)">Gamma</td>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><%= product.CodiceArticolo %></td>
+                                <td title="ReparMK - Colonna S (Codice Articolo)"><%= product.CodiceArticolo %></td>
                                 <td><%= product.CodiceBarre %></td>
-                                <td><%= product.DescrizioneBrand %></td>
-                                <td><%= product.Societa %></td>
-                                <td><%= product.Gamma %></td>
+                                <td title="ReparMK - Colonna BJ (Brand)"><%= product.DescrizioneBrand %></td>
+                                <td title="ReparMK - Colonna H (Azienda)"><%= product.Societa %></td>
+                                <td title="ReparMK - Colonna BK (Gamma)"><%= product.Gamma %></td>
                             </tr>
                         </tbody>
                     </table>
@@ -95,18 +95,18 @@
                     <tbody>
                         <tr>
                             <td scope="row" rowspan="<%= (product.ArticoloBrands ? product.ArticoloBrands.split(',').length : 1) + 2 %>" width="33.33%" class="text-center">
-                                <h1 class="primary-price">
+                                <h1 class="primary-price" title="ReparMK - Colonna AQ (Prezzo Lis Forn)">
                                     <%= product.PrezzoListinoFornitore %><sup><span class="bi bi-currency-euro linea-prodotto"></sup>
                                 </h1>
-                                <span style="width: 100px;" class="badge bg-primary badge-price">
+                                <span style="width: 100px;" class="badge bg-primary badge-price" title="ReparMK - Colonna AQ (Prezzo Lis Forn)">
                                     Prezzo Fornitore
                                 </span>
                             </td>
                             <td scope="row" rowspan="<%= (product.ArticoloBrands ? product.ArticoloBrands.split(',').length : 1) + 2 %>" width="33.33%" class="text-center">
-                                <h1 class="primary-price">
+                                <h1 class="primary-price" title="ReparMK - Colonna AS (Prezzo Ls)">
                                     <%= product.PrezzoListinoBase %><sup><span class="bi bi-currency-euro linea-prodotto"></sup>
                                 </h1>
-                                <span style="width: 110px;" class="badge bg-primary badge-price">
+                                <span style="width: 110px;" class="badge bg-primary badge-price" title="ReparMK - Colonna AS (Prezzo Ls)">
                                     <%= product.LineaProdotto %> -
                                     <% if (product.LineaProdotto == "L06") { %>
                                         Da scontare 
