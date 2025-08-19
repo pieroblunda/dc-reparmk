@@ -54,10 +54,10 @@ li.submenu a[role="button"].show::after {
         position: fixed;
     }
 }
-label.col-form-label[for] {
+.sidebar label.col-form-label[for] {
     padding-bottom: 2px;
 }
-.input-wrapper {
+.sidebar .input-wrapper {
     margin-bottom: 16px;
 }
 .jumbotron-product {
