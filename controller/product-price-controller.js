@@ -225,13 +225,16 @@ const getProductPriceHistories = async ({ product_id }, connectionPool, sqlDrive
     let dbQuery = await connectionPool.request()
       .input('product_id', sqlDriver.Int(), product_id)
       .query(`
-        SELECT TOP 5
+        SELECT
           pph.product_id,
           pph.price,
-          pph.created_at
+          pph.created_at,
+          pph.created_by,
+          users.name as userName,
+          users.email as userEmail
         FROM product_price_histories pph
+        JOIN users ON pph.created_by=users.id
         WHERE pph.product_id = @product_id
-        ORDER BY pph.created_at DESC
       `);
 
     return dbQuery.recordset.length ? dbQuery.recordset : [];
