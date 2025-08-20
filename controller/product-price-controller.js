@@ -242,15 +242,19 @@ const getCompetitorProductPriceHistories = async ({ product_id, competitor_id },
       .input('product_id', sqlDriver.Int(), product_id)
       .input('competitor_id', sqlDriver.Int(), competitor_id)
       .query(`
-        SELECT TOP 5
+        SELECT
           cp.product_id,
           cp.competitor_id,
           c.name AS competitor_name,
           cph.price,
-          cph.created_at
+          cph.created_at,
+          cph.created_by,
+          users.name as userName,
+          users.email as userEmail
         FROM competitor_product_histories cph
         JOIN competitor_product cp ON cph.competitor_product_id = cp.id
         JOIN competitors c ON cp.competitor_id = c.id
+        JOIN users ON cph.created_by=users.id
         WHERE cp.product_id = @product_id AND cp.competitor_id = @competitor_id
         ORDER BY cph.created_at DESC
       `);
