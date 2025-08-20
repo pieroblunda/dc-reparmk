@@ -720,6 +720,28 @@ $(document).on('click', '.btn-competitor-product-price-history', function () {
         })
         .catch(err => {});
     });
+// zaky modify filter button  start 
+// Reset button functionality
+$(document).on('click', '.btn-reset', function () {
+    // Clear all select dropdowns (reset to first option)
+    $('#Supplier').val('');
+    $('#Category').val('');
+    
+    // Clear all text inputs
+    $('#CodiceArticolo').val('');
+    $('#CodiceFornitore').val('');
+    $('#NomeProdotto').val('');
+    
+    // Reset radio buttons to the first option (Tutti)
+    $('#withPrice_0').prop('checked', true);
+    
+    // After clearing fields, automatically trigger search to load all products
+    $('.btn-search').trigger('click');
+    
+    // Optional: Show a message that fields have been reset
+    console.log('Form fields have been reset and all products loaded');
+});
+
     $('#load-data').click(function () {
         const nextOffset = $(this).data('nextOffset') || 0;
         /* Carica la lista dei risultati */

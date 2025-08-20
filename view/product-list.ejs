@@ -89,16 +89,22 @@
                 </div>
             </div>
             <h6></h6> 
-            <div>
-                <button 
-                    type="button" 
-                    class="btn btn-primary btn-search w-100" 
-                    data-offset-rows
-                    data-next-rows
-                >
-                    Cerca
-                </button>
-            </div>
+        <div class="d-flex gap-2">
+        <button
+            type="button"
+            class="btn btn-primary btn-search flex-fill"
+            data-offset-rows
+            data-next-rows
+        >
+            Cerca
+        </button>
+        <button
+            type="button"
+            class="btn btn-secondary btn-reset flex-fill"
+        >
+            Reset
+        </button>
+    </div>
             <h5 class="load-pager">
                 <% if (user.NextRows > RowsCount) { %>
                     <span class="LoadedRows"><%= rows_count %></span>
