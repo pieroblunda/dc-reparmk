@@ -2,8 +2,15 @@
 @import url(//fonts.googleapis.com/css?family=Roboto:300,400,500,600,700,800,900);
 
 body {
-    padding-top: 80px;
+    margin-top: 60px;
 }
+
+.navbar {
+    margin-bottom: 0;
+    padding: 0 16px;
+    min-height: 60px;
+}
+
 
 span div table tr td th {
     font-family: "Montserrat", sans-serif;
@@ -101,9 +108,13 @@ li.submenu a[role="button"].show::after {
 }
 div.sidebar {
     max-width: 320px;
+    margin-top: 8px;
 }
 .main-area {
     width: calc(100% - 320px)!important;
+    height: calc(100vh - 60px - 8px);
+    overflow-y: scroll;
+    margin-top: 8px;
 }
 .sidebar label.col-form-label[for] {
     padding-bottom: 2px;
