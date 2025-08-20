@@ -89,21 +89,22 @@
                 </div>
             </div>
             <h6></h6> 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 buttons-sidebar">
+               <button
+            type="button"
+            class="btn btn-secondary btn-reset flex-fill col-4"
+        >
+            Reset
+        </button>
         <button
             type="button"
-            class="btn btn-primary btn-search flex-fill"
+            class="btn btn-primary btn-search flex-fill col-8"
             data-offset-rows
             data-next-rows
         >
             Cerca
         </button>
-        <button
-            type="button"
-            class="btn btn-secondary btn-reset flex-fill"
-        >
-            Reset
-        </button>
+     
     </div>
             <h5 class="load-pager">
                 <% if (user.NextRows > RowsCount) { %>

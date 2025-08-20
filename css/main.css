@@ -125,6 +125,10 @@ div.sidebar {
 .sidebar .radio-wrapper {
     margin: 0;
 }
+
+.buttons-sidebar .btn-reset:hover {
+  color: white !important;
+}
 .jumbotron-product {
     padding-left: 0;
     padding-right: 0;
