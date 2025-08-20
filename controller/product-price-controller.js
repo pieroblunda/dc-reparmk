@@ -225,13 +225,16 @@ const getProductPriceHistories = async ({ product_id }, connectionPool, sqlDrive
     let dbQuery = await connectionPool.request()
       .input('product_id', sqlDriver.Int(), product_id)
       .query(`
-        SELECT TOP 5
+        SELECT
           pph.product_id,
           pph.price,
-          pph.created_at
+          pph.created_at,
+          pph.created_by,
+          users.name as userName,
+          users.email as userEmail
         FROM product_price_histories pph
+        JOIN users ON pph.created_by=users.id
         WHERE pph.product_id = @product_id
-        ORDER BY pph.created_at DESC
       `);
 
     return dbQuery.recordset.length ? dbQuery.recordset : [];
@@ -242,15 +245,19 @@ const getCompetitorProductPriceHistories = async ({ product_id, competitor_id },
       .input('product_id', sqlDriver.Int(), product_id)
       .input('competitor_id', sqlDriver.Int(), competitor_id)
       .query(`
-        SELECT TOP 5
+        SELECT
           cp.product_id,
           cp.competitor_id,
           c.name AS competitor_name,
           cph.price,
-          cph.created_at
+          cph.created_at,
+          cph.created_by,
+          users.name as userName,
+          users.email as userEmail
         FROM competitor_product_histories cph
         JOIN competitor_product cp ON cph.competitor_product_id = cp.id
         JOIN competitors c ON cp.competitor_id = c.id
+        JOIN users ON cph.created_by=users.id
         WHERE cp.product_id = @product_id AND cp.competitor_id = @competitor_id
         ORDER BY cph.created_at DESC
       `);

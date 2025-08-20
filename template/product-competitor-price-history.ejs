@@ -1,28 +1,32 @@
-<table class="table table-striped mt-3" style="padding:2px !important;">
-    <tbody>
-        <% if (competitorPriceHistory.length === 0) { %>
+<% if (competitorPriceHistory.length === 0) { %>
+    <div class="text-center text-muted">Nessun risultato</div>
+<% } else { %>
+    <table class="table table-striped mt-3" style="padding:2px !important;">
+        <thead>
             <tr>
-                <td colspan="2" class="text-center text-muted">
-                    Nessun risultato
-                </td>
+                <td scope="col">Data</td>
+                <td scope="col">Autore</td>
+                <td scope="col" class="text-right">Prezzo</td>
             </tr>
-        <% } else { %>
+        </thead>
+        <tbody>
             <% competitorPriceHistory.forEach(function(entry) { 
                 const date = new Date(entry.created_at);
                 const formattedDate = date.toLocaleDateString('es-AR');
             %>
                 <tr>
                     <td scope="col"><%= formattedDate %></td>
+                    <td scope="col"><%= entry.userName %> (<%= entry.userEmail %>)</td>
                     <td scope="col" class="text-right">
                         <span class="PrezzoListinoFornitore">
                             <%= entry.price %><span class="bi bi-currency-euro"></span>
                         </span>
                     </td>
                 </tr>
-            <% }); %>
-        <% } %>
-    </tbody>
-</table>
+            <% }); %> 
+        </tbody>
+    </table>
+<% } %>
 
 <div class="col-xs-12 text-right">
     <input type="button" class="btn btn-primary btn-product-price-history-ok" value="OK">

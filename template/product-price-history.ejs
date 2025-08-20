@@ -1,4 +1,11 @@
 <table class="table table-striped mt-3" style="padding:2px !important;">
+  <thead>
+    <tr>
+      <td>Data</td>
+      <td>Autore</td>
+      <td class="text-right">Prezzo</td>
+    </tr>
+  </thead>
   <tbody>
     <% priceHistory.forEach(function(item) { %>
       <% 
@@ -9,6 +16,7 @@
       %>
       <tr>
         <td scope="col"><%= day %>/<%= month %>/<%= year %></td>
+        <td><%= item.userName %> (<%= item.userEmail %>)</td>
         <td scope="col" class="text-right">
           <span class="PrezzoListinoFornitore">
             <%= item.price %><span class="bi bi-currency-euro"></span>
