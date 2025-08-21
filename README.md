@@ -1,71 +1,110 @@
-# dc-it-web-app-monitor-rilevamento-prezzi
+# API ReparMk
 
-## Architecture
+# Usage
 
-![Senza-architettura](https://github.com/user-attachments/assets/bec55523-85c8-41cc-8868-612f741abfc6)
+> http://localhost:5001/queryAll
+> http://localhost:5001/queryAll?fields=Categoria,NomeCategoria&page=1&pageSize=25&Fornitore=LIKE_IMPORT&Categoria=%3E_15
 
+## Params
 
-## Dependencies
-* [Driver - SQL Server Express Edition](https://www.microsoft.com/en-us/download/details.aspx?id=104781)
-* VPN to access to Company WLAN
-* NodeJs v18.20.8
-
-## Install
+```javascript
+{
+    fields: ['Categoria', 'NomeCategoria', 'Gruppo Merceologico'],
+    page: 3,
+    pageSize: 25,
+    conditions: [
+        { field:'Azienda', operator: '=', value: 'DC SRL' },
+        { field:'Linea Prodotto', operator: '=', value: 'L01' },
+        { field:'Fornitore', operator: 'LIKE', value: '%IMPORT%' },
+        { field:'Categoria', operator: '>', value: 70 },
+        { field:'Art Sost', operator: '', value: null }
+    ]
+}
 ```
-$ git clone git@github.com:dcgroupitalia/dc-it-web-app-monitor-rilevamento-prezzi.git
-$ npm install
-$ npm run start
+
+| Field | Description |
+|---|---|
+| fields | Optional. Defaults is DataReport |
+| page | Optional. Default is 1 |
+| pageSize | Optional. Default is 25 |
+| conditions | Optional. Defualt is empty value (to get all products) |
+
+## Fields
+
+> Is an array of string where the elements match a ReparMK field. See Fields Available.
+> Available fields are any of reparMK
+
+| Field | Description |
+|---|---|
+| | |
+
+> Note: '*' is a valid field to get all available fields
+> IMPORTANT: System will automatically adds [DataReport] field in order to show how old is the information showed in UI.
+
+## Conditions
+An array of object where each item match the  following schema:
+
+```javascript
+{ field:'Visibile Catalogo', operator: '=', value: 'Y' }
+```
+> IMPORTANT: System automatically will add the rule used as example above in order to query only active products
+> NOTE: When value is `NULL` operator will be ignored
+> Valid Operators: '=','LIKE', '>','<'
+
+## Response
+```javascript
+{
+  "totalRows": 2,
+  "pageSize": 2,
+  "pageNumber": 1,
+  "dataReport": null,
+  "conditions": [
+    "[Azienda]='DC SRL' ",
+    "[Linea Prodotto]='L01' ",
+    "[Fornitore]LIKE'%IMPORT%' ",
+    "[Categoria]\u003E70 ",
+    "[Art Sost]IS NULL ",
+    "[Visibile Catalogo]='Y'"
+  ],
+  "data": [
+    {
+      "Categoria": "76",
+      "NomeCategoria": "MELISSA ESPOSITORI",
+      "Gruppo Merceologico": "MELISSA ESPOSITORI"
+    },
+    {
+      "Categoria": "76",
+      "NomeCategoria": "MELISSA ESPOSITORI",
+      "Gruppo Merceologico": "MELISSA ESPOSITORI"
+    }
+  ]
+}
 ```
 
 ## Environment variables
-| Variable | Range | Dsc  |
-|---|---|---|
-| USE_MOCK | [0 \| 1] | Describes if System should use mocked data for internal database |
-| USE_MOCK_PRODUCTS | [0 \| 1] | Describes if System should use mocked data for reading products from external database |
-| DB_SERVER | String | IP SERVER used in the database connection string |
-| DB_PORT | Integer | Port where DB is listening |
-| DB_NAME | String | Database name |
-| DB_USER | String | User used in the database connection string |
-| DB_PASSWORD | String | Password for the DB connection in config.db.js |
 
-## Database
-Run the script in order
-```
-scripts/1.db_price_tracking_monitor.sql
-scripts/2.insert_soap_products.sql
-scripts/3.insert_base_records.sql
-scripts/4.insert_product_related_records.sql
-```
-
-## User test
-> [!WARNING]
-> ToDo
-
-## Run app
-```
-Server running on port 5001
-
-Open http://localhost:5001/
-```
-
-## Debugging
-```
-$ npm run debug
-```
-
-## External Libraries
-
-| Library | Dsc  |
+|Variable | Description |
 |---|---|
-| [exceljs](https://www.npmjs.com/package/exceljs) | Build a file excel to download |
-| []() | Bootstrap Iconset | |
-| [bootstrapcdn](https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css) | CSS Layout framework | 
+| PORT | |
+| DB_SERVER |  |
+| DB_PORT |  |
+| DB_NAME | Darwin |
+| DB_USER ||
+| DB_PASSWORD ||
 
-## CDN Immagini
-To serve the images app calls the nodejs express server that reads the images directly from the `//192.168.0.141/as-f/scambio/FOTODC_AGENTI` folder.
-Read more information in the [static-images application](https://github.com/dcgroupitalia/static-images)
+## Debito tecnico
 
-```HTML
-<!-- usage example -->
-<img src="http://192.168.0.232:3005/images/0004987.jpg">
+* Ogni elemento di Response.data contiene l'attributo "DataReport" che è già presente alla radice dell'oggetto
+* Il sistema risponde con la chiave del ogetto come "Gruppo Merceologico" il chè rende difficile usare la notazione per punto. Valutare di usare camel case.
+* ToDo: Fields must be dinamic
+* Il sistema debe eliminare duplicati dei parametri di fields
+* Evitare de usare try catch e usare invece promises
+* Documentare l'uso delle variabili di ambiente
+* Pagina 404 non funziona
+* Implementare @JSDoc
+
+```
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'ReparMk'
 ```

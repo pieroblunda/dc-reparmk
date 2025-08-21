@@ -1,5 +1,4 @@
 const sql = require('mssql/msnodesqlv8');
-const connection = require('../../config.db.js');
 
 class Products {
 
@@ -18,9 +17,9 @@ class Products {
     }
     */
     static async queryAll(queryParams) {
-        const pool = await sql.connect(connection);
-        const PAGE_NUMBER = 1;
-        const PAGINATION_SIZE = 2;
+        const pool = await sql.connect(this.connection);
+        const PAGE_NUMBER = queryParams.page;
+        const PAGINATION_SIZE = queryParams.pageSize;
         const CONDITIONS_STR = this.prepareConditions(queryParams.conditions);
         const queryString = `
         SELECT
@@ -38,21 +37,72 @@ class Products {
 
     static normalizeResponse(response, PAGINATION_SIZE, PAGE_NUMBER, conditionsStr) {
         return {
-            totalRows: response.rowsAffected,
+            totalRows: response.rowsAffected.at(0),
             pageSize: PAGINATION_SIZE,
             pageNumber: PAGE_NUMBER,
-            dataReport: new Date(response.recordset.at(0)),
+            dataReport: new Date(response.recordset.at(0)?.DataReport),
             conditions: this.humanizeConditions(conditionsStr),
+            productsIds: response.recordset.map( (item) => item['Codice Articolo']),
             data: response.recordset
         };
     }
 
-    static normalizeQueryParams(queryParams) {
+    static getQueryParamsObjectFromQueryString(queryObj) {
+        const fixedParams = ['fields', 'page', 'pageSize'];
+        const conditions = Object.keys(queryObj).filter( (item) => !fixedParams.includes(item));
+
+        let returnedObject = {
+            fields: queryObj.fields.split(','),
+            page: queryObj.page,
+            pageSize: queryObj.pageSize,
+            conditions: conditions.map( (item) => {
+                let key = item;
+                let value = queryObj[item];
+
+                if(value.includes('_')) {
+                    return { field:item, operator: value.split('_').at(0), value: value.split('_').at(1) };
+                } else {
+                    return { field:item, operator: '=', value: value };
+                }
+            })
+        };
+        return this.normalizeQueryParams(returnedObject);
+    }
+
+    static normalizeQueryParams(queryObj) {
+
+        if (typeof queryObj.fields === 'string') {
+            queryObj.fields = queryObj.fields.split(',')
+        }
+
+        if (!Object.hasOwnProperty('conditions')) {
+            queryObj.conditions = Object.keys(queryObj).map( (item) => {
+                let key = item;
+                let value = queryObj[item];
+                let operator;
+
+
+                if(value.includes('_')) {
+                    operator = value.split('_').at(0);
+                    value = value.split('_').at(1);
+                    if(operator === 'LIKE') {
+                        value = `%${value}%`;
+                    } else {
+                        value = typeof parseInt(value) === 'number' ? parseInt(value) : value;
+                    }
+
+                    return { field:item, operator: operator, value: value };
+                } else {
+                    return { field:item, operator: '=', value: value };
+                }
+            });
+        }
+
         return {
-            fields: queryParams.fields || ['*'],
-            page: parseInt(queryParams.page) || 1,
-            pageSize: parseInt(queryParams.pageSize) || 25,
-            conditions: queryParams.conditions
+            fields: queryObj.fields || ['*'],
+            page: parseInt(queryObj.page) || 1,
+            pageSize: parseInt(queryObj.pageSize) || 25,
+            conditions: queryObj.conditions
         };
     }
 
@@ -70,7 +120,7 @@ class Products {
             return this.isValidField(item.field)
         }).map( (item) => {
             value = (typeof item.value === 'number' || item.value === null) ? item.value : `'${item.value}'`;
-            if(item.value === null) {
+            if(item.value === null || item.value === 'null') {
                 value = 'IS NULL';
             }
             return `AND ${this.normalizeField(item.field)}${item.operator}${value}`;
@@ -82,6 +132,13 @@ class Products {
     }
 
     static prepareFields(fields) {
+
+        if(!Array.isArray(fields)) {
+            return '*';
+        }
+
+        fields.push('DataReport', 'Codice Articolo');
+
         return fields.filter( (item) => {
             return this.isValidField(item);
         }).map( (item) => {
@@ -173,6 +230,21 @@ class Products {
             'Giac_Magazzino',
             'DataReport'
         ].includes(fieldName);
+    }
+
+    static get connection() {
+        return {
+            server   : process.env.DB_SERVER,
+            port     : parseInt(process.env.DB_PORT),
+            database : process.env.DB_NAME,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            options: {
+                //trustedConnection: true, // Set to true if using Windows Authentication
+                trustServerCertificate: true, // Set to true if using self-signed certificates
+            },
+            /*   driver: 'msnodesqlv8', */ // Required if using Windows Authentication
+        }
     }
 
 };
