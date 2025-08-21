@@ -32,6 +32,7 @@ const {
   utilityScript,
   validationScript,
   getAllProducts,
+  queryAll,
   getOneProductByCode,
   searchProducts
 } = require('../controller/product-list-controller');
@@ -45,6 +46,10 @@ const { getUserCategories } = require('../controller/category-controller');
 | MODULES EXPORTS
 |--------------------------------------------------------------------------
 */
+
+//router.get('/queryAll', queryAll);
+const ProductsController = require('../server/controller/product.server.controller.js');
+router.get('/queryAll', ProductsController);
 
 /*
 router.get('/product-list-script', (req, res) => {

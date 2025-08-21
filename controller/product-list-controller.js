@@ -30,6 +30,22 @@ const connection = require('../config.db');
 |--------------------------------------------------------------------------
 */
 
+const queryAll = async (req, res) => {
+  try {
+    res.set('Access-Control-Allow-Origin', '*');
+
+    const pool = await sql.connect(connection);
+    const queryStrign = `SELECT TOP (5) * FROM [Darwin].[dbo].[ReparMk] WHERE DataReport=(SELECT TOP (1) DataReport FROM [Darwin].[dbo].[ReparMk] ORDER BY DataReport DESC)`;
+    const queryResult = await pool.request().query(queryStrign);
+    console.log(queryResult);
+    //const result = await getAllProducts();
+    res.status(200).json(queryResult);
+  } catch (err) {
+    const response = new ResponseModel('ERR', null, err);
+    res.status(500).json(response);
+  }
+}
+
 const fetchProducts = async (
   {
     userId,
@@ -546,5 +562,6 @@ module.exports = {
   validationScript,
   getAllProducts,
   getOneProductByCode,
-  searchProducts
+  searchProducts,
+  queryAll
 };
