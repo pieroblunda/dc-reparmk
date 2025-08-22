@@ -35,6 +35,42 @@ class Products {
         return this.normalizeResponse(queryResult, PAGINATION_SIZE, PAGE_NUMBER, CONDITIONS_STR);
     };
 
+    static async queryPriceUpdates() {
+        const pool = await sql.connect(this.connection);
+        /*
+        const PAGE_NUMBER = 1;
+        const PAGINATION_SIZE = 0;
+        const CONDITIONS_STR = null;
+        */
+        const dateSince = '2025-08-14';
+        const queryString = `
+        WITH PreciosConAnterior AS (
+            -- step 1: get the last product price for each product
+            SELECT
+                [Codice Articolo] as productCode,
+                DataReport,
+                [Prezzo Lis Forn],
+                LAG([Prezzo Lis Forn], 1) OVER (PARTITION BY [Codice Articolo] ORDER BY DataReport) AS lastPrice
+            FROM
+                ReparMk
+            WHERE DataReport>'${dateSince}'
+        )
+        -- step 2: filter in order to show only price differences
+        SELECT
+            productCode,
+            DataReport AS updateDate,
+            lastPrice,
+            [Prezzo Lis Forn] AS newPrice
+        FROM
+            PreciosConAnterior
+        WHERE
+            [Prezzo Lis Forn] <> lastPrice
+            AND lastPrice <> 0
+        ORDER BY updateDate DESC;`;
+        const queryResult = await pool.request().query(queryString);
+        return queryResult.recordset;
+    }
+
     static normalizeResponse(response, PAGINATION_SIZE, PAGE_NUMBER, conditionsStr) {
         return {
             totalRows: response.rowsAffected.at(0),

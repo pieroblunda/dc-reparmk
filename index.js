@@ -14,7 +14,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.get('/queryAll', ProductsController);
+console.log(ProductsController);
+
+app.get('/queryAll', ProductsController.queryAll);
+app.get('/queryPriceUpdates', ProductsController.queryPriceUpdates);
 app.use((req, res, next) => res.status(404).json({error: '404 - Page not found'}));
 
 app.listen(process.env.PORT, () => {
