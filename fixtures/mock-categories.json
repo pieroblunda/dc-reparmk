@@ -1,0 +1,23 @@
+{
+  "pageSize": 999,
+  "pageNumber": 1,
+  "dataReport": "2025-09-23T08:00:04.300Z",
+  "conditions": [
+    "[Visibile Catalogo]='Y'"
+  ],
+  "data": [
+    "PROMOZIONI",
+    "DC CASA PROMO",
+    "PRYMA PROMO",
+    "Categoria Mock 1",
+    "Categoria Mock 2",
+    "Categoria Mock 3",
+    "Categoria Mock 4",
+    "EX PREVENDITA",
+    "FORNITURE USO INTERNO",
+    "MATERIALI ESPOSITIVI",
+    "PROMOZIONI",
+    "PRYMA PROMO",
+    "WECHAT UFFICIALE"
+  ]
+}

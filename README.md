@@ -1,5 +1,6 @@
 # API ReparMk
 
+Esto se va a usar como paquete NPM o como una URL para llamar ?
 
 ## Table of content
 
@@ -24,7 +25,8 @@ In order to match a different set, or customize output, it is possible to use a 
 |---|---|---|---|
 | fields | csv string| `[*]` | List of attributes to query separated by values using camelCase style |
 | page | Integer | 1 |Number starting from 1 corrisponding to the page to query |
-| pageSize | Integer | 25 | Number of elements per page to be present in the query result |
+| pageSize | Integer | 25 | Number of elements per page to be present in the query result |ù
+| exclude | String | List of exclude values as CSV |
 | [any_attribute_key] | String | _Empty value_ | Any key attribute in camelCase to use as filter |
 
 > [IMPORTANT]

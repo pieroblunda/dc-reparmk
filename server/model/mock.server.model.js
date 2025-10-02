@@ -15,6 +15,11 @@ class Mock {
     return JSON.parse(fs.readFileSync('./fixtures/mock-products.json').toString());
   }
 
+  static loadCategories() {
+    console.log('Mock /fixtures/mock-categories.json');
+    return JSON.parse(fs.readFileSync('./fixtures/mock-categories.json').toString());
+  }
+
 }
 
 module.exports = Mock;
