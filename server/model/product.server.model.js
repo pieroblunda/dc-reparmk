@@ -17,6 +17,7 @@ class Products {
             { field:'Fornitore', operator: 'LIKE', value: '%IMPORT%' },
             { field:'Categoria', operator: '>', value: 70 },
             { field:'Art Sost', operator: '', value: null }
+            { field:'NomeCategoria', operator: 'NOT IN', value: ['Categoria', 'NomeCategoria', 'Gruppo Merceologico'] }
         ]
     }
     */
@@ -164,6 +165,12 @@ class Products {
         };
     }
 
+    /**
+     * 
+     * @param {*} conditionsArr 
+     * @returns String
+     * @description Transform an array of conditions into a string SQL friendly 
+     */
     static prepareConditions(conditionsArr) {
         let value;
 
@@ -180,6 +187,9 @@ class Products {
             value = (typeof item.value === 'number' || item.value === null) ? item.value : `'${item.value}'`;
             if(item.value === null || item.value === 'null') {
                 value = 'IS NULL';
+            }
+            if(item.operator === 'NOT IN') {
+                value = `(${value.join(',')})`;
             }
             return `AND ${this.normalizeField(item.field)}${item.operator}${value}`;
         }).join(' ');
@@ -236,6 +246,11 @@ class Products {
     }
 
     static async getCategories(queryParams) {
+
+        if(Mock.isActive()) {
+            return Mock.loadCategories();
+        }
+
         const pool = await sql.connect(this.connection);
         queryParams.conditions = [
             ...queryParams.conditions,
